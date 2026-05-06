@@ -1,0 +1,128 @@
+"use client";
+
+import Image from "next/image";
+import { FaXTwitter, FaLinkedinIn, FaInstagram, FaFacebookF } from "react-icons/fa6";
+import { HiOutlineLocationMarker, HiOutlineMail } from "react-icons/hi";
+import { FiPhone } from "react-icons/fi";
+
+export default function footer() {
+  return (
+    <footer className="bg-teal-700 text-white">
+      {/* TOP SECTION */}
+      <div className="max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-5 gap-10">
+        
+        {/* Logo + Description */}
+        <div className="md:col-span-2">
+          <div className="bg-white rounded-xl p-3 inline-block">
+            <Image
+              src="/image/Rectangle 14.png"
+              alt="Zoiko Orbit"
+              width={120}
+              height={50}
+            />
+          </div>
+
+          <p className="mt-6 text-sm text-gray-200 leading-relaxed max-w-sm">
+            Zoiko Orbit™ delivers seamless global eSIM connectivity for travelers and
+            businesses, empowering them to stay connected anywhere — while supporting
+            animal welfare with every plan
+          </p>
+        </div>
+
+        {/* Explore */}
+        <div>
+          <h3 className="font-semibold mb-4">Explore</h3>
+          <ul className="space-y-2 text-gray-200 text-sm">
+            <li>Coverage</li>
+            <li>Plans</li>
+            <li>Ecosystem</li>
+            <li>About Us</li>
+          </ul>
+        </div>
+
+        {/* Support */}
+        <div>
+          <h3 className="font-semibold mb-4">Support & Help</h3>
+          <ul className="space-y-2 text-gray-200 text-sm">
+            <li>Support Center</li>
+            <li>FAQs</li>
+            <li>Accessibility Options</li>
+          </ul>
+        </div>
+
+        {/* Legal */}
+        <div>
+          <h3 className="font-semibold mb-4">Legal & Privacy</h3>
+          <ul className="space-y-2 text-gray-200 text-sm">
+            <li>Privacy Policy</li>
+            <li>Terms Of Service</li>
+            <li>Cookie Preferences</li>
+          </ul>
+        </div>
+
+        {/* Business */}
+        <div>
+          <h3 className="font-semibold mb-4">For Business</h3>
+          <ul className="space-y-2 text-gray-200 text-sm">
+            <li>Partner With Us</li>
+            <li>Travel Agencies & OTAs</li>
+            <li>Corporate Travel Solutions</li>
+            <li>API Integrations</li>
+          </ul>
+        </div>
+      </div>
+
+      {/* MIDDLE SECTION */}
+      <div className="border-t border-white/20">
+        <div className="max-w-7xl mx-auto px-6 py-10 grid md:grid-cols-3 gap-10">
+          
+          {/* Corporate */}
+          <div>
+            <h3 className="font-semibold mb-4">Corporate & Responsibility</h3>
+            <ul className="space-y-2 text-gray-200 text-sm">
+              <li>Corporate Responsibility</li>
+              <li>Investor Relations</li>
+              <li>Press & Media</li>
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h3 className="font-semibold mb-4">Contact Us</h3>
+            <div className="space-y-3 text-sm text-gray-200">
+              <p className="flex items-center gap-2">
+                <HiOutlineLocationMarker />
+                1401 21st Street, Suite R, Sacramento, CA 95811
+              </p>
+              <p className="flex items-center gap-2">
+                <FiPhone />
+                +1 800-484-5574
+              </p>
+              <p className="flex items-center gap-2">
+                <HiOutlineMail />
+                info@zoikoorbit.com
+              </p>
+            </div>
+          </div>
+
+          {/* Social */}
+          <div>
+            <h3 className="font-semibold mb-4">Connect with us</h3>
+            <div className="flex gap-4">
+              {[FaXTwitter, FaLinkedinIn, FaInstagram, FaFacebookF].map(
+                (Icon, i) => (
+                  <div
+                    key={i}
+                    className="w-10 h-10 flex items-center justify-center rounded-full border border-white/30 hover:bg-white hover:text-teal-700 transition cursor-pointer"
+                  >
+                    <Icon size={16} />
+                  </div>
+                )
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
