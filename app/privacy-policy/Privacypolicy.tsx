@@ -1,0 +1,132 @@
+import Image from "next/image";
+
+export default function PrivacyPolicy() {
+  return (
+    <div className="w-full font-sans bg-white dark:bg-gray-900 dark:text-white">
+
+      {/* ================= HERO ================= */}
+<section className="relative w-full overflow-hidden bg-[#0f1b2d] min-h-[320px] md:min-h-[420px]">
+  
+  {/* Full Background Image */}
+  <div className="absolute inset-0">
+    <Image
+      src="/image/c.png"
+      alt="Privacy Shield"
+      fill
+      priority
+      className="object-cover object-center"
+    />
+
+    {/* Optional Dark Overlay */}
+    <div className="absolute inset-0 bg-[#0f1b2d]/60" />
+  </div>
+
+  {/* Hero Content */}
+  <div className="relative z-10 mx-auto flex min-h-[320px] max-w-7xl items-center px-6 py-16 md:min-h-[420px] md:px-12">
+    
+    <div className="max-w-2xl">
+      <h1 className="mb-6 text-3xl font-extrabold leading-tight text-white md:text-5xl">
+        Privacy by Design
+        <br />
+        — Protection Without Compromise
+      </h1>
+
+      <p className="max-w-xl text-sm leading-relaxed text-gray-200 md:text-base">
+        At Zoiko Orbit, protecting your privacy isn't just a regulatory obligation —
+        it's a core part of our infrastructure. As a global eSIM and connectivity
+        platform serving users across more than 220 countries and territories,
+        we are fully committed to data protection frameworks including the UK
+        Data Protection Act (2018), EU GDPR, California CCPA &amp; CPRA,
+        and relevant international laws governing cross-border data transfers.
+      </p>
+    </div>
+
+  </div>
+</section>
+      {/* ================= POLICY CONTENT ================= */}
+      <section className="bg-white py-14 dark:bg-gray-900 dark:text-white">
+        <div className="mx-auto max-w-4xl px-6 md:px-12 space-y-8 text-sm text-gray-800 dark:text-gray-200 leading-relaxed">
+
+          {/* Intro line */}
+          <p className="font-bold text-zinc-900 dark:text-white">
+            Our Privacy Policy clearly explains how your data is:
+          </p>
+
+          {/* Data usage list */}
+          <div className="space-y-2">
+            {[
+              {
+                bold: "Collected —",
+                text: " including personal identifiers, device metadata, SIM/eSIM profile details, and real-time network diagnostics",
+              },
+              {
+                bold: "Used",
+                text: " — for service activation, account management, network optimization, fraud prevention, and personalized support",
+              },
+              {
+                bold: "Shared —",
+                text: " only with vetted processors and regulatory authorities where required by law",
+              },
+              {
+                bold: "Protected",
+                text: " — using zero-trust access controls, end-to-end encryption, and geographically distributed, SOC 2-compliant data centers",
+              },
+              {
+                bold: "Stored & Retained —",
+                text: " only for as long as necessary to meet legal, billing, and service continuity requirements",
+              },
+              {
+                bold: "Deleted or Ported",
+                text: " — upon request, in accordance with your data rights",
+              },
+            ].map((item, i) => (
+              <p key={i}>
+                <span className="font-bold text-zinc-900 dark:text-white">{item.bold}</span>
+                {item.text}
+              </p>
+            ))}
+          </div>
+
+          {/* Divider */}
+          <div className="pt-2" />
+
+          {/* You'll also find */}
+          <div>
+            <p className="font-bold text-zinc-900 dark:text-white mb-3">
+              You'll also find clear guidance on:
+            </p>
+            <ul className="space-y-2 text-gray-700 dark:text-gray-300">
+              {[
+                "How to access, correct, restrict, or delete your personal information",
+                "Your right to object to data profiling or direct marketing",
+                "Our lawful bases for data processing (consent, contract, legal obligation, legitimate interest)",
+                "How we handle children's data and ensure age-appropriate safeguards",
+                "How to file a concern with our Data Protection Officer (DPO) or local supervisory authority",
+              ].map((item, i) => (
+                <li key={i} className="flex items-start gap-2">
+                  <span className="mt-1 text-gray-500 dark:text-gray-400">•</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Divider */}
+          <div className="pt-2" />
+
+          {/* Closing paragraphs */}
+          <p className="text-gray-700 dark:text-gray-300">
+            We do not sell your personal data. We do not use your information for profiling without your clear
+            consent. And we never hide behind jargon or legalese.
+          </p>
+
+          <p className="font-bold text-zinc-900 dark:text-white">
+            Zoiko Orbit — engineering digital trust, globally.
+          </p>
+
+        </div>
+      </section>
+
+    </div>
+  );
+}
