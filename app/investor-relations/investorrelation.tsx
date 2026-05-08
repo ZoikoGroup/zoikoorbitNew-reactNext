@@ -41,7 +41,7 @@ export default function InvestorRelations() {
           {/* Image */}
           <div>
             <Image
-              src="/image/vector-1.webp"
+              src="/image/vector-111.webp"
               alt="Investor Graphic 1"
               width={760}
               height={710}
