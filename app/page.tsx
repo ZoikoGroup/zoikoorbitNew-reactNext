@@ -197,9 +197,9 @@ function TravelPlanChooser() {
   const [duration, setDuration] = useState("");
 
   return (
-    <section className="bg-gray-50 pt-16 pb-10 px-4 md:px-16">
+    <section className="bg-gray-50  dark:bg-gray-900 dark:text-white   pt-16 pb-10 px-4 md:px-16">
       <div className="max-w-5xl mx-auto">
-        <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 text-center mb-2">
+        <h2 className="text-2xl md:text-3xl font-extrabold  dark:bg-gray-900 dark:text-white  text-gray-900 text-center mb-2">
           Choose Your Perfect Travel Plan
         </h2>
         <p className="text-gray-500 text-center text-sm mb-8">
