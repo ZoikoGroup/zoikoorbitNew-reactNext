@@ -170,11 +170,13 @@ const footerCorporate = [
 
 export default function PartnerWithUs() {
   return (
+    
+    <>
+    
     <div className="w-full bg-white font-sans">
    
         
     
-
       {/* ── HERO SECTION ── */}
       <div className="relative w-full h-[420px] overflow-hidden">
         {/* Background image placeholder — replace src with actual image */}
@@ -253,7 +255,7 @@ export default function PartnerWithUs() {
       {/* ── CTA BANNER ── */}
       <section className="relative w-full h-[300px] overflow-hidden">
         <Image
-          src="/image/Rectangle 935.png"
+          src="/image/Rectangle 19 (2).png"
           alt="Go Global Together"
           fill
           className="object-cover object-center"
@@ -277,6 +279,7 @@ export default function PartnerWithUs() {
       </section>
 
     </div>
+    </>
   );
 }
 
