@@ -1,122 +1,236 @@
 import React from "react";
+import Image from "next/image";
 
 export default function InvestorRelations() {
   return (
-    <main className="font-sans text-gray-800 bg-white">
-      {/* Hero Section */}
-      <section className="relative w-full h-[420px] overflow-hidden bg-gray-900">
-        {/* Background image placeholder – swap src for real asset */}
-        <img
-          src="image/Rectangle 41582 (1).png"
-          alt="Investor Relations hero"
-          className="absolute inset-0 w-full h-full object-cover object-center opacity-90"
-        />
-        <div className="relative z-10 flex flex-col justify-center h-full px-8 md:px-20 max-w-lg">
-          <h1 className="text-3xl md:text-4xl font-extrabold  text-white leading-tight mb-4">
-            Investor Relations
-          </h1>
-          <p className="text-sm md:text-base text-gray-200 leading-relaxed">
-            At Zoiko Orbit, we value the trust and confidence of our global
-            investors. As a subsidiary of Zoiko Communications Group Inc., we
-            are committed to financial transparency, strategic growth, and
-            long-term value creation.
-          </p>
-        </div>
-      </section>
+    <>
+      {/* Hero section */}
+      <section className="relative w-full overflow-hidden">
+        {/* Background Image */}
+        <div className="relative w-full h-70 sm:h-90 md:h-115 lg:h-128">
+          <Image
+            src="/image/investor-heropic(dv).webp"
+            alt="Investor Relations"
+            fill
+            priority
+            className="object-cover
+        object-[55%_center]
+        sm:object-center"
+          />
 
-      {/* Open Communication Section */}
-      <section className="w-full py-10 px-6 md:px-16 lg:px-28 dark:bg-gray-900 dark:text-white">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          {/* Text */}
-          <div className="text-center md:text-right">
-            <p className=" dark:bg-gray-900 dark:text-white text-gray-600 text-sm md:text-base leading-relaxed">
-              We maintain open communication with instiutional
-and private investors, guided by global best
-practices in financial governance and disclosure.
-Our leadership team delivers consistent
-performance updates, regulatory compliance
-reports, and stakeholder briefings to ensure
-investors are informed and aligned with our
-strategic objectives.
-            </p>
-          </div>
+          {/* Dark Overlay */}
+          <div className="absolute inset-0 bg-black/35" />
 
-          {/* Image collage */}
-         {/* Single Image */}
-<div className="w-full">
-  <img
-    src="image/Vector (5).png"
-    alt="Investor meeting"
-    className="rounded-lg object-cover w-full h-[420px]"
-  />
-</div>
-        </div>
-      </section>
+          {/* Content */}
+          <div className="absolute inset-0 flex items-center">
+            <div className="max-w-7xl mx-auto w-full px-6 sm:px-10 lg:px-16">
+              <div className="max-w-lg">
+                <h1 className="text-white font-bold leading-tight text-2xl sm:text-3xl md:text-4xl">
+                  Investor Relations
+                </h1>
 
-      {/* eSIM / Investment Opportunity Section */}
-      <section className="w-full py-8 px-6 md:px-16 lg:px-28 dark:bg-gray-900 dark:text-white bg-gray-50">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          {/* Phone image */}
-          <div className="flex justify-center">
-            <div className="relative w-56 h-72 rounded-2xl overflow-hidden shadow-2xl border border-gray-200">
-              <img
-                src="/image/Vector (6).png"
-                alt="eSIM on phone"
-                className="w-full h-full object-cover"
-              />
-              {/* eSIM badge overlay */}
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-gray-900 text-xs font-bold px-3 py-1 rounded-full shadow">
-                eSim™
+                <p className="mt-5 text-white/90 text-sm sm:text-base md:text-xl leading-relaxed">
+                  At Zoiko Orbit, we value the trust and confidence of our
+                  global investors. As a subsidiary of Zoiko Communications
+                  Group Inc., we are committed to financial transparency,
+                  strategic growth, and long-term value creation.
+                </p>
               </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* Text */}
-          <div className="dark:bg-gray-900 dark:text-white">
-            <p className="text-gray-600 dark:bg-gray-900 dark:text-white text-sm md:text-base leading-relaxed">
-              From our pioneering work in sustainable eSIM
-connectivity to our expanding footprint across travel,
-telecom, and conservation markets, Zoiko Orbit
-represents a forward-thinking investment
-opportunity rooted in innovation, resilience, and
-responsible growth.
-            </p>
+      {/* Content Section 1*/}
+      <section className="relative w-full bg-[#f7f7f7] py-16 md:py-24 overflow-hidden">
+        {/* Background Grid */}
+        <div className="absolute inset-0 opacity-40 pointer-events-none">
+          <div
+            className="w-full h-full"
+            style={{
+              backgroundImage: `
+              linear-gradient(to right, #d9dde3 1px, transparent 1px),
+              linear-gradient(to bottom, #d9dde3 1px, transparent 1px)
+            `,
+              backgroundSize: "120px 120px",
+            }}
+          />
+        </div>
+
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Main Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-center">
+            {/* Left Content */}
+            <div className="flex justify-center lg:justify-start order-2 lg:order-1">
+              <div className="max-w-2xl text-center lg:text-left">
+                <p
+                  className="
+                  text-[#2b2b2b]
+                  text-lg
+                  sm:text-xl
+                  leading-relaxed
+                "
+                >
+                  We maintain open communication with institutional and private
+                  investors, guided by global best practices in financial
+                  governance and disclosure.
+                </p>
+
+                <p
+                  className="
+                  mt-4
+                  text-[#2b2b2b]
+                  text-lg
+                  sm:text-xl
+                  leading-relaxed
+                "
+                >
+                  Our leadership team delivers consistent performance updates,
+                  regulatory compliance reports, and stakeholder briefings to
+                  ensure investors are informed and aligned with our strategic
+                  objectives.
+                </p>
+              </div>
+            </div>
+
+            {/* Right Image */}
+            <div className="relative flex justify-center order-1 lg:order-2">
+              {/* Image Wrapper */}
+              <div className="relative w-full max-w-110 h-70 sm:h-95 md:h-115">
+                {/* Main Image */}
+                <div className="absolute inset-0 overflow-hidden shadow-lg">
+                  <Image
+                    src="/image/investor-Vector-1.webp"
+                    alt="Investor Communication"
+                    fill
+                    priority
+                    className="object-cover"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Banner Section */}
-      <section className="relative w-full overflow-hidden">
-        {/* Background */}
-        <img
-          src="/image/Rectangle 935 (2).png"
-          alt="Team background"
-          className="absolute inset-0 w-full h-full object-cover object-center opacity-80"
-        />
-        <div className="absolute inset-0 bg-gray-900/70" />
+      {/* Content Section 2*/}
+      <section className="relative w-full bg-[#f7f7f7] py-16 md:py-24 overflow-hidden">
+        {/* Background Grid */}
+        <div className="absolute inset-0 opacity-40 pointer-events-none">
+          <div
+            className="w-full h-full"
+            style={{
+              backgroundImage: `
+              linear-gradient(to right, #d9dde3 1px, transparent 1px),
+              linear-gradient(to bottom, #d9dde3 1px, transparent 1px)
+            `,
+              backgroundSize: "120px 120px",
+            }}
+          />
+        </div>
 
-        <div className="relative z-10 flex flex-col md:flex-row items-center md:items-stretch min-h-[360px]">
-          {/* Left: photo takes natural space */}
-          <div className="hidden md:block md:w-1/2" />
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Main Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-center">
+            {/* Left Content */}
+            <div className="relative flex justify-center order-1 lg:order-1">
+              {/* Image Wrapper */}
+              <div className="relative w-full max-w-110 h-70 sm:h-95 md:h-115">
+                {/* Main Image */}
+                <div className="absolute inset-0 overflow-hidden shadow-lg">
+                  <Image
+                    src="/image/investor-Vector-2.webp"
+                    alt="Investor Communication"
+                    fill
+                    priority
+                    className="object-cover"
+                  />
+                </div>
+              </div>
+            </div>
 
-          {/* Right: teal card */}
-          <div className="w-full md:w-1/2 bg-teal-700/90 p-10 md:p-14 flex flex-col justify-center">
-            <p className="text-white text-base md:text-lg font-semibold leading-relaxed mb-6">
+            {/* Right Image */}
+            <div className="flex justify-center lg:justify-start order-2 lg:order-2">
+              <div className="max-w-2xl text-center lg:text-left">
+                <p
+                  className="
+                  text-[#2b2b2b]
+                  text-lg
+                  sm:text-xl
+                  leading-relaxed
+                "
+                >
+                  From our pioneering work in sustainable eSIM connectivity to
+                  our expanding footprint across travel, telecom, and
+                  conservation markets, Zoiko Orbit represents a
+                  forward-thinking investment opportunity rooted in innovation,
+                  resilience, and responsible growth.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-We invite stakeholders and potential investors to connect with our Investor Relations team for access to quarterly reports, corporate filings, shareholder updates, and investor briefings.
-            </p>
-            <p className="text-white text-base font-semibold">
-           For investment-related queries, please contact: 
-            </p>
-            <a
-              href="mailto:ir@zoikoorbit.com"
-              className="text-white text-base font-bold underline underline-offset-4 mt-1 hover:text-teal-200 transition-colors"
+      <section className="w-full bg-[#f5f5f5] py-8 md:py-10 overflow-hidden">
+        <div className="w-full">
+          {/* Main Wrapper */}
+          <div className="relative">
+            {/* Background Image */}
+            <div className="relative w-full h-65 sm:h-95 md:h-120 lg:h-130 overflow-hidden">
+              <Image
+                src="/image/Rectangle(dv).webp"
+                alt="Accessibility Section"
+                fill
+                priority
+                className="object-cover
+          object-[45%_center]
+          sm:object-center"
+              />
+            </div>
+
+            {/* Overlay Card */}
+            <div
+              className="
+                relative
+                lg:absolute
+                lg:right-[8%]
+                lg:bottom-[8%]
+                w-full
+                lg:w-[45%]
+                bg-[#007b95]/70
+                rounded-none
+                sm:rounded-xl
+                shadow-xl
+                z-20
+              "
             >
-              ir@zoikoorbit.com
-            </a>
+              <div className="px-6 py-8 sm:px-10 sm:py-10 md:px-12 md:py-12">
+
+                {/* Description */}
+                <p
+                  className="
+                    text-white/90
+                    text-sm
+                    sm:text-base
+                    md:text-lg
+                    leading-relaxed
+                    max-w-2xl
+                  "
+                >
+                  We invite stakeholders and potential investors to connect with
+                  our Investor Relations team for access to quarterly reports,
+                  corporate filings, shareholder updates, and investor
+                  briefings. <br/>
+                  <br/>
+                  For investment-related queries, please contact:
+                  ir@zoikoorbit.com
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
-    </main>
+    </>
   );
 }

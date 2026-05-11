@@ -1,13 +1,10 @@
-import InvestorRelations from "./InvestorRelations";
+import React from 'react'
+import InvestorRelations from './InvestorRelations'
 
-export default function page(){
-
-
-    return(
-        <>
-        
-        <InvestorRelations/>
-        
-        </>
-    );
+export default function page() {
+  return (
+    <>
+    <InvestorRelations/>
+    </>
+  )
 }
