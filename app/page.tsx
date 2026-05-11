@@ -125,68 +125,139 @@ function HeroSection() {
       </div>
 
       {/* Announcement bar */}
-      <div className="absolute top-0 left-0 right-0 bg-amber-400 text-gray-900 text-xs py-1.5 text-center font-medium">
-        🌸 Happy Mother's Day — Celebrating The Mum Who Connects Our World with 15% Off |{" "}
-        <span className="underline cursor-pointer font-semibold">Update Global Plans</span>
-      </div>
-
-      <div className="relative z-10 px-4 pt-10 pb-4">
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-3 leading-tight drop-shadow-lg">
+  
+ <section className="relative w-full overflow-hidden bg-[#0a1a3a]">
+      {/* Full-bleed background - single image */}
+      <img
+        src="/image/Rectangle 4 (6).png"
+        alt="Global travel background"
+        className="absolute inset-0 w-full h-full object-cover object-center"
+        style={{ opacity: 0.95 }}
+      />
+ 
+      {/* Deep blue overlay to match the original's rich blue sky tone */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(175deg, rgba(5,20,80,0.6) 0%, rgba(8,30,100,0.5) 50%, rgba(4,18,55,0.7) 100%)",
+        }}
+      />
+ 
+      {/* ── Main content ── */}
+      <div className="relative z-10 flex flex-col items-center text-center text-white px-4 pt-14 pb-0">
+        <h1
+          className="font-extrabold leading-tight tracking-tight mb-3"
+          style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)", textShadow: "0 2px 12px rgba(0,0,0,0.4)" }}
+        >
           Stay Connected Everywhere
         </h1>
-        <p className="text-base md:text-lg text-blue-100 mb-8 max-w-xl mx-auto">
-          Your global eSIM Trusted by travelers, enterprises, and travel brands worldwide.
+ 
+        <p className="text-blue-100 mb-7 max-w-lg" style={{ fontSize: "0.95rem" }}>
+          Your global eSIM. Trusted by travelers, enterprises, and travel brands worldwide.
         </p>
-        <div className="flex flex-wrap justify-center gap-3">
-          <button className="bg-teal-500 hover:bg-teal-400 text-white font-semibold px-7 py-2.5 rounded-full transition-all shadow-lg">
+ 
+        {/* CTA buttons */}
+        <div className="flex flex-wrap justify-center gap-3 mb-8">
+          <button
+            className="font-semibold text-sm px-8 py-2.5 rounded-full text-white transition-colors"
+            style={{ background: "rgba(88,78,220,0.92)", border: "none" }}
+          >
             Get Your eSIM
           </button>
-          <button className="border border-white/60 hover:bg-white/10 text-white font-semibold px-7 py-2.5 rounded-full transition-all">
+          <button
+            className="font-semibold text-sm px-8 py-2.5 rounded-full text-white transition-colors bg-transparent"
+            style={{ border: "1.5px solid rgba(255,255,255,0.55)" }}
+          >
             Partner with Us
           </button>
         </div>
+ 
+        {/* Landmarks strip — part of the same background scene, fades into cards */}
+      
       </div>
-
-      {/* Hero image strip */}
-      <div className="relative z-10 w-full max-w-4xl mx-auto px-4 mt-6">
-        <div className="w-full h-48 md:h-64 rounded-2xl overflow-hidden bg-gradient-to-b from-blue-900/40 to-teal-900/40 flex items-center justify-center">
-          <img
-            src="/hero-landmarks.jpg"
-            alt="World landmarks"
-            className="w-full h-full object-cover opacity-70 rounded-2xl"
-          />
-        </div>
-      </div>
-
-      {/* For Individuals / For Businesses cards */}
-      <div className="relative z-10 w-full max-w-3xl mx-auto px-4 -mb-8 mt-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+ 
+      {/* ── For Individuals / For Businesses cards ── */}
+      <div className="relative z-10 w-full max-w-3xl mx-auto px-4 pb-6">
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 shadow-2xl overflow-hidden"
+          style={{ borderRadius: "0 0 16px 16px" }}
+        >
           {[
             {
-              icon: "👤",
+              iconSrc: "https://cdn-icons-png.flaticon.com/512/1077/1077063.png",
               title: "For Individuals",
-              desc: "Simple, affordable coverage. No hidden fees",
+              desc: "One eSIM, global coverage, no hidden fees.",
             },
             {
-              icon: "🏢",
+              iconSrc: "https://cdn-icons-png.flaticon.com/512/3281/3281289.png",
               title: "For Businesses",
-              desc: "Resellers, Distributors, Travel agencies, travel agencies & Country Registries, Airlines & OTAs",
+              desc: "Retailers & Distributors, Travel Agencies & Tour Operators, Insurance Companies & More.",
             },
-          ].map((card) => (
+          ].map((card, i) => (
             <div
               key={card.title}
-              className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 flex items-start gap-3 hover:bg-white/15 transition-all cursor-pointer"
+              className="flex items-center gap-4 px-6 py-5 cursor-pointer"
+              style={{
+                background: "rgba(255,255,255,0.97)",
+                borderRight:
+                  i === 0 ? "1px solid rgba(0,0,0,0.07)" : undefined,
+              }}
             >
-              <span className="text-2xl mt-0.5">{card.icon}</span>
-              <div className="flex-1 text-left">
-                <p className="font-bold text-white text-sm">{card.title}</p>
-                <p className="text-blue-200 text-xs mt-0.5 leading-relaxed">{card.desc}</p>
+              {/* Teal icon container */}
+              <div
+                className="flex-shrink-0 flex items-center justify-center rounded-xl"
+                style={{
+                  width: 42,
+                  height: 42,
+                  background: "rgba(13,148,136,0.12)",
+                }}
+              >
+                <img
+                  src={card.iconSrc}
+                  alt={card.title}
+                  style={{
+                    width: 22,
+                    height: 22,
+                    objectFit: "contain",
+                    filter:
+                      "invert(30%) sepia(90%) saturate(600%) hue-rotate(148deg)",
+                  }}
+                />
               </div>
-              <span className="text-white/60 text-lg self-center">→</span>
+ 
+              {/* Text */}
+              <div className="flex-1 text-left min-w-0">
+                <p
+                  className="font-bold text-gray-900 leading-snug"
+                  style={{ fontSize: "0.85rem" }}
+                >
+                  {card.title}
+                </p>
+                <p
+                  className="text-gray-500 leading-relaxed mt-0.5"
+                  style={{ fontSize: "0.75rem" }}
+                >
+                  {card.desc}
+                </p>
+              </div>
+ 
+              {/* Arrow */}
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/271/271228.png"
+                alt="arrow"
+                style={{
+                  width: 14,
+                  height: 14,
+                  flexShrink: 0,
+                  filter: "invert(70%)",
+                }}
+              />
             </div>
           ))}
         </div>
       </div>
+    </section>
     </section>
   );
 }
@@ -197,7 +268,7 @@ function TravelPlanChooser() {
   const [duration, setDuration] = useState("");
 
   return (
-    <section className="bg-gray-50  dark:bg-gray-900 dark:text-white   pt-16 pb-10 px-4 md:px-16">
+    <section className="bg-gray-50   dark:bg-gray-900 dark:text-white   pt-16 pb-10 px-4 md:px-16">
       <div className="max-w-5xl mx-auto">
         <h2 className="text-2xl md:text-3xl font-extrabold  dark:bg-gray-900 dark:text-white  text-gray-900 text-center mb-2">
           Choose Your Perfect Travel Plan
