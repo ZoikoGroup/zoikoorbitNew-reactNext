@@ -48,11 +48,9 @@ export default function footer() {
             <li><a href="/faqs" className="hover:underline">
               FAQs
             </a></li>
-            <li>
-              <a href="/accessibility" className="hover:underline">
-                Accessibility Options
-              </a>
-            </li>
+            <li> <a href="/accessibility" className="hover:underline">
+              Accessibility Options
+            </a></li>
           </ul>
         </div>
 
@@ -86,13 +84,15 @@ export default function footer() {
           <div>
             <h3 className="font-semibold mb-4">Corporate & Responsibility</h3>
             <ul className="space-y-2 text-gray-200 text-sm">
-              <li><a href="/corporate-responsibility" className="hover:underline">
+              <li> <a href="/corporate-responsibility" className="hover:underline">
                 Corporate Responsibility
               </a></li>
-              <li><a href="/investor-relations" className="hover:underline">
+              <li> <a href="/investor-relations" className="hover:underline">
                 Investor Relations
               </a></li>
-              <li>Press & Media</li>
+              <li> <a href="/press-media" className="hover:underline">
+                Press & Media
+              </a></li>
             </ul>
           </div>
 
