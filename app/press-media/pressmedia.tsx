@@ -1,0 +1,95 @@
+"use client";
+
+import Image from "next/image";
+
+export default function PressMedia() {
+  return (
+    <div className="w-full bg-white">
+      {/* HERO SECTION */}
+      <div className="relative w-full h-[420px]">
+        <Image
+          src="/image/Rectangle 41582.png"
+          alt="press"
+          fill
+          className="object-cover"
+        />
+
+        {/* overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/20" />
+
+        {/* text */}
+        <div className="absolute right-10 top-1/2 -translate-y-1/2 text-white max-w-md">
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">
+            Press & Media
+          </h1>
+          <p className="text-sm leading-relaxed text-gray-200">
+            Stay informed with the latest developments from Zoiko Orbit —
+            including product innovations, global rollouts, strategic alliances,
+            sustainability initiatives, and thought leadership from our executive team.
+          </p>
+        </div>
+      </div>
+
+      {/* CONTENT SECTION */}
+      <div className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-10 items-center">
+        {/* Left Image */}
+        <div className="w-full">
+          <Image
+            src="/image/vector.png"
+            alt="news"
+            width={500}
+            height={400}
+            className="rounded-md object-cover w-full"
+          />
+        </div>
+
+        {/* Right Content */}
+        <div>
+          <p className="text-gray-600 text-sm leading-relaxed mb-6">
+            Our dedicated Press & Media Center provides accredited journalists,
+            editors, and analysts with access to official press releases,
+            multimedia assets, leadership profiles, and high-resolution imagery
+            across our global operations.
+          </p>
+
+          <p className="text-gray-600 text-sm mb-4">
+            We welcome media inquiries for:
+          </p>
+
+          <ul className="space-y-3 text-sm text-gray-700">
+            {[
+              "Interviews with executives and technical leads",
+              "Industry commentary on eSIM, travel connectivity, and telecom evolution",
+              "Press briefings and event coverage",
+              "Feature articles and trend analysis",
+            ].map((item, i) => (
+              <li key={i} className="flex items-start gap-3">
+                <span className="text-green-500 mt-1">✔</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* BOTTOM TEXT */}
+      <div className="max-w-6xl mx-auto px-6 pb-16 text-gray-600 text-sm leading-relaxed space-y-6">
+        <p>
+          Our team offers timely responses, factual verification, and on-the-record
+          perspectives to support high-quality reporting and global syndication
+        </p>
+
+        <p>
+          Media Contact:
+          <br />
+          press@zoikoorbit.com
+        </p>
+
+        <p>
+          For brand guidelines, logos, approved photography, and editorial assets,
+          please visit our Brand Resources page.
+        </p>
+      </div>
+    </div>
+  );
+} 
