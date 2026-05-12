@@ -1,6 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import { Check } from "lucide-react";
+
+/* ─────────────────────────────────────────
+   DATA
+───────────────────────────────────────── */
+
 
 const features1 = [
   "Instant eSIM activation at checkout or post-sale",
