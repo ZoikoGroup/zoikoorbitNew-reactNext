@@ -1,11 +1,10 @@
-import Corporateresponsibility from "./corporateresponsibility";
+ import React from 'react'
+import CorporateResponsibility from './CorporateResponsibility'
 
-export default function page(){
-
-    return(
-        <>
-        
-        <Corporateresponsibility/>
-        </>
-    );
+export default function page() {
+  return (
+    <>
+    <CorporateResponsibility/>
+    </>
+  )
 }
