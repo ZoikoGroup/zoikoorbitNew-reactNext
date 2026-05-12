@@ -1,5 +1,11 @@
-import ApiIntegrations from "./apiintegration";
+import Apiintegration from "./apiintegration";
 
-export default function Page() {
-  return <ApiIntegrations />;
+export default function page(){
+
+    return(
+        <>
+        
+        <Apiintegration/>
+        </>
+    );
 }
