@@ -12,11 +12,19 @@ jobs:
     steps:
       - name: Deploy to GCP VM
         run: |
-          echo "${{ secrets.SSH_KEY }}" | base64 -d > /tmp/deploy_key
+          echo "${{ secrets.SSH_KEY }}" > /tmp/deploy_key
           chmod 600 /tmp/deploy_key
+
           ssh -i /tmp/deploy_key \
           -o StrictHostKeyChecking=no \
           -p ${{ secrets.SSH_PORT }} \
           ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-          "git config --global --add safe.directory /var/www/html/zoikoorbitNew-reactNext && cd /var/www/html/zoikoorbitNew-reactNext && git pull origin main && npm install && npm run build && pm2 restart driverx-frontend && pm2 save"
+          "git config --global --add safe.directory /var/www/html/zoikoorbitNew-reactNext && \
+          cd /var/www/html/zoikoorbitNew-reactNext && \
+          git pull origin main && \
+          npm install && \
+          npm run build && \
+          pm2 restart zoikoorbit-reactNext && \
+          pm2 save"
+
           rm /tmp/deploy_key
