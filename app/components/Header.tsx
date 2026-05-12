@@ -7,7 +7,7 @@ import { ChevronDown, Search, User, ShoppingCart } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const navLinks = [
-  { label: "Home", href: "/" },
+  { label: "Plans", href: "/plans" },
   { label: "About Us", href: "/about-us" },
   {
     label: "Solutions",
