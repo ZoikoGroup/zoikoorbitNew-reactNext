@@ -10,7 +10,7 @@ const offers = [
     image: "/image/offer-1.png",
   },
   {
-    title: "Flexible Integration",
+    title: "Flexible Integrations",
     description:
       "API, widget, and plug-in options for mobile apps, CRM platforms, and confirmation emails",
     image: "/image/offer-2.png",
