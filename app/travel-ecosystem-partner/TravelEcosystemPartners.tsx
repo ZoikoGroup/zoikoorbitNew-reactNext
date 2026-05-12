@@ -1,4 +1,7 @@
+"use client";
 import Image from "next/image";
+import {useState} from "react";
+import toast from "react-hot-toast";
 
  const countries = [
   "Afghanistan",
@@ -49,6 +52,106 @@ import Image from "next/image";
 ];
 
 export default function TravelEcosystemPartners() {
+   const [loading, setLoading] = useState(false);
+   const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    work_email: "",
+    company_name: "",
+    website: "",
+    country_region: "",
+    role_function: "",
+    monthly_traveler_volume: "",
+    partnership_interest: "",
+    message: "",
+    consent: false,
+  });
+
+   // HANDLE CHANGE
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement |
+      HTMLTextAreaElement |
+      HTMLSelectElement
+    >
+  ) => {
+
+    const { name, value, type } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+
+      [name]:
+        type === "checkbox"
+          ? (e.target as HTMLInputElement).checked
+          : value,
+    }));
+  };
+
+  // HANDLE SUBMIT
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+
+    e.preventDefault();
+
+    setLoading(true);
+
+    try {
+
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/travel-ecosystem-partner/travel-ecosystem-inquiry/",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify(formData),
+        }
+      );
+
+      const data = await response.json();
+
+      console.log("Response:", data);
+
+      if (response.ok) {
+
+        toast.success("Form submitted successfully");
+
+        setFormData({
+          first_name: "",
+          last_name: "",
+          work_email: "",
+          company_name: "",
+          website: "",
+          country_region: "",
+          role_function: "",
+          monthly_traveler_volume: "",
+          partnership_interest: "",
+          message: "",
+          consent: false,
+        });
+
+      } else {
+
+        console.log("Backend Errors:", data);
+
+        toast.error("Validation failed");
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+      toast.error("Server error");
+    }
+
+    setLoading(false);
+  };
+
+
   return (
     <div className="w-full font-sans dark:bg-gray-900 dark:text-white">
       {/* ================= HERO ================= */}
@@ -507,7 +610,7 @@ export default function TravelEcosystemPartners() {
               </div>
 
               {/* FORM */}
-              <form className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-5">
 
                 {/* ROW 1 */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -520,7 +623,10 @@ export default function TravelEcosystemPartners() {
                     <input
                       type="text"
                       placeholder="Enter Your First Name"
-                      className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:text-white"
+                      name="first_name"
+                      value={formData.first_name}
+                      onChange={handleChange}
+                      className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:focus:bg-[#1f2937] dark:text-white"
                     />
                   </div>
 
@@ -532,7 +638,10 @@ export default function TravelEcosystemPartners() {
                     <input
                       type="text"
                       placeholder="Enter Your Last Name"
-                      className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:text-white"
+                      name="last_name"
+                      value={formData.last_name}
+                      onChange={handleChange}
+                      className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:focus:bg-[#1f2937] dark:text-white"
                     />
                   </div>
 
@@ -549,7 +658,10 @@ export default function TravelEcosystemPartners() {
                     <input
                       type="email"
                       placeholder="Enter Work Email"
-                      className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:text-white"
+                      name="work_email"
+                      value={formData.work_email}
+                      onChange={handleChange}
+                      className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:focus:bg-[#1f2937] dark:text-white"
                     />
                   </div>
 
@@ -561,7 +673,10 @@ export default function TravelEcosystemPartners() {
                     <input
                       type="text"
                       placeholder="Enter Company Name"
-                      className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:text-white"
+                      name="company_name"
+                      value={formData.company_name}
+                      onChange={handleChange}
+                      className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:focus:bg-[#1f2937] dark:text-white"
                     />
                   </div>
 
@@ -578,7 +693,10 @@ export default function TravelEcosystemPartners() {
                     <input
                       type="text"
                       placeholder="Enter Website URL"
-                      className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:text-white"
+                      name="website"
+                      value={formData.website}
+                      onChange={handleChange}
+                      className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:focus:bg-[#1f2937] dark:text-white"
                     />
                   </div>
 
@@ -587,10 +705,17 @@ export default function TravelEcosystemPartners() {
                       Country / Region
                     </label>
 
-                    <select className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:text-white">
-                      <option>Select Option</option>
+                    <select
+                      name="country_region"
+                      value={formData.country_region}
+                      onChange={handleChange}
+                      className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:focus:bg-[#1f2937] dark:text-white"
+                    >
+                      <option value="">Select Option</option>
                       {countries.map((country) => (
-                        <option key={country}>{country}</option>
+                        <option key={country} value={country}>
+                          {country}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -608,7 +733,10 @@ export default function TravelEcosystemPartners() {
                     <input
                       type="text"
                       placeholder="Travel Agency Owner..."
-                      className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:text-white"
+                      name="role_function"
+                      value={formData.role_function}
+                      onChange={handleChange}
+                      className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:focus:bg-[#1f2937] dark:text-white"
                     />
                   </div>
 
@@ -617,13 +745,19 @@ export default function TravelEcosystemPartners() {
                       Monthly Traveler Volume
                     </label>
 
-                    <select className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:text-white">
-                      <option>0-1K</option>
-                      <option>1K-10K</option>
-                      <option>10K-50K</option>
-                      <option>50K-100K</option>
-                      <option>100K-200K</option>
-                      <option>1M+</option>
+                    <select
+                      name="monthly_traveler_volume"
+                      value={formData.monthly_traveler_volume}
+                      onChange={handleChange}
+                      className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:focus:bg-[#1f2937] dark:text-white"
+                    >
+                      <option value="">Select Option</option>
+                      <option value="0-1K">0-1K</option>
+                      <option value="1K-10K">1K-10K</option>
+                      <option value="10K-50K">10K-50K</option>
+                      <option value="50K-100K">50K-100K</option>
+                      <option value="100K-200K">100K-200K</option>
+                      <option value="200K+">200K+</option>
                     </select>
                   </div>
 
@@ -638,7 +772,10 @@ export default function TravelEcosystemPartners() {
                   <input
                     type="text"
                     placeholder="Reseller, API Integration..."
-                    className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:text-white"
+                    name="partnership_interest"
+                    value={formData.partnership_interest}
+                    onChange={handleChange}
+                    className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:focus:bg-[#1f2937] dark:text-white"
                   />
                 </div>
 
@@ -647,7 +784,10 @@ export default function TravelEcosystemPartners() {
                   <textarea
                     rows={5}
                     placeholder="Enter your message..."
-                    className="w-full resize-none rounded-md border border-gray-300 bg-[#f3f3f3] px-4 py-3 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:text-white"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    className="w-full resize-none rounded-md border border-gray-300 bg-[#f3f3f3] px-4 py-3 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:focus:bg-[#1f2937] dark:text-white"
                   />
                 </div>
 
@@ -656,6 +796,9 @@ export default function TravelEcosystemPartners() {
                   <input
                     type="checkbox"
                     id="consent"
+                    name="consent"
+                    checked={formData.consent}
+                    onChange={handleChange}
                     className="mt-1 accent-[#007C91]"
                   />
 
@@ -686,7 +829,7 @@ export default function TravelEcosystemPartners() {
                 hover:bg-[#00697b]
               "
                   >
-                    Submit & Schedule a Consultation
+                    {loading ? "Submitting..." : "Submit & Schedule a Consultation"}
                   </button>
                 </div>
 
