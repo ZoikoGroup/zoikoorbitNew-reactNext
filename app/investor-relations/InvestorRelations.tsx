@@ -42,15 +42,25 @@ export default function InvestorRelations() {
       </section>
 
       {/* Content Section 1*/}
-      <section className="relative w-full bg-[#f7f7f7] py-16 md:py-24 overflow-hidden">
+      <section className="relative w-full bg-[#f7f7f7] dark:bg-[#0F172A] py-16 md:py-24 overflow-hidden">
         {/* Background Grid */}
-        <div className="absolute inset-0 opacity-40 pointer-events-none">
+        <div className="absolute inset-0 opacity-40 dark:opacity-30 pointer-events-none">
           <div
-            className="w-full h-full"
+            className="w-full h-full dark:hidden"
             style={{
               backgroundImage: `
               linear-gradient(to right, #d9dde3 1px, transparent 1px),
               linear-gradient(to bottom, #d9dde3 1px, transparent 1px)
+            `,
+              backgroundSize: "120px 120px",
+            }}
+          />
+          <div
+            className="w-full h-full hidden dark:block"
+            style={{
+              backgroundImage: `
+              linear-gradient(to right, #1e293b 1px, transparent 1px),
+              linear-gradient(to bottom, #1e293b 1px, transparent 1px)
             `,
               backgroundSize: "120px 120px",
             }}
@@ -66,6 +76,7 @@ export default function InvestorRelations() {
                 <p
                   className="
                   text-[#2b2b2b]
+                  dark:text-gray-200
                   text-lg
                   sm:text-xl
                   leading-relaxed
@@ -80,6 +91,7 @@ export default function InvestorRelations() {
                   className="
                   mt-4
                   text-[#2b2b2b]
+                  dark:text-gray-200
                   text-lg
                   sm:text-xl
                   leading-relaxed
@@ -98,7 +110,7 @@ export default function InvestorRelations() {
               {/* Image Wrapper */}
               <div className="relative w-full max-w-110 h-70 sm:h-95 md:h-115">
                 {/* Main Image */}
-                <div className="absolute inset-0 overflow-hidden shadow-lg">
+                <div className="absolute inset-0 overflow-hidden shadow-lg dark:shadow-none dark:ring-1 dark:ring-white/10">
                   <Image
                     src="/image/investor-Vector-1.webp"
                     alt="Investor Communication"
@@ -114,15 +126,25 @@ export default function InvestorRelations() {
       </section>
 
       {/* Content Section 2*/}
-      <section className="relative w-full bg-[#f7f7f7] py-16 md:py-24 overflow-hidden">
+      <section className="relative w-full bg-[#f7f7f7] dark:bg-[#0F172A] py-16 md:py-24 overflow-hidden">
         {/* Background Grid */}
-        <div className="absolute inset-0 opacity-40 pointer-events-none">
+        <div className="absolute inset-0 opacity-40 dark:opacity-30 pointer-events-none">
           <div
-            className="w-full h-full"
+            className="w-full h-full dark:hidden"
             style={{
               backgroundImage: `
               linear-gradient(to right, #d9dde3 1px, transparent 1px),
               linear-gradient(to bottom, #d9dde3 1px, transparent 1px)
+            `,
+              backgroundSize: "120px 120px",
+            }}
+          />
+          <div
+            className="w-full h-full hidden dark:block"
+            style={{
+              backgroundImage: `
+              linear-gradient(to right, #1e293b 1px, transparent 1px),
+              linear-gradient(to bottom, #1e293b 1px, transparent 1px)
             `,
               backgroundSize: "120px 120px",
             }}
@@ -137,7 +159,7 @@ export default function InvestorRelations() {
               {/* Image Wrapper */}
               <div className="relative w-full max-w-110 h-70 sm:h-95 md:h-115">
                 {/* Main Image */}
-                <div className="absolute inset-0 overflow-hidden shadow-lg">
+                <div className="absolute inset-0 overflow-hidden shadow-lg dark:shadow-none dark:ring-1 dark:ring-white/10">
                   <Image
                     src="/image/investor-Vector-2.webp"
                     alt="Investor Communication"
@@ -155,6 +177,7 @@ export default function InvestorRelations() {
                 <p
                   className="
                   text-[#2b2b2b]
+                  dark:text-gray-200
                   text-lg
                   sm:text-xl
                   leading-relaxed
@@ -172,7 +195,7 @@ export default function InvestorRelations() {
         </div>
       </section>
 
-      <section className="w-full bg-[#f5f5f5] py-8 md:py-10 overflow-hidden">
+      <section className="w-full bg-[#f5f5f5] dark:bg-[#0F172A] py-8 md:py-10 overflow-hidden">
         <div className="w-full">
           {/* Main Wrapper */}
           <div className="relative">
@@ -199,9 +222,13 @@ export default function InvestorRelations() {
                 w-full
                 lg:w-[45%]
                 bg-[#007b95]/70
+                dark:bg-[#0891A6]/80
                 rounded-none
                 sm:rounded-xl
                 shadow-xl
+                dark:shadow-none
+                dark:ring-1
+                dark:ring-white/10
                 z-20
               "
             >

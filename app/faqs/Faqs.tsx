@@ -192,11 +192,11 @@ export default function Faqs() {
       </section>
 
       {/* Faq's */}
-      <section className="w-full bg-[#f5f5f5] py-16">
+      <section className="w-full bg-[#f5f5f5] dark:bg-[#0F172A] py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Heading */}
           <div className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl font-bold text-[#1f2937]">
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#1f2937] dark:text-white">
               Got Questions? We’ve Got Answers
             </h2>
           </div>
@@ -206,7 +206,7 @@ export default function Faqs() {
             {/* Left Sidebar */}
             <div className="lg:col-span-4">
               <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase text-gray-400 mb-4">
+                <p className="text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 mb-4">
                   Getting Started With Your eSIM
                 </p>
 
@@ -220,8 +220,8 @@ export default function Faqs() {
                     className={`w-full flex items-center justify-between border-b pb-2 pt-2 text-left transition-all duration-300
                   ${
                     activeCategory === category
-                      ? "text-[#007b95] border-[#007b95] font-semibold"
-                      : "text-gray-400 border-gray-300 hover:text-[#007b95]"
+                      ? "text-[#007b95] dark:text-[#22D3EE] border-[#007b95] dark:border-[#22D3EE] font-semibold"
+                      : "text-gray-400 dark:text-gray-500 border-gray-300 dark:border-white/10 hover:text-[#007b95] dark:hover:text-[#22D3EE]"
                   }`}
                   >
                     <span className="text-sm md:text-base">{category}</span>
@@ -238,27 +238,27 @@ export default function Faqs() {
 
             {/* Right FAQ Content */}
             <div className="lg:col-span-8">
-              <h3 className="text-xl sm:text-3xl font-bold text-[#007b95] mb-8">
+              <h3 className="text-xl sm:text-3xl font-bold text-[#007b95] dark:text-[#22D3EE] mb-8">
                 {activeCategory} FAQs
               </h3>
 
               <div className="space-y-2">
                 {faqData[activeCategory as keyof typeof faqData].map(
                   (faq, index) => (
-                    <div key={index} className="border-b border-gray-300 pb-4">
+                    <div key={index} className="border-b border-gray-300 dark:border-white/10 pb-4">
                       {/* Question */}
                       <button
                         onClick={() => toggleFAQ(index)}
                         className="w-full flex items-center justify-between gap-4 text-left py-2"
                       >
-                        <span className="text-base sm:text-lg font-medium text-[#1f2937]">
+                        <span className="text-base sm:text-lg font-medium text-[#1f2937] dark:text-white">
                           {faq.question}
                         </span>
 
                         {openFAQ === index ? (
-                          <DownArrowIcon className="w-5 h-5 shrink-0" />
+                          <DownArrowIcon className="w-5 h-5 shrink-0 text-[#1f2937] dark:text-white" />
                         ) : (
-                          <RightArrowIcon className="w-5 h-5 shrink-0" />
+                          <RightArrowIcon className="w-5 h-5 shrink-0 text-[#1f2937] dark:text-white" />
                         )}
                       </button>
 
@@ -270,7 +270,7 @@ export default function Faqs() {
                             : "max-h-0 opacity-0"
                         }`}
                       >
-                        <p className="text-gray-600 text-sm md:text-base leading-relaxed pr-6">
+                        <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base leading-relaxed pr-6">
                           {faq.answer}
                         </p>
                       </div>
@@ -284,13 +284,13 @@ export default function Faqs() {
       </section>
 
       {/* Need more help */}
-      <section className="w-full bg-[#f5f5f5] py-12 md:py-20 overflow-hidden">
+      <section className="w-full bg-[#f5f5f5] dark:bg-[#0F172A] py-12 md:py-20 overflow-hidden">
         <div className=" ">
           {/* Main Wrapper */}
           <div className="relative flex flex-col lg:flex-row items-center lg:items-stretch">
             {/* Left Image */}
             <div className="w-full relative z-10">
-              <div className="w-full relative h-65 sm:h-87.5 md:h-105 lg:h-105 overflow-hidden shadow-md">
+              <div className="w-full relative h-65 sm:h-87.5 md:h-105 lg:h-105 overflow-hidden shadow-md dark:shadow-none dark:ring-1 dark:ring-white/10">
                 <Image
                   src="/image/help-support.png"
                   alt="Support Team"
@@ -311,7 +311,11 @@ export default function Faqs() {
           w-full
           lg:w-[40%]
           bg-white
+          dark:bg-[#1E293B]
           shadow-xl
+          dark:shadow-none
+          dark:ring-1
+          dark:ring-white/10
           rounded-lg
           -mt-5
           sm:-mt-10
@@ -322,12 +326,12 @@ export default function Faqs() {
             >
               <div className="p-6 sm:p-8 md:p-10">
                 {/* Heading */}
-                <h2 className="text-2xl sm:text-3xl font-bold text-[#007b95] mb-3">
+                <h2 className="text-2xl sm:text-3xl font-bold text-[#007b95] dark:text-[#22D3EE] mb-3">
                   Need More Help?
                 </h2>
 
                 {/* Description */}
-                <p className="text-gray-500 text-sm sm:text-base leading-relaxed mb-8">
+                <p className="text-gray-500 dark:text-gray-300 text-sm sm:text-base leading-relaxed mb-8">
                   Chat live with our experts or explore the full Knowledge Base.
                 </p>
 
@@ -336,7 +340,7 @@ export default function Faqs() {
                   {/* Chat Support */}
                   <div className="flex flex-col items-start">
                     {/* Icon */}
-                    <div className="w-16 h-16 rounded-full bg-[#007b95] flex items-center justify-center mb-5">
+                    <div className="w-16 h-16 rounded-full bg-[#007b95] dark:bg-[#0891A6] flex items-center justify-center mb-5">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -354,12 +358,12 @@ export default function Faqs() {
                     </div>
 
                     {/* Content */}
-                    <p className="text-gray-500 text-sm leading-relaxed mb-3">
+                    <p className="text-gray-500 dark:text-gray-300 text-sm leading-relaxed mb-3">
                       Chat live with our multilingual support agents anytime,
                       anywhere.
                     </p>
 
-                    <button className="text-[#007b95] font-semibold hover:underline">
+                    <button className="text-[#007b95] dark:text-[#22D3EE] font-semibold hover:underline">
                       Chat Now →
                     </button>
                   </div>
@@ -367,7 +371,7 @@ export default function Faqs() {
                   {/* Watch Videos */}
                   <div className="flex flex-col items-start">
                     {/* Icon */}
-                    <div className="w-16 h-16 rounded-full bg-[#007b95] flex items-center justify-center mb-5">
+                    <div className="w-16 h-16 rounded-full bg-[#007b95] dark:bg-[#0891A6] flex items-center justify-center mb-5">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -385,12 +389,12 @@ export default function Faqs() {
                     </div>
 
                     {/* Content */}
-                    <p className="text-gray-500 text-sm leading-relaxed mb-3">
+                    <p className="text-gray-500 dark:text-gray-300 text-sm leading-relaxed mb-3">
                       Watch quick-start video tutorials and browse our
                       self-service library.
                     </p>
 
-                    <button className="text-[#007b95] font-semibold hover:underline">
+                    <button className="text-[#007b95] dark:text-[#22D3EE] font-semibold hover:underline">
                       Watch Now →
                     </button>
                   </div>
