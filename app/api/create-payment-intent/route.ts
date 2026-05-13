@@ -4,9 +4,8 @@ import Stripe from "stripe";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-// Lazy singleton — Stripe is instantiated only on first request,
-// never at module load. This lets the build succeed even when the
-// env var is absent (e.g. CI), and ensures we read the key fresh.
+// Lazy singleton — never instantiated at module load, so the build
+// succeeds even when STRIPE_SECRET_KEY is absent (e.g. CI).
 let _stripe: Stripe | null = null;
 function getStripe(): Stripe {
   if (_stripe) return _stripe;
@@ -18,58 +17,62 @@ function getStripe(): Stripe {
   return _stripe;
 }
 
+interface IncomingBody {
+  /** Total in USD (decimal dollars, e.g. 12.99). We always bill USD. */
+  totalUsd: number;
+  /** Optional presentment currency the user is viewing in — recorded
+   *  for analytics/reporting only, not used in billing. */
+  presentmentCurrency?: string;
+  /** Lightweight order context for Stripe metadata. Keep small — Stripe
+   *  metadata has a 500-char value limit per key. */
+  cartSummary?: {
+    itemCount: number;
+    variationIds: number[]; // up to ~30 ids
+  };
+  customerEmail?: string;
+}
+
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const body = (await req.json()) as IncomingBody;
+    const usd = Number(body.totalUsd);
 
-    const {
-      cart = [],
-      billingAddress = {},
-      shippingAddress = {},
-      subtotal = 0,
-      shippingFee = 0,
-      discountAmount = 0,
-      total,
-    } = body;
-
-    /* ------------------------------
-       VALIDATION
-    ------------------------------ */
-    const amount = Number(total);
-
-    if (!amount || isNaN(amount) || amount <= 0) {
+    if (!usd || isNaN(usd) || usd <= 0) {
       return NextResponse.json(
-        { error: "Invalid total amount" },
+        { error: "Invalid totalUsd amount" },
         { status: 400 }
       );
     }
 
-    /* ------------------------------
-       CREATE PAYMENT INTENT
-    ------------------------------ */
     const stripe = getStripe();
+
+    // Build a minimal metadata payload — Stripe limits each value to 500
+    // chars and there's a 50-key cap on the metadata object.
+    const variationList = (body.cartSummary?.variationIds ?? [])
+      .slice(0, 30)
+      .join(",");
+
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100),
+      // Stripe expects integer cents for USD (non-zero-decimal currency)
+      amount: Math.round(usd * 100),
       currency: "usd",
-
-      automatic_payment_methods: {
-        enabled: true,
-      },
-
+      automatic_payment_methods: { enabled: true },
+      receipt_email: body.customerEmail || undefined,
       metadata: {
-        items: cart.length.toString(),
-        subtotal: String(subtotal),
-        shipping: String(shippingFee),
-        discount: String(discountAmount),
+        itemCount: String(body.cartSummary?.itemCount ?? 0),
+        variationIds: variationList,
+        presentmentCurrency: body.presentmentCurrency ?? "usd",
+        source: "zoiko-orbit-checkout",
       },
     });
 
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
     });
   } catch (err) {
-    console.error("❌ Stripe PI Error:", err);
-
+    const message = err instanceof Error ? err.message : "Unknown error";
+    console.error("❌ Stripe PI Error:", message);
     return NextResponse.json(
       { error: "Payment initialization failed" },
       { status: 500 }

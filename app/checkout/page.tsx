@@ -1,10 +1,18 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { usStates } from "../utils/usStates";
 import { processOrderStripe } from "../utils/beQuickStripeWebPaymentApi";
 import StripePaymentForm, { StripePaymentFormRef } from "../components/StripePaymentForm";
+import {
+  CurrencySelect,
+  CURRENCY_BY_CODE,
+  formatMoney,
+  getRates,
+  convertFromUsd,
+  type FxRates,
+} from "../components/CurrencySelect";
 
 // ── Stub data for standalone compilation ──────────────────────────────────────
 
@@ -402,8 +410,10 @@ const CategoryBadge = ({ categoryName, slug }: { categoryName: string; slug: str
 export default function CheckoutPage() {
   const stripeFormRef = useRef<StripePaymentFormRef>(null);
   const [showOrderErrorPopup, setShowOrderErrorPopup] = useState(false);
-const [orderError, setOrderError] = useState("");
+  const [orderError, setOrderError] = useState("");
   const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "");
+  const [currency, setCurrency] = useState<string>("usd");
+  const [rates, setRates] = useState<FxRates | null>(null);
 
   const [clientSecret, setClientSecret] = useState("");
   // const stripeFormRef = useRef<{
@@ -466,6 +476,23 @@ const [orderError, setOrderError] = useState("");
     }
   }, []);
 
+  // Load FX rates on mount (non-blocking)
+  useEffect(() => {
+    getRates().then(setRates).catch(() => {});
+  }, []);
+
+  // Persist + restore the user's currency choice
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("zoiko_presentment_currency");
+      if (saved && CURRENCY_BY_CODE[saved]) setCurrency(saved);
+    } catch {}
+  }, []);
+  useEffect(() => {
+    try {
+      localStorage.setItem("zoiko_presentment_currency", currency);
+    } catch {}
+  }, [currency]);
   // ── Derived helpers ───────────────────────────────────────────────────────
 
   /**
@@ -623,14 +650,16 @@ const [orderError, setOrderError] = useState("");
     const newErrors: FormErrors = {};
     const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRx = /^[0-9]{7,15}$/;
-    newErrors.billingFirstName = billingAddress.firstName ? "" : "Required";
-    newErrors.billingLastName = billingAddress.lastName ? "" : "Required";
-    newErrors.billingState = billingAddress.state ? "" : "Required";
-    newErrors.billingCity = billingAddress.city ? "" : "Required";
-    newErrors.billingHouseNumber = billingAddress.houseNumber ? "" : "Required";
-    newErrors.billingZip = billingAddress.zip ? "" : "Required";
-    newErrors.billingEmail = emailRx.test(billingAddress.email) ? "" : "Invalid email";
-    newErrors.billingPhone = phoneRx.test(billingAddress.phone) ? "" : "Invalid phone";
+    if (hasShippingItem) {
+      newErrors.billingFirstName = billingAddress.firstName ? "" : "Required";
+      newErrors.billingLastName = billingAddress.lastName ? "" : "Required";
+      newErrors.billingState = billingAddress.state ? "" : "Required";
+      newErrors.billingCity = billingAddress.city ? "" : "Required";
+      newErrors.billingHouseNumber = billingAddress.houseNumber ? "" : "Required";
+      newErrors.billingZip = billingAddress.zip ? "" : "Required";
+      newErrors.billingEmail = emailRx.test(billingAddress.email) ? "" : "Invalid email";
+      newErrors.billingPhone = phoneRx.test(billingAddress.phone) ? "" : "Invalid phone";
+    }
     if (showShipping) {
       newErrors.shippingFirstName = shippingAddress.firstName ? "" : "Required";
       newErrors.shippingLastName = shippingAddress.lastName ? "" : "Required";
@@ -746,6 +775,9 @@ const [orderError, setOrderError] = useState("");
     return Number.isInteger(n) ? n.toString() : n.toFixed(2);
   };
 
+  // Convert a USD amount to whatever currency the user picked, formatted.
+  const fmt = (usd: number): string =>
+    formatMoney(convertFromUsd(usd, currency, rates), currency);
   // ── Empty Cart ────────────────────────────────────────────────────────────
   if (cart.length === 0) {
     return (
@@ -787,13 +819,15 @@ const [orderError, setOrderError] = useState("");
     <div className="min-h-screen bg-gray-50">
       {/* Page header */}
       <div className="bg-white border-b border-gray-100 py-6 px-4">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Checkout</h1>
             <p className="text-sm text-gray-500">Connecting Every Possibility with Zoiko Mobile!</p>
           </div>
-          <button
-            onClick={handleClearCart}
+          <div className="flex items-center gap-3 self-start sm:self-auto">
+            <CurrencySelect value={currency} onChange={setCurrency} />
+            <button
+              onClick={handleClearCart}
             disabled={loading}
             className="self-start sm:self-auto flex items-center gap-2 px-4 py-2 rounded-lg border border-red-200 text-red-500 text-sm font-medium hover:bg-red-50 transition-colors disabled:opacity-50"
           >
@@ -806,7 +840,8 @@ const [orderError, setOrderError] = useState("");
               />
             </svg>
             Clear Cart
-          </button>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -876,7 +911,7 @@ const [orderError, setOrderError] = useState("");
 
                         {item.planType === "prepaid-plans" && item.simType.toLowerCase() === "esim" && (
                           <span className="inline-block mt-2 text-xs bg-amber-100 text-amber-700 font-semibold px-2.5 py-0.5 rounded-full">
-                            + ${ACTIVATION_FEE_PER_ESIM.toFixed(2)} / eSIM Activation Fee
+                            + {fmt(ACTIVATION_FEE_PER_ESIM)} / eSIM Activation Fee
                           </span>
                         )}
                       </div>
@@ -904,13 +939,13 @@ const [orderError, setOrderError] = useState("");
                         </div>
                         <div className="text-right">
                           <p className="font-bold text-gray-900 text-base">
-                            ${(
+                            {fmt(
                               Number(item.planPrice ?? item.formData?.price ?? 0) *
                               Number(item.formData?.priceQty ?? 1)
-                            ).toFixed(2)}
+                            )}
                           </p>
                           <p className="text-xs text-gray-400 mt-0.5">
-                            ${Number(item.planPrice ?? 0).toFixed(2)} / {item.planDuration}
+                            {fmt(Number(item.planPrice ?? 0))} / {item.planDuration}
                           </p>
                           {Number(item.formData?.priceQty ?? 1) > 1 && (
                             <p className="text-xs text-gray-400">
@@ -975,7 +1010,8 @@ const [orderError, setOrderError] = useState("");
               )}
             </div>
 
-            {/* Billing Address */}
+            {/* Billing Address — only when cart has a physical SIM */}
+            {hasShippingItem && (
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <h2 className="font-bold text-gray-900 mb-5">Service / Billing Details</h2>
               <AddressForm
@@ -1011,8 +1047,8 @@ const [orderError, setOrderError] = useState("");
                 </div>
               )}
             </div>
-          </div>
-
+             )}
+</div>
           {/* ── Right Column ── */}
           <div className="w-full lg:w-96 space-y-6">
 
@@ -1031,10 +1067,10 @@ const [orderError, setOrderError] = useState("");
                       </p>
                     </div>
                     <span className="font-semibold text-gray-900 shrink-0">
-                      ${(
+                      {fmt(
                         Number(item.planPrice ?? item.formData?.price ?? 0) *
                         Number(item.formData?.priceQty ?? 1)
-                      ).toFixed(2)}
+                      )}
                     </span>
                   </div>
                 ))}
@@ -1057,13 +1093,13 @@ const [orderError, setOrderError] = useState("");
                   >
                     {shippingOptions.map((o, i) => (
                       <option key={i} value={o.value}>
-                        {o.label} — ${o.value}
+                        {o.label} — {fmt(o.value)}
                       </option>
                     ))}
                   </select>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-500">Shipping</span>
-                    <span className="font-medium">${shippingFee.toFixed(2)}</span>
+                    <span className="font-medium">{fmt(shippingFee)}</span>
                   </div>
                 </div>
               )}
@@ -1077,11 +1113,10 @@ const [orderError, setOrderError] = useState("");
                   return (
                     <div className="flex justify-between text-sm mt-2">
                       <span className="text-gray-500">
-                        Activation Fee{qty > 1 ? "s" : ""} ({qty} × $
-                        {ACTIVATION_FEE_PER_ESIM.toFixed(2)})
+                       Activation Fee{qty > 1 ? "s" : ""} ({qty} × {fmt(ACTIVATION_FEE_PER_ESIM)})
                       </span>
                       <span className="font-medium text-amber-600">
-                        +${activationFeeTotal.toFixed(2)}
+                        +{fmt(activationFeeTotal)}
                       </span>
                     </div>
                   );
@@ -1093,19 +1128,25 @@ const [orderError, setOrderError] = useState("");
                     Discount (
                     {discountData.type === "percentage"
                       ? formatDiscount(discountData.discount) + "%"
-                      : "$" + formatDiscount(discountData.discount)}
+                      : fmt(Number(discountData.discount))}
                     )
                   </span>
                   <span className="font-medium text-green-600">
-                    −${discountAmount.toFixed(2)}
+                    −{fmt(discountAmount)}
                   </span>
                 </div>
               )}
 
               <div className="flex justify-between font-bold text-base mt-4 pt-4 border-t border-gray-100">
                 <span>Total</span>
-                <span className="text-red-500">${total.toFixed(2)}</span>
+                <span className="text-red-500">{fmt(total)}</span>
               </div>
+              {currency !== "usd" && (
+                <p className="mt-2 text-[11px] text-gray-500 leading-relaxed">
+                  Charged in USD ({formatMoney(total, "usd")}). Your bank converts at the
+                  payment time.
+                </p>
+              )}
             </div>
 
             {/* Payment */}
@@ -1270,23 +1311,23 @@ const [orderError, setOrderError] = useState("");
           <div className="bg-gray-50 rounded-xl p-4 mb-5 text-left space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">Subtotal</span>
-              <span className="font-semibold text-gray-800">${subtotal.toFixed(2)}</span>
+              <span className="font-semibold text-gray-800">{fmt(subtotal)}</span>
             </div>
             {shippingFee > 0 && (
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Shipping</span>
-                <span className="font-semibold text-gray-800">${shippingFee.toFixed(2)}</span>
+                <span className="font-semibold text-gray-800">{fmt(shippingFee)}</span>
               </div>
             )}
             {discountAmount > 0 && (
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Discount</span>
-                <span className="font-semibold text-green-600">−${discountAmount.toFixed(2)}</span>
+                <span className="font-semibold text-green-600">−{fmt(discountAmount)}</span>
               </div>
             )}
             <div className="border-t border-gray-200 pt-2 flex justify-between text-base font-bold">
               <span className="text-gray-900">Total Paid</span>
-              <span className="text-red-500">${total.toFixed(2)}</span>
+              <span className="text-red-500">{fmt(total)}</span>
             </div>
           </div>
 
