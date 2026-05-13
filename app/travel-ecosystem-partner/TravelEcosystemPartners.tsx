@@ -491,32 +491,31 @@ const handleSubmit = async (e: React.FormEvent) => {
 <section className="relative overflow-hidden bg-[#f7f7f7] pt-0 dark:bg-gray-950 dark:text-white">
   
   {/* Top Banner Image */}
-  <div className="relative h-[280px] w-full md:h-[340px]">
-    <Image
-      src="/image/Rectangle 19 (1).png"
-      alt="Connectivity Program"
-      fill
-      priority
-      className="object-cover"
-    />
-  </div>
+<div className="relative h-[280px] w-full md:h-[340px]">
+  <Image
+    src="/image/Rectangle-19.png"
+    alt="Connectivity Program"
+    fill
+    priority
+    className="object-cover"
+  />
+</div>
 
-  {/* Content Wrapper */}
-  <div className="relative mx-auto -mt-20 max-w-7xl px-6 pb-20 md:px-12">
+{/* Content Wrapper */}
+<div className="relative mx-auto -mt-20 max-w-7xl px-6 pb-20 md:px-12">
+  <div className="grid gap-10 md:grid-cols-2 md:items-start">
     
-    <div className="grid gap-10 md:grid-cols-2 md:items-start">
-      
-      {/* LEFT SIDE IMAGE */}
-      <div className="relative hidden min-h-[520px] md:flex items-center justify-center">
-        <div className="relative h-[600px] w-full opacity-100 dark:opacity-80">
-          <Image
-            src="/image/map.png"
-            alt="World Map"
-            fill
-            className="object-contain"
-          />
-        </div>
+    {/* LEFT SIDE IMAGE */}
+    <div className="relative hidden min-h-[520px] md:flex items-center justify-center">
+      <div className="relative h-[600px] w-full opacity-100 dark:opacity-80">
+        <Image
+          src="/image/world-map.png"
+          alt="World Map"
+          fill
+          className="object-contain"
+        />
       </div>
+    </div>
 
       {/* RIGHT FORM CARD */}
       <div className="relative z-10 rounded-2xl bg-white p-8 shadow-[0_10px_40px_rgba(0,0,0,0.12)] dark:bg-gray-900 dark:shadow-[0_10px_40px_rgba(0,0,0,0.5)] dark:ring-1 dark:ring-gray-800 md:p-10">

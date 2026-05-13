@@ -1,8 +1,116 @@
 "use client";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 
 const TravelPartnersPage = () => {
+
+  const [formData, setFormData] = useState({
+    full_name: "",
+    company_name: "",
+    business_email: "",
+    role: "",
+    website: "",
+    message: "",
+    consent: false,
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]:
+        type === "checkbox"
+          ? (e.target as HTMLInputElement).checked
+          : value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    setSuccessMessage("");
+    setErrorMessage("");
+
+    // Checkbox validation
+    if (!formData.consent) {
+      setErrorMessage("Please agree to be contacted before submitting.");
+      return;
+    }
+
+    // Required field validation
+    if (
+      !formData.full_name.trim() ||
+      !formData.company_name.trim() ||
+      !formData.business_email.trim() ||
+      !formData.role.trim()
+    ) {
+      setErrorMessage("Please fill in all required fields.");
+      return;
+    }
+
+    // Basic email format check
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.business_email)) {
+      setErrorMessage("Please enter a valid business email address.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const payload = {
+        ...formData,
+        website: formData.website.trim() ? formData.website : null,
+      };
+
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/travel-partners/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccessMessage("Form submitted successfully! Our team will reach out within 48 hours.");
+        setFormData({
+          full_name: "",
+          company_name: "",
+          business_email: "",
+          role: "",
+          website: "",
+          message: "",
+          consent: false,
+        });
+      } else {
+        if (typeof data === "object" && data !== null) {
+          const firstError = Object.values(data)[0];
+          setErrorMessage(
+            Array.isArray(firstError)
+              ? String(firstError[0])
+              : String(firstError)
+          );
+        } else {
+          setErrorMessage("Something went wrong. Please try again.");
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      setErrorMessage("Server error. Please check your connection and try again.");
+    }
+
+    setLoading(false);
+  };
+
   return (
     <div className="font-sans text-gray-800 bg-white dark:bg-gray-900 dark:text-white">
 
@@ -208,7 +316,7 @@ const TravelPartnersPage = () => {
               </div>
 
               {/* Form */}
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={handleSubmit}>
 
                 {/* Row 1 */}
                 <div className="grid md:grid-cols-2 gap-4">
@@ -218,17 +326,23 @@ const TravelPartnersPage = () => {
                     </label>
                     <input
                       type="text"
+                      name="full_name"
+                      value={formData.full_name}
+                      onChange={handleChange}
                       placeholder="Enter Full Name"
                       className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal-600"
                     />
                   </div>
                   <div>
                     <label className="text-xs text-gray-700 dark:text-white mb-1 block">
-                      Company/Agency Name<span className="text-red-500">*</span>
+                      Company / Organization<span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
-                      placeholder="Enter Company/Agency Name"
+                      name="company_name"
+                      value={formData.company_name}
+                      onChange={handleChange}
+                      placeholder="Enter Company/Organization Name"
                       className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal-600"
                     />
                   </div>
@@ -238,11 +352,14 @@ const TravelPartnersPage = () => {
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs text-gray-700 dark:text-white mb-1 block">
-                      Business Email<span className="text-red-500">*</span>
+                      Business Email
                     </label>
                     <input
                       type="email"
-                      placeholder="Enter Work Email"
+                      name="business_email"
+                      value={formData.business_email}
+                      onChange={handleChange}
+                      placeholder="Enter Business Email"
                       className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal-600"
                     />
                   </div>
@@ -250,43 +367,44 @@ const TravelPartnersPage = () => {
                     <label className="text-xs text-gray-700 dark:text-white mb-1 block">
                       Role<span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="text"
-                      placeholder="(Owner, Manager, Agent)"
-                      className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal-600"
-                    />
+                    <select
+                      name="role"
+                      value={formData.role}
+                      onChange={handleChange}
+                      className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal-600 dark:[&>option]:bg-gray-800 dark:[&>option]:text-white"
+                    >
+                      <option value="">- Select Role -</option>
+                      <option value="Owner">Owner</option>
+                      <option value="Manager">Manager</option>
+                      <option value="Agent">Agent</option>
+                      <option value="Other">Other</option>
+                    </select>
                   </div>
                 </div>
 
-                {/* Row 3 */}
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs text-gray-700 dark:text-white mb-1 block">
-                      Website (if any)
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter Website URL"
-                      className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal-600"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-gray-700 dark:text-white mb-1 block">
-                      Type of Partnership<span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="(API, White Label, Distributor, Other)"
-                      className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal-600"
-                    />
-                  </div>
+                {/* Row 3 - Website only */}
+                <div>
+                  <label className="text-xs text-gray-700 dark:text-white mb-1 block">
+                    Website (if any)
+                  </label>
+                  <input
+                    type="text"
+                    name="website"
+                    value={formData.website}
+                    onChange={handleChange}
+                    placeholder="Enter Website URL"
+                    className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal-600"
+                  />
                 </div>
 
                 {/* Message */}
                 <div>
                   <textarea
                     rows={4}
-                    placeholder="Enter your message..."
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    placeholder="Enter your message....."
                     className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-3 py-3 text-sm outline-none resize-none focus:ring-2 focus:ring-teal-600"
                   />
                 </div>
@@ -294,20 +412,39 @@ const TravelPartnersPage = () => {
                 {/* Checkbox */}
                 <div className="flex items-start gap-2">
                   <input
+                    id="consent"
                     type="checkbox"
+                    name="consent"
+                    checked={formData.consent}
+                    onChange={handleChange}
                     className="mt-1 accent-teal-700"
                   />
-                  <p className="text-xs text-gray-600 dark:text-white">
+                  <label htmlFor="consent" className="text-xs text-gray-600 dark:text-white">
                     I agree to be contacted by Zoiko Orbit regarding partner opportunities.
-                  </p>
+                  </label>
                 </div>
+
+                {/* Success Message */}
+                {successMessage && (
+                  <p className="text-sm font-medium text-green-600 dark:text-green-400">
+                    {successMessage}
+                  </p>
+                )}
+
+                {/* Error Message */}
+                {errorMessage && (
+                  <p className="text-sm font-medium text-red-600 dark:text-red-400">
+                    {errorMessage}
+                  </p>
+                )}
 
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  className="w-full bg-teal-700 hover:bg-teal-800 transition text-white font-medium px-8 py-3 rounded-md shadow-md"
+                  disabled={loading}
+                  className="w-full bg-teal-700 hover:bg-teal-800 transition text-white font-medium px-8 py-3 rounded-md shadow-md disabled:cursor-not-allowed disabled:opacity-70"
                 >
-                  Submit & Schedule Consultation
+                  {loading ? "Submitting..." : "Submit & Schedule Consultation"}
                 </button>
               </form>
             </div>

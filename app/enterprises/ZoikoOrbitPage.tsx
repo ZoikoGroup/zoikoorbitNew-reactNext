@@ -5,6 +5,120 @@ import React, { useState } from "react";
 const ZoikoOrbitPage = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    business_email: "",
+    company_name: "",
+    phone: "",
+    country: "",
+    inquiry_type: "",
+    message: "",
+    consent: false,
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]:
+        type === "checkbox"
+          ? (e.target as HTMLInputElement).checked
+          : value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    setSuccessMessage("");
+    setErrorMessage("");
+
+    // Checkbox validation
+    if (!formData.consent) {
+      setErrorMessage("Please agree to be contacted before submitting.");
+      return;
+    }
+
+    // Required field validation
+    if (
+      !formData.first_name.trim() ||
+      !formData.last_name.trim() ||
+      !formData.business_email.trim() ||
+      !formData.company_name.trim() ||
+      !formData.country.trim() ||
+      !formData.inquiry_type.trim()
+    ) {
+      setErrorMessage("Please fill in all required fields.");
+      return;
+    }
+
+    // Basic email format check
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.business_email)) {
+      setErrorMessage("Please enter a valid business email address.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const payload = {
+        ...formData,
+        phone: formData.phone.trim() ? formData.phone : null,
+      };
+
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/enterprise-inquiry/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccessMessage("Form submitted successfully! Our specialists will respond within 24 hours.");
+        setFormData({
+          first_name: "",
+          last_name: "",
+          business_email: "",
+          company_name: "",
+          phone: "",
+          country: "",
+          inquiry_type: "",
+          message: "",
+          consent: false,
+        });
+      } else {
+        if (typeof data === "object" && data !== null) {
+          const firstError = Object.values(data)[0];
+          setErrorMessage(
+            Array.isArray(firstError)
+              ? String(firstError[0])
+              : String(firstError)
+          );
+        } else {
+          setErrorMessage("Something went wrong. Please try again.");
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      setErrorMessage("Server error. Please check your connection and try again.");
+    }
+
+    setLoading(false);
+  };
+
   return (
     <div className="font-sans text-gray-800 bg-white dark:bg-gray-900 dark:text-white">
 
@@ -259,7 +373,7 @@ const ZoikoOrbitPage = () => {
       </div>
 
       {/* Form */}
-      <form className="space-y-5">
+      <form className="space-y-5" onSubmit={handleSubmit}>
 
         {/* Row 1 */}
         <div className="grid md:grid-cols-2 gap-5">
@@ -271,6 +385,9 @@ const ZoikoOrbitPage = () => {
 
             <input
               type="text"
+              name="first_name"
+              value={formData.first_name}
+              onChange={handleChange}
               placeholder="Enter First Name"
               className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
             />
@@ -283,6 +400,9 @@ const ZoikoOrbitPage = () => {
 
             <input
               type="text"
+              name="last_name"
+              value={formData.last_name}
+              onChange={handleChange}
               placeholder="Enter Last Name"
               className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
             />
@@ -300,6 +420,9 @@ const ZoikoOrbitPage = () => {
 
             <input
               type="email"
+              name="business_email"
+              value={formData.business_email}
+              onChange={handleChange}
               placeholder="Enter Work Email"
               className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
             />
@@ -312,6 +435,9 @@ const ZoikoOrbitPage = () => {
 
             <input
               type="text"
+              name="company_name"
+              value={formData.company_name}
+              onChange={handleChange}
               placeholder="Enter Company/Organization Name"
               className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
             />
@@ -329,6 +455,9 @@ const ZoikoOrbitPage = () => {
 
             <input
               type="text"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
               placeholder="Enter Website URL"
               className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
             />
@@ -340,12 +469,15 @@ const ZoikoOrbitPage = () => {
             </label>
 
             <select
-              className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600 text-gray-600"
+              name="country"
+              value={formData.country}
+              onChange={handleChange}
+              className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600 text-gray-600 dark:[&>option]:bg-gray-800 dark:[&>option]:text-white"
             >
-              <option>Select Option</option>
-              <option>India</option>
-              <option>United States</option>
-              <option>United Kingdom</option>
+              <option value="">Select Option</option>
+              <option value="India">India</option>
+              <option value="United States">United States</option>
+              <option value="United Kingdom">United Kingdom</option>
             </select>
           </div>
 
@@ -359,6 +491,9 @@ const ZoikoOrbitPage = () => {
 
           <input
             type="text"
+            name="inquiry_type"
+            value={formData.inquiry_type}
+            onChange={handleChange}
             placeholder="Corporate Travel, Remote Workforce, Bulk Deployment, Security Review, Integration Other"
             className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
           />
@@ -368,6 +503,9 @@ const ZoikoOrbitPage = () => {
         <div>
           <textarea
             rows={5}
+            name="message"
+            value={formData.message}
+            onChange={handleChange}
             placeholder="Enter your message..."
             className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-4 outline-none resize-none focus:ring-2 focus:ring-teal-600"
           />
@@ -376,21 +514,40 @@ const ZoikoOrbitPage = () => {
         {/* Checkbox */}
         <div className="flex items-start gap-3">
           <input
+            id="consent"
             type="checkbox"
+            name="consent"
+            checked={formData.consent}
+            onChange={handleChange}
             className="mt-1 accent-teal-700"
           />
 
-          <p className="text-sm text-gray-600 dark:text-white">
+          <label htmlFor="consent" className="text-sm text-gray-600 dark:text-white">
             I agree to be contacted by Zoiko Orbit regarding partner opportunities.
-          </p>
+          </label>
         </div>
+
+        {/* Success Message */}
+        {successMessage && (
+          <p className="text-sm font-medium text-green-600 dark:text-green-400">
+            {successMessage}
+          </p>
+        )}
+
+        {/* Error Message */}
+        {errorMessage && (
+          <p className="text-sm font-medium text-red-600 dark:text-red-400">
+            {errorMessage}
+          </p>
+        )}
 
         {/* Button */}
         <button
           type="submit"
-          className="bg-teal-700 hover:bg-teal-800 transition text-white font-medium px-8 py-3 rounded-lg shadow-md"
+          disabled={loading}
+          className="bg-teal-700 hover:bg-teal-800 transition text-white font-medium px-8 py-3 rounded-lg shadow-md disabled:cursor-not-allowed disabled:opacity-70"
         >
-          Submit & Schedule a Consultation
+          {loading ? "Submitting..." : "Submit & Schedule a Consultation"}
         </button>
 
       </form>
