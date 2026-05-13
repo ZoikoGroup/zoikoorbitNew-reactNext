@@ -627,22 +627,30 @@ export default function CheckoutPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          total,
-          subtotal,
-          shippingFee,
-          discountAmount,
-          cart,
-          billingAddress,
-          shippingAddress,
+          totalUsd: total,           // ← must match what the API route expects
+          presentmentCurrency: currency,
+          customerEmail: billingAddress.email || undefined,
+          cartSummary: {
+            itemCount: cart.length,
+            variationIds: cart.map((i) => Number(i.planId)).filter(Boolean),
+          },
         }),
       })
-        .then((r) => r.json())
-        .then((d) => {
-          if (d.clientSecret) setClientSecret(d.clientSecret);
+        .then(async (r) => {
+          const data = await r.json();
+
+          if (!r.ok) {
+            console.error("Payment Intent Error:", data);
+            return;
+          }
+
+          if (data.clientSecret) {
+            setClientSecret(data.clientSecret);
+          }
         })
         .catch(() => {});
     }
-  }, [total, cart.length]);
+  }, [total, cart.length, currency, billingAddress.email]);
 
   // ── Validation ────────────────────────────────────────────────────────────
 
