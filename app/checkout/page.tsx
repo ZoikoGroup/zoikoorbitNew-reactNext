@@ -3,7 +3,7 @@ import { useEffect, useState, useRef, useMemo } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { usStates } from "../utils/usStates";
-import { processOrderStripe } from "../utils/beQuickStripeWebPaymentApi";
+import { processOrderMalima } from "../utils/malimaOrangeApi";
 import StripePaymentForm, { StripePaymentFormRef } from "../components/StripePaymentForm";
 import {
   CurrencySelect,
@@ -723,9 +723,12 @@ export default function CheckoutPage() {
       }
     }
 
-    // 2️⃣ BeQuick order
+    // 2️⃣ Malima / Orange — create product order(s) on Orange.
+    //    This replaces the previous BeQuick `processOrderStripe` pipeline.
+    //    Internally: Django allocates SIM identifiers → POST per SIM to
+    //    api.orange.com/.../productOrders/ → full record saved to Django.
     const products = buildProducts();
-    const orderData = {
+    const orderContext = {
       billingAddress,
       shippingAddress: showShipping ? shippingAddress : billingAddress,
       shippingOption: hasShippingItem ? { ...selectedShippingOption } : null,
@@ -737,30 +740,19 @@ export default function CheckoutPage() {
       createdAt: new Date().toISOString(),
     };
 
-    const response = await processOrderStripe(orderData);
-    console.log("✅ processOrderStripe response:", response);  // ← ADD
+    const result = await processOrderMalima(products as unknown[], orderContext);
+    console.log("✅ Malima pipeline result:", result);
 
-    if (!response?.status) {
-      setOrderError(response?.message || "Order processing failed.");
-      setShowOrderErrorPopup(true);
-      return;
-    }
-
-    const payload = (response as Record<string, unknown>).data ?? response;
-    console.log("✅ payload to Django:", payload);  // ← ADD
-
-    // 3️⃣ Save to Django
-    const orderRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/bqorders/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    const orderResData = await orderRes.json().catch(() => ({}));
-    console.log("✅ Django response ok:", orderRes.ok, "status:", orderRes.status, "data:", orderResData);  // ← ADD
-
-    if (!orderRes.ok || !orderResData?.success) {
-      setOrderError(orderResData?.message || "Order could not be saved.");
+    if (!result.status) {
+      // Different failure stages get different messaging. The stage tells
+      // the operator (and the user) how far the order got.
+      const stageMessage: Record<string, string> = {
+        empty_cart: "Cart is empty.",
+        allocate_failed: "Could not allocate SIM(s). Please try again or contact support.",
+        malima_failed: "Some lines could not be activated on the carrier. Support has been notified.",
+        save_failed: "Order activated but could not be recorded. Please keep your receipt.",
+      };
+      setOrderError(stageMessage[result.stage] || result.message || "Order processing failed.");
       setShowOrderErrorPopup(true);
       return;
     }
