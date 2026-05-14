@@ -3,11 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { ChevronDown, Search, User } from "lucide-react";
+import { ChevronDown, Search, User, ShoppingCart } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const navLinks = [
-  { label: "Home", href: "/" },
+  { label: "Plans", href: "/plans" },
   { label: "About Us", href: "/about-us" },
   {
     label: "Solutions",
@@ -35,6 +35,40 @@ export default function Header() {
   const [langOpen, setLangOpen] = useState(false);
   const [orbitOpen, setOrbitOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+
+  const [cartCount, setCartCount] = useState(0);
+
+  // Cart key must match whatever BuyPlanModal writes to.
+  // Default in your modal is "driverx_checkout".
+  const CART_KEY = "driverx_checkout";
+
+  useEffect(() => {
+    const readCount = () => {
+      try {
+        const raw = localStorage.getItem(CART_KEY);
+        const arr = raw ? JSON.parse(raw) : [];
+        setCartCount(Array.isArray(arr) ? arr.length : 0);
+      } catch {
+        setCartCount(0);
+      }
+    };
+
+    // Initial read
+    readCount();
+
+    // Cross-tab updates (fires in OTHER tabs when localStorage changes)
+    window.addEventListener("storage", readCount);
+
+    // Same-tab updates — localStorage doesn't fire 'storage' in the tab
+    // that wrote to it, so we use a custom event for that.
+    window.addEventListener("cart:updated", readCount);
+
+    return () => {
+      window.removeEventListener("storage", readCount);
+      window.removeEventListener("cart:updated", readCount);
+    };
+  }, []);
 
   const router = useRouter();
 
@@ -107,7 +141,20 @@ export default function Header() {
         <div className="flex items-center gap-4">
 
           {/* Search */}
-          <Search className="cursor-pointer hidden md:block" size={20} />
+          {/* <Search className="cursor-pointer hidden md:block" size={20} /> */}
+
+          {/* Search */}
+          {/* <Search className="cursor-pointer hidden md:block" size={20} /> */}
+
+          {/* Cart */}
+          <Link href="/checkout" className="relative cursor-pointer" aria-label="Cart">
+            <ShoppingCart size={22} />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-amber-400 text-[10px] font-bold text-[#0b328c] leading-none">
+                {cartCount > 99 ? "99+" : cartCount}
+              </span>
+            )}
+          </Link>
 
           {/* ✅ My Orbit Dropdown */}
           <div className="relative">
@@ -151,7 +198,7 @@ export default function Header() {
           </div>
 
           {/* Language */}
-          <div className="relative">
+          {/* <div className="relative">
             <button
               onClick={() => setLangOpen(!langOpen)}
               className="flex items-center gap-2 font-medium"
@@ -168,7 +215,7 @@ export default function Header() {
                 ))}
               </div>
             )}
-          </div>
+          </div> */}
 
         </div>
       </div>

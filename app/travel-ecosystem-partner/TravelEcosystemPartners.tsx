@@ -80,7 +80,6 @@ export default function TravelEcosystemPartners() {
 
     setFormData((prev) => ({
       ...prev,
-
       [name]:
         type === "checkbox"
           ? (e.target as HTMLInputElement).checked
@@ -842,6 +841,6 @@ export default function TravelEcosystemPartners() {
         <div className="mt-12 h-[4px] w-full bg-[#007C91]" />
       </section>
 
-    </div>
-  );
-}
+      </div>
+    );
+  }

@@ -5,44 +5,41 @@ export default function PrivacyPolicy() {
     <div className="w-full font-sans bg-white dark:bg-gray-900 dark:text-white">
 
       {/* ================= HERO ================= */}
-<section className="relative w-full overflow-hidden bg-[#0f1b2d] min-h-[320px] md:min-h-[420px]">
-  
-  {/* Full Background Image */}
-  <div className="absolute inset-0">
-    <Image
-      src="/image/c.png"
-      alt="Privacy Shield"
-      fill
-      priority
-      className="object-cover object-center"
-    />
+      <section className="relative w-full overflow-hidden bg-[#0f1b2d] min-h-[320px] md:min-h-[420px]">
 
-    {/* Optional Dark Overlay */}
-    <div className="absolute inset-0 bg-[#0f1b2d]/60" />
-  </div>
+        {/* Full Background Image */}
+        <div className="absolute inset-0">
+          <Image
+            src="/image/c.png"
+            alt="Privacy Shield"
+            fill
+            priority
+            className="object-cover object-center"
+          />
+          {/* Dark Overlay */}
+          <div className="absolute inset-0 bg-[#0f1b2d]/60" />
+        </div>
 
-  {/* Hero Content */}
-  <div className="relative z-10 mx-auto flex min-h-[320px] max-w-7xl items-center px-6 py-16 md:min-h-[420px] md:px-12">
-    
-    <div className="max-w-2xl">
-      <h1 className="mb-6 text-3xl font-extrabold leading-tight text-white md:text-5xl">
-        Privacy by Design
-        <br />
-        — Protection Without Compromise
-      </h1>
+        {/* Hero Content */}
+        <div className="relative z-10 mx-auto flex min-h-[320px] max-w-7xl items-center px-6 py-16 md:min-h-[420px] md:px-12">
+          <div className="max-w-2xl">
+            <h1 className="mb-6 text-3xl font-extrabold leading-tight text-white md:text-5xl">
+              Privacy by Design
+              <br />
+              — Protection Without Compromise
+            </h1>
+            <p className="max-w-xl text-sm leading-relaxed text-gray-200 md:text-base">
+              At Zoiko Orbit, protecting your privacy isn't just a regulatory obligation —
+              it's a core part of our infrastructure. As a global eSIM and connectivity
+              platform serving users across more than 220 countries and territories,
+              we are fully committed to data protection frameworks including the UK
+              Data Protection Act (2018), EU GDPR, California CCPA &amp; CPRA,
+              and relevant international laws governing cross-border data transfers.
+            </p>
+          </div>
+        </div>
+      </section>
 
-      <p className="max-w-xl text-sm leading-relaxed text-gray-200 md:text-base">
-        At Zoiko Orbit, protecting your privacy isn't just a regulatory obligation —
-        it's a core part of our infrastructure. As a global eSIM and connectivity
-        platform serving users across more than 220 countries and territories,
-        we are fully committed to data protection frameworks including the UK
-        Data Protection Act (2018), EU GDPR, California CCPA &amp; CPRA,
-        and relevant international laws governing cross-border data transfers.
-      </p>
-    </div>
-
-  </div>
-</section>
       {/* ================= POLICY CONTENT ================= */}
       <section className="bg-white py-14 dark:bg-gray-900 dark:text-white">
         <div className="mx-auto max-w-4xl px-6 md:px-12 space-y-8 text-sm text-gray-800 dark:text-gray-200 leading-relaxed">
@@ -52,38 +49,60 @@ export default function PrivacyPolicy() {
             Our Privacy Policy clearly explains how your data is:
           </p>
 
-          {/* Data usage list */}
-          <div className="space-y-2">
+          {/* Data usage list with images */}
+          <div className="space-y-4">
             {[
               {
+                img: "/image/Group 1597883246.png",
+                alt: "Collected",
                 bold: "Collected —",
                 text: " including personal identifiers, device metadata, SIM/eSIM profile details, and real-time network diagnostics",
               },
               {
+                img: "/image/used.png",
+                alt: "Used",
                 bold: "Used",
                 text: " — for service activation, account management, network optimization, fraud prevention, and personalized support",
               },
               {
+                img: "/image/shared.png",
+                alt: "Shared",
                 bold: "Shared —",
                 text: " only with vetted processors and regulatory authorities where required by law",
               },
               {
+                img: "/image/protected.png",
+                alt: "Protected",
                 bold: "Protected",
                 text: " — using zero-trust access controls, end-to-end encryption, and geographically distributed, SOC 2-compliant data centers",
               },
               {
+                img: "/image/stored.png",
+                alt: "Stored",
                 bold: "Stored & Retained —",
                 text: " only for as long as necessary to meet legal, billing, and service continuity requirements",
               },
               {
+                img: "/image/deleted.png",
+                alt: "Deleted",
                 bold: "Deleted or Ported",
                 text: " — upon request, in accordance with your data rights",
               },
             ].map((item, i) => (
-              <p key={i}>
-                <span className="font-bold text-zinc-900 dark:text-white">{item.bold}</span>
-                {item.text}
-              </p>
+              <div key={i} className="flex items-start gap-3">
+                <div className="mt-0.5 flex-shrink-0 w-5 h-5 relative">
+                  <Image
+                    src={item.img}
+                    alt={item.alt}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+                <p>
+                  <span className="font-bold text-zinc-900 dark:text-white">{item.bold}</span>
+                  {item.text}
+                </p>
+              </div>
             ))}
           </div>
 
@@ -95,17 +114,44 @@ export default function PrivacyPolicy() {
             <p className="font-bold text-zinc-900 dark:text-white mb-3">
               You'll also find clear guidance on:
             </p>
-            <ul className="space-y-2 text-gray-700 dark:text-gray-300">
+            <ul className="space-y-3 text-gray-700 dark:text-gray-300">
               {[
-                "How to access, correct, restrict, or delete your personal information",
-                "Your right to object to data profiling or direct marketing",
-                "Our lawful bases for data processing (consent, contract, legal obligation, legitimate interest)",
-                "How we handle children's data and ensure age-appropriate safeguards",
-                "How to file a concern with our Data Protection Officer (DPO) or local supervisory authority",
+                {
+                  img: "/image/access.png",
+                  alt: "Access",
+                  text: "How to access, correct, restrict, or delete your personal information",
+                },
+                {
+                  img: "/image/object.png",
+                  alt: "Object",
+                  text: "Your right to object to data profiling or direct marketing",
+                },
+                {
+                  img: "/image/lawful.png",
+                  alt: "Lawful",
+                  text: "Our lawful bases for data processing (consent, contract, legal obligation, legitimate interest)",
+                },
+                {
+                  img: "/image/children.png",
+                  alt: "Children",
+                  text: "How we handle children's data and ensure age-appropriate safeguards",
+                },
+                {
+                  img: "/image/dpo.png",
+                  alt: "DPO",
+                  text: "How to file a concern with our Data Protection Officer (DPO) or local supervisory authority",
+                },
               ].map((item, i) => (
-                <li key={i} className="flex items-start gap-2">
-                  <span className="mt-1 text-gray-500 dark:text-gray-400">•</span>
-                  <span>{item}</span>
+                <li key={i} className="flex items-start gap-3">
+                  <div className="mt-0.5 flex-shrink-0 w-5 h-5 relative">
+                    <Image
+                      src={item.img}
+                      alt={item.alt}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                  <span>{item.text}</span>
                 </li>
               ))}
             </ul>
