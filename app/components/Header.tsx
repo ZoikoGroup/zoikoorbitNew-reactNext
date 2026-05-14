@@ -22,7 +22,7 @@ const navLinks = [
     label: "Ecosystem Partners",
     dropdown: [
       { label: "Travelers", href: "/travelers" },
-      { label: "Businesses", href: "/business" },
+      { label: "Businesses", href: "/businesses-enterprises" },
     ],
   },
   { label: "Support", href: "/support" },
