@@ -164,30 +164,135 @@ export default function TravelEcosystemPartners() {
           priority
         />
 
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    work_email: "",
+    company_name: "",
+    website: "",
+    country: "",
+    role: "",
+    monthly_volume: "",
+    partnership_interest: "",
+    message: "",
+    consent: false,
+  });
 
-        {/* Hero Content */}
-        <div className="absolute inset-0 flex items-center">
-          <div className="mx-auto w-full max-w-7xl px-6 md:px-12">
-            <div className="max-w-lg">
-              <h1 className="mb-4 text-3xl font-extrabold leading-tight text-white md:text-5xl">
-                Grow Your Business with{" "}
-                <br className="hidden md:block" />
-                Global eSIM Connectivity
-              </h1>
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-              <p className="mb-8 text-base leading-relaxed text-gray-200 md:text-lg">
-                Seamless eSIM solutions for travel agencies, OTAs,
-                tour operators, and distributors.
-              </p>
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value, type } = e.target;
 
-              <a
-                href="#"
-                className="inline-block rounded-md bg-teal-600 px-7 py-3 text-sm font-semibold text-white transition-colors hover:bg-teal-700"
-              >
-                Become a Partner
-              </a>
+    setFormData((prev) => ({
+      ...prev,
+      [name]:
+        type === "checkbox"
+          ? (e.target as HTMLInputElement).checked
+          : value,
+    }));
+  };
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  setLoading(true);
+  setSuccessMessage("");
+  setErrorMessage("");
+
+  try {
+
+    const payload = {
+      ...formData,
+      website: formData.website.trim()
+        ? formData.website
+        : null,
+    };
+
+    const response = await fetch(
+      "http://127.0.0.1:8000/api/partner-leads/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+      setSuccessMessage("Form submitted successfully!");
+
+      setFormData({
+        first_name: "",
+        last_name: "",
+        work_email: "",
+        company_name: "",
+        website: "",
+        country: "",
+        role: "",
+        monthly_volume: "",
+        partnership_interest: "",
+        message: "",
+        consent: false,
+      });
+    } else {
+      console.log(data);
+      setErrorMessage(JSON.stringify(data));
+    }
+
+  } catch (error) {
+    console.log(error);
+    setErrorMessage("Server error.");
+  }
+
+  setLoading(false);
+};
+  return (
+    
+      <div className="w-full font-sans dark:bg-gray-900 dark:text-white">
+        {/* ================= HERO ================= */}
+        <section className="relative h-[75vh] min-h-[500px]">
+          <Image
+            src="/image/Rectangle 4d.png"
+            alt="Partners hero"
+            fill
+            className="object-cover object-center"
+            priority
+          />
+
+          {/* Dark overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
+
+          {/* Hero Content */}
+          <div className="absolute inset-0 flex items-center">
+            <div className="mx-auto w-full max-w-7xl px-6 md:px-12">
+              <div className="max-w-lg">
+                <h1 className="mb-4 text-3xl font-extrabold leading-tight text-white md:text-5xl">
+                  Grow Your Business with{" "}
+                  <br className="hidden md:block" />
+                  Global eSIM Connectivity
+                </h1>
+
+                <p className="mb-8 text-base leading-relaxed text-gray-200 md:text-lg">
+                  Seamless eSIM solutions for travel agencies, OTAs,
+                  tour operators, and distributors.
+                </p>
+
+                <a
+                  href="#"
+                  className="inline-block rounded-md bg-teal-600 px-7 py-3 text-sm font-semibold text-white transition-colors hover:bg-teal-700"
+                >
+                  Become a Partner
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -842,6 +947,6 @@ export default function TravelEcosystemPartners() {
         <div className="mt-12 h-[4px] w-full bg-[#007C91]" />
       </section>
 
-    </div>
-  );
-}
+      </div>
+    );
+  }
