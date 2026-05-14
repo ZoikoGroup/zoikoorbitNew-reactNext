@@ -16,7 +16,7 @@ export default function CorporateResponsibility() {
           <p className="text-lg md:text-xl mb-6 leading-relaxed">
             Zoiko Orbit is deeply committed to responsible business
             practices that prioritize people, planet, and transparency.
-            As part of Zoiko Group Inc., we align with global ESG frameworks
+            As part of Zoiko Group Inc, we align with global ESG frameworks
             and sustainability goals, embedding ethical governance,
             carbon awareness, and community engagement into every
             layer of our operations.
