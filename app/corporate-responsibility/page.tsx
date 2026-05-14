@@ -1,5 +1,5 @@
  import React from 'react'
-import CorporateResponsibility from './corporateresponsibility'
+import CorporateResponsibility from './Corporateresponsibility'
 
 export default function page() {
   return (
