@@ -26,7 +26,7 @@ const stats = [
 const ecosystemPartners = [
   {
     title: "Retailers & Dealers",
-    img: "/image/ecosystem-retailers.jpg",
+    img: "/image/ecosystem-retailers.webp",
     bullets: [
       "High-margin products/Custom POS kits",
       "Staff training & marketing toolkits",
@@ -35,7 +35,7 @@ const ecosystemPartners = [
   },
   {
     title: "Travel Agencies & OTAs",
-    img: "/image/ecosystem-travel.jpg",
+    img: "/image/ecosystem-travel.webp",
     bullets: [
       "API & white-label integrations",
       "Add eSIM to every booking",
@@ -44,7 +44,7 @@ const ecosystemPartners = [
   },
   {
     title: "Travel Insurance Providers",
-    img: "/image/ecosystem-insurance.jpg",
+    img: "/image/ecosystem-insurance.webp",
     bullets: [
       "Bundle eSIM into travel insurance",
       "Customisable client dashboards",
@@ -80,7 +80,24 @@ const trustedBrands = [
   { name: "WWF", icon: "🐾" },
   { name: "Alliance", icon: null, logo: true },
 ];
-
+const cards = [
+  {
+    icon: "/image/Content.png",
+    title: "For Individuals",
+    desc: "One eSIM, global coverage, no hidden fees.",
+  },
+  {
+    icon: "/image/Bag.png",
+    title: "For Businesses",
+    desc: "Retailers & Distributors, Travel Agencies & Tour Operators, Insurance & Loyalty Programs, Airlines & OTAs.",
+  },
+];
+const logos = [
+  { src: "/image/logo1.png", alt: "Global Travel Alliance" },
+  { src: "/image/logo2.png", alt: "Orange" },
+  { src: "/image/logo3.png", alt: "WWF" },
+  { src: "/image/logo4.png", alt: "Alliance Airlines" },
+];
 
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
@@ -102,162 +119,90 @@ function StarRating({ rating }: { rating: number }) {
 /** 1. HERO */
 function HeroSection() {
   return (
-    <section
-      className="relative min-h-[560px] flex flex-col items-center justify-center text-center text-white overflow-hidden"
-      style={{
-        background: "linear-gradient(135deg, #0a1628 0%, #0d2f4f 40%, #0f3d5c 70%, #0a2d45 100%)",
-      }}
-    >
-      {/* Decorative dots / bokeh */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(18)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full bg-white/10"
-            style={{
-              width: Math.random() * 6 + 2 + "px",
-              height: Math.random() * 6 + 2 + "px",
-              top: Math.random() * 100 + "%",
-              left: Math.random() * 100 + "%",
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Announcement bar */}
-  
- <section className="relative w-full overflow-hidden bg-[#0a1a3a]">
-      {/* Full-bleed background - single image */}
-      <img
+    <section className="relative w-full overflow-hidden bg-[#0a1a3a]">
+      {/* ─── Background image ─── */}
+      <Image
         src="/image/Rectangle 4 (6).png"
-        alt="Global travel background"
-        className="absolute inset-0 w-full h-full object-cover object-center"
-        style={{ opacity: 0.95 }}
+        alt="Global travel landmarks at dusk"
+        fill
+        className="absolute inset-0 w-full h-full object-cover object-center opacity-95"
       />
- 
-      {/* Deep blue overlay to match the original's rich blue sky tone */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(175deg, rgba(5,20,80,0.6) 0%, rgba(8,30,100,0.5) 50%, rgba(4,18,55,0.7) 100%)",
-        }}
-      />
- 
-      {/* ── Main content ── */}
-      <div className="relative z-10 flex flex-col items-center text-center text-white px-4 pt-14 pb-0">
-        <h1
-          className="font-extrabold leading-tight tracking-tight mb-3"
-          style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)", textShadow: "0 2px 12px rgba(0,0,0,0.4)" }}
-        >
+
+      {/* ─── Deep-blue gradient overlay ─── */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#05145099]/55 via-[#081e6499]/45 to-[#041237aa]/65" />
+
+      {/* ─── Main content ─── */}
+      <div className="relative z-10 flex flex-col items-center text-center text-white px-4 sm:px-6 pt-14 sm:pt-20 md:pt-24 pb-0">
+        <h1 className="font-extrabold leading-tight tracking-tight mb-3 sm:mb-4 text-[clamp(1.75rem,4.5vw,3.25rem)] [text-shadow:0_2px_14px_rgba(0,0,0,0.45)]">
           Stay Connected Everywhere
         </h1>
- 
-        <p className="text-blue-100 mb-7 max-w-lg" style={{ fontSize: "0.95rem" }}>
-          Your global eSIM. Trusted by travelers, enterprises, and travel brands worldwide.
+
+        <p className="text-blue-100/90 mb-6 sm:mb-8 max-w-md sm:max-w-lg px-2 text-[clamp(0.85rem,1.4vw,1rem)]">
+          Your global eSIM. Trusted by travelers, enterprises, and travel brands
+          worldwide.
         </p>
- 
-        {/* CTA buttons */}
-        <div className="flex flex-wrap justify-center gap-3 mb-8">
-          <button
-            className="font-semibold text-sm px-8 py-2.5 rounded-full text-white transition-colors"
-            style={{ background: "rgba(88,78,220,0.92)", border: "none" }}
-          >
+
+        {/* ─── CTA buttons ─── */}
+        <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-10 sm:mb-16 md:mb-24">
+          <button className="font-semibold text-xs sm:text-sm px-6 sm:px-8 py-2.5 rounded-full text-white transition-all hover:brightness-110 hover:-translate-y-0.5 bg-[#584edc]/95 shadow-[0_6px_18px_rgba(60,50,200,0.35)] border-none">
             Get Your eSIM
           </button>
-          <button
-            className="font-semibold text-sm px-8 py-2.5 rounded-full text-white transition-colors bg-transparent"
-            style={{ border: "1.5px solid rgba(255,255,255,0.55)" }}
-          >
+          <button className="font-semibold text-xs sm:text-sm px-6 sm:px-8 py-2.5 rounded-full text-white transition-all hover:bg-white/10 hover:-translate-y-0.5 bg-transparent border border-white/60">
             Partner with Us
           </button>
         </div>
- 
-        {/* Landmarks strip — part of the same background scene, fades into cards */}
-      
       </div>
- 
-      {/* ── For Individuals / For Businesses cards ── */}
-      <div className="relative z-10 w-full max-w-3xl mx-auto px-4 pb-6">
-        <div
-          className="grid grid-cols-1 md:grid-cols-2 shadow-2xl overflow-hidden"
-          style={{ borderRadius: "0 0 16px 16px" }}
-        >
-          {[
-            {
-              iconSrc: "https://cdn-icons-png.flaticon.com/512/1077/1077063.png",
-              title: "For Individuals",
-              desc: "One eSIM, global coverage, no hidden fees.",
-            },
-            {
-              iconSrc: "https://cdn-icons-png.flaticon.com/512/3281/3281289.png",
-              title: "For Businesses",
-              desc: "Retailers & Distributors, Travel Agencies & Tour Operators, Insurance Companies & More.",
-            },
-          ].map((card, i) => (
+
+      {/* ─── Info Cards ─── */}
+      <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 pb-6 sm:pb-8 -mt-4 sm:-mt-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+          {cards.map((card) => (
             <div
               key={card.title}
-              className="flex items-center gap-4 px-6 py-5 cursor-pointer"
-              style={{
-                background: "rgba(255,255,255,0.97)",
-                borderRight:
-                  i === 0 ? "1px solid rgba(0,0,0,0.07)" : undefined,
-              }}
+              className="flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-4 sm:py-5 cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-xl bg-white/[0.98] rounded-[10px] shadow-[0_10px_30px_rgba(0,0,0,0.18),0_2px_6px_rgba(0,0,0,0.06)]"
             >
-              {/* Teal icon container */}
-              <div
-                className="flex-shrink-0 flex items-center justify-center rounded-xl"
-                style={{
-                  width: 42,
-                  height: 42,
-                  background: "rgba(13,148,136,0.12)",
-                }}
-              >
-                <img
-                  src={card.iconSrc}
+              {/* Icon container */}
+              <div className="flex-shrink-0 flex items-center justify-center rounded-full w-[56px] h-[56px] bg-[#2850b4]/10">
+                <Image
+                  src={card.icon}
                   alt={card.title}
-                  style={{
-                    width: 22,
-                    height: 22,
-                    objectFit: "contain",
-                    filter:
-                      "invert(30%) sepia(90%) saturate(600%) hue-rotate(148deg)",
-                  }}
+                  width={60}
+                  height={60}
+                  unoptimized
+                  className="object-contain"
                 />
               </div>
- 
+
               {/* Text */}
               <div className="flex-1 text-left min-w-0">
-                <p
-                  className="font-bold text-gray-900 leading-snug"
-                  style={{ fontSize: "0.85rem" }}
-                >
+                <p className="font-bold leading-snug text-[clamp(0.95rem,1.4vw,1.05rem)] text-[#2a3a8c]">
                   {card.title}
                 </p>
-                <p
-                  className="text-gray-500 leading-relaxed mt-0.5"
-                  style={{ fontSize: "0.75rem" }}
-                >
+                <p className="text-gray-500 leading-relaxed mt-1 text-[clamp(0.75rem,1.1vw,0.85rem)]">
                   {card.desc}
                 </p>
               </div>
- 
-              {/* Arrow */}
-              <img
-                src="https://cdn-icons-png.flaticon.com/512/271/271228.png"
-                alt="arrow"
-                style={{
-                  width: 14,
-                  height: 14,
-                  flexShrink: 0,
-                  filter: "invert(70%)",
-                }}
-              />
+
+              {/* SVG Arrow */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="flex-shrink-0 w-[18px] h-[18px] text-[#2a3a8c]"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
             </div>
           ))}
         </div>
       </div>
-    </section>
     </section>
   );
 }
@@ -344,7 +289,7 @@ function EmpoweringSection() {
           {/* Left: Image with overlay quote */}
           <div className="relative rounded-2xl overflow-hidden min-h-[300px] bg-gray-200">
             <img
-              src="/image/innovation-globe.jpg"
+              src="/image/Vector-4.webp"
               alt="eSIM Innovation"
               className="w-full h-full object-cover"
             />
@@ -420,37 +365,58 @@ function EcosystemPartners() {
           {ecosystemPartners.map((partner, i) => (
             <div
               key={i}
-              className="rounded-2xl overflow-hidden bg-white shadow-sm border border-gray-100 group hover:shadow-md transition-all"
+              className="rounded-2xl overflow-hidden shadow-md group hover:shadow-xl transition-all duration-300 flex flex-col"
             >
-              {/* Image */}
-              <div className="h-44 bg-gray-200 relative overflow-hidden">
+              {/* ─── Image with teal gradient overlay + title ─── */}
+              <div className="relative h-56 overflow-hidden">
                 <img
                   src={partner.img}
                   alt={partner.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                {/* Dark overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                <p className="absolute bottom-3 left-4 text-white font-bold text-base">
-                  {partner.title}
-                </p>
+                {/* Teal-blue gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-teal-700/90 via-teal-800/60 to-teal-700/30" />
+
+                {/* Title overlaid at bottom-left */}
+                <div className="absolute bottom-0 left-0 right-0 px-5 py-4">
+                  <h3 className="text-white font-bold text-lg leading-snug drop-shadow-sm">
+                    {partner.title}
+                  </h3>
+                </div>
               </div>
 
-              {/* Body */}
-              <div className="p-4">
-                <ul className="space-y-1 mb-4">
+              {/* ─── Card body ─── */}
+              <div className="flex flex-col flex-1 bg-white px-5 py-4 gap-4">
+                {/* Bullet points */}
+                <ul className="flex flex-col gap-2 flex-1">
                   {partner.bullets.map((b, j) => (
-                    <li key={j} className="text-xs text-gray-600 flex items-start gap-1.5">
-                      <span className="text-teal-500 mt-0.5">•</span>
-                      {b}
+                    <li key={j} className="flex items-start gap-2 text-sm text-gray-600">
+                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-teal-500 flex-shrink-0" />
+                      <span>{b}</span>
                     </li>
                   ))}
                 </ul>
+
+                {/* Divider */}
+                <div className="border-t border-gray-100" />
+
+                {/* CTA link */}
                 <a
                   href="#"
-                  className="text-teal-600 text-xs font-semibold hover:underline flex items-center gap-1"
+                  className="text-teal-600 text-sm font-semibold hover:text-teal-700 flex items-center gap-1.5 transition-colors"
                 >
-                  {partner.cta} <span>→</span>
+                  {partner.cta}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    aria-hidden="true"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
                 </a>
               </div>
             </div>
@@ -462,9 +428,8 @@ function EcosystemPartners() {
           {[0, 1, 2].map((d) => (
             <div
               key={d}
-              className={`h-2 rounded-full transition-all ${
-                d === 0 ? "w-6 bg-teal-600" : "w-2 bg-gray-300"
-              }`}
+              className={`h-2 rounded-full transition-all ${d === 0 ? "w-6 bg-teal-600" : "w-2 bg-gray-300"
+                }`}
             />
           ))}
         </div>
@@ -500,9 +465,9 @@ function GlobalCoverage() {
           <div className="flex items-center justify-center">
             <div className="w-full max-w-md relative">
               <img
-                src="/image/world-map-teal.png"
+                src="/image/world-map-teal.webp"
                 alt="Global Coverage Map"
-                className="w-full h-auto opacity-90"
+                className="w-full h-auto md:h-80 opacity-90"
               />
             </div>
           </div>
@@ -518,7 +483,7 @@ function ExperienceBanner() {
     <section className="relative overflow-hidden">
       <div className="w-full h-80 md:h-96 relative">
         <img
-          src="/image/banner-cityview.jpg"
+          src="/image/banner-cityview.webp"
           alt="Travel banner"
           className="w-full h-full object-cover"
         />
@@ -589,9 +554,8 @@ function CustomerFeedback() {
           {[0, 1, 2].map((d) => (
             <div
               key={d}
-              className={`h-2 rounded-full transition-all ${
-                d === 1 ? "w-6 bg-teal-600" : "w-2 bg-gray-300"
-              }`}
+              className={`h-2 rounded-full transition-all ${d === 1 ? "w-6 bg-teal-600" : "w-2 bg-gray-300"
+                }`}
             />
           ))}
         </div>
@@ -603,46 +567,27 @@ function CustomerFeedback() {
 /** 8. TRUSTED BY */
 function TrustedBy() {
   return (
-    <section className="py-12 px-4 md:px-16 bg-gray-50 border-t border-gray-100">
-      <div className="max-w-4xl mx-auto">
-        <p className="text-center text-gray-500 text-sm font-medium mb-8">
-          Trusted by global leaders in travel &amp; telecoms
-        </p>
-        <div className="flex flex-wrap items-center justify-center gap-10 md:gap-16">
-          {/* Global Travel Alliance */}
-          <div className="flex items-center gap-2 grayscale hover:grayscale-0 transition-all cursor-pointer">
-            <div className="w-8 h-8 rounded-full border-2 border-blue-600 flex items-center justify-center text-blue-600 font-bold text-xs">
-              GT
-            </div>
-            <span className="text-sm font-semibold text-gray-700">Global Travel<br />Alliance</span>
-          </div>
-
-          {/* orange */}
-          <div className="grayscale hover:grayscale-0 transition-all cursor-pointer">
-            <span
-              className="text-2xl font-black"
-              style={{ color: "#FF7900", fontFamily: "Helvetica, sans-serif" }}
+     <section className="py-12 px-4 md:px-16 bg-white border-t border-gray-100">
+      <div className="max-w-5xl mx-auto">
+        {/* Heading */}
+        <h2 className="text-center text-gray-800 text-xl md:text-2xl font-bold mb-10">
+          Trusted by Global Leaders in Travel &amp; Telecoms
+        </h2>
+ 
+        {/* Logo cards */}
+        <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
+          {logos.map((logo) => (
+            <div
+              key={logo.alt}
+              className="flex items-center justify-center bg-gray-100 rounded-2xl px-6 py-4 w-58 h-20 hover:shadow-md transition-all duration-300 cursor-pointer"
             >
-              orange
-            </span>
-          </div>
-
-          {/* WWF */}
-          <div className="flex items-center gap-1.5 grayscale hover:grayscale-0 transition-all cursor-pointer">
-            <div className="w-9 h-9 bg-black rounded flex items-center justify-center">
-              <span className="text-white font-extrabold text-xs">WWF</span>
+              <img
+                src={logo.src}
+                alt={logo.alt}
+                className="max-h-16 max-w-full object-contain"
+              />
             </div>
-          </div>
-
-          {/* Alliance */}
-          <div className="grayscale hover:grayscale-0 transition-all cursor-pointer">
-            <div className="flex items-center gap-1">
-              <div className="w-6 h-6 rounded-full bg-blue-700 flex items-center justify-center">
-                <div className="w-3 h-3 rounded-full bg-white" />
-              </div>
-              <span className="text-sm font-bold text-gray-700">Alliance</span>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>
