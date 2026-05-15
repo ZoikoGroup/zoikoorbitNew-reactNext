@@ -98,7 +98,7 @@ export default function CorporateResponsibility() {
               </div>
             </div>
           </div>
-        </div>
+        {/* </div> */}
       </section>
 
       <section className="relative w-full bg-[#f7f7f7] dark:bg-[#0F172A] py-14 md:py-20 overflow-hidden">
