@@ -92,7 +92,7 @@ export default function Aboutus() {
         </p>
 
         <p className="text-gray-600 leading-relaxed  dark:text-white dark:bg-gray-900">
-         But we didn’t stop there. As passionate advocates for the animal kingdom, we’ve woven impact directly into our model.  Every Zoiko Orbit purchase supports animal shelters, wildlife sanctuaries, and conservation initiatives worldwide — helping protect endangered species, fund vital rescues, and sustain habitats for generations to come.
+         But we didn’t stop there. As passionate advocates for the animal kingdom, we’ve woven impact directly into our model. Every Zoiko Orbit purchase supports animal shelters, wildlife sanctuaries, and conservation initiatives worldwide — helping protect endangered species, fund vital rescues, and sustain habitats for generations to come.
         </p>
       </div>
 
