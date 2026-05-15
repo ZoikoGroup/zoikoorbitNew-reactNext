@@ -2,11 +2,14 @@ import { Metadata } from "next";
 import MyAccount from "./MyAccount";
 
 export const metadata: Metadata = {
-  title: "Zoiko Orbit | Login to Manage Your Services",
+  title: "My Account | Zoiko",
   description:
-    "Log in to your Zoiko Orbit account now to manage your services, view and pay bills, track your usage & enjoy full control over your mobile plan & features.",
+    "Manage your profile, security, and support all in one place.",
 };
 
-export default function LoginPage() {
+// NOTE: Authentication is intentionally disabled here for now.
+// To re-enable later, wrap the returned component in <ProtectedRoute> and import it.
+
+export default function DashboardPage() {
   return <MyAccount />;
 }
