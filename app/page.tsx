@@ -26,7 +26,7 @@ const stats = [
 const ecosystemPartners = [
   {
     title: "Retailers & Dealers",
-    img: "/image/ecosystem-retailers.jpg",
+    img: "/ecosystem-retailers.jpg",
     bullets: [
       "High-margin products/Custom POS kits",
       "Staff training & marketing toolkits",
@@ -35,7 +35,7 @@ const ecosystemPartners = [
   },
   {
     title: "Travel Agencies & OTAs",
-    img: "/image/ecosystem-travel.jpg",
+    img: "/ecosystem-travel.jpg",
     bullets: [
       "API & white-label integrations",
       "Add eSIM to every booking",
@@ -44,7 +44,7 @@ const ecosystemPartners = [
   },
   {
     title: "Travel Insurance Providers",
-    img: "/image/ecosystem-insurance.jpg",
+    img: "/ecosystem-insurance.jpg",
     bullets: [
       "Bundle eSIM into travel insurance",
       "Customisable client dashboards",
@@ -344,7 +344,7 @@ function EmpoweringSection() {
           {/* Left: Image with overlay quote */}
           <div className="relative rounded-2xl overflow-hidden min-h-[300px] bg-gray-200">
             <img
-              src="/image/innovation-globe.jpg"
+              src="/innovation-globe.jpg"
               alt="eSIM Innovation"
               className="w-full h-full object-cover"
             />
@@ -500,7 +500,7 @@ function GlobalCoverage() {
           <div className="flex items-center justify-center">
             <div className="w-full max-w-md relative">
               <img
-                src="/image/world-map-teal.png"
+                src="/world-map-teal.png"
                 alt="Global Coverage Map"
                 className="w-full h-auto opacity-90"
               />
@@ -518,7 +518,7 @@ function ExperienceBanner() {
     <section className="relative overflow-hidden">
       <div className="w-full h-80 md:h-96 relative">
         <img
-          src="/image/banner-cityview.jpg"
+          src="/banner-cityview.jpg"
           alt="Travel banner"
           className="w-full h-full object-cover"
         />
