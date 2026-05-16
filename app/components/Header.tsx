@@ -108,7 +108,7 @@ export default function Header() {
         <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((item) => (
             <div
-              key={item.label}
+              key={item.href}
               className="relative"
               onMouseEnter={() => item.dropdown && setOpenDropdown(item.label)}
               onMouseLeave={() => setOpenDropdown(null)}
