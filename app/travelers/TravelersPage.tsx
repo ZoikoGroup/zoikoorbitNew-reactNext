@@ -176,7 +176,7 @@ export default function TravelersPage() {
                 animal welfare.
               </p>
               <a
-                href="#plans"
+                href="/plans"
                 className="inline-block bg-[#2B4A9B] hover:bg-[#1f3a7d] text-white font-semibold px-8 py-3 rounded-md transition-colors"
               >
                 Get Your eSIM

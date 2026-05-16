@@ -2,12 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { ChevronDown, Search, User, ShoppingCart } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { ChevronDown, User, ShoppingCart } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const navLinks = [
-  { label: "Plans", href: "/plans" },
+  { label: "Home", href: "/" },
   { label: "About Us", href: "/about-us" },
   {
     label: "Solutions",
@@ -28,21 +28,22 @@ const navLinks = [
   { label: "Support", href: "/support" },
 ];
 
-const languages = ["Arabic", "Dutch", "French", "German", "Italian", "Portuguese"];
-
 export default function Header() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [langOpen, setLangOpen] = useState(false);
   const [orbitOpen, setOrbitOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-
   const [cartCount, setCartCount] = useState(0);
 
+  // Timer used to delay dropdown close on mouse-leave so the user has
+  // a moment to move the cursor onto the panel without it snapping shut.
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const router = useRouter();
+
   // Cart key must match whatever BuyPlanModal writes to.
-  // Default in your modal is "driverx_checkout".
   const CART_KEY = "driverx_checkout";
 
+  // ── Cart count syncing ────────────────────────────────
   useEffect(() => {
     const readCount = () => {
       try {
@@ -54,14 +55,8 @@ export default function Header() {
       }
     };
 
-    // Initial read
     readCount();
-
-    // Cross-tab updates (fires in OTHER tabs when localStorage changes)
     window.addEventListener("storage", readCount);
-
-    // Same-tab updates — localStorage doesn't fire 'storage' in the tab
-    // that wrote to it, so we use a custom event for that.
     window.addEventListener("cart:updated", readCount);
 
     return () => {
@@ -70,22 +65,41 @@ export default function Header() {
     };
   }, []);
 
-  const router = useRouter();
-
-  // ✅ Check login (IMPORTANT FIX)
+  // ── Login check ───────────────────────────────────────
   useEffect(() => {
-    const token = localStorage.getItem("zoikoorbit_token"); // <-- correct key
+    const token = localStorage.getItem("zoikoorbit_token");
     setIsLoggedIn(!!token);
   }, []);
 
-  // ✅ Logout
+  // Clean up any pending close-timer on unmount
+  useEffect(() => {
+    return () => {
+      if (closeTimer.current) clearTimeout(closeTimer.current);
+    };
+  }, []);
+
+  // ── Dropdown handlers ─────────────────────────────────
+  const handleOpenDropdown = (label: string) => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+    setOpenDropdown(label);
+  };
+
+  const handleCloseDropdown = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    closeTimer.current = setTimeout(() => {
+      setOpenDropdown(null);
+    }, 150); // small delay so the cursor can travel onto the panel
+  };
+
+  // ── Logout ────────────────────────────────────────────
   const handleLogout = () => {
     localStorage.removeItem("zoikoorbit_token");
     localStorage.removeItem("zoikoorbit_user");
-
     setIsLoggedIn(false);
     setOrbitOpen(false);
-
     router.push("/login");
   };
 
@@ -106,48 +120,73 @@ export default function Header() {
 
         {/* Nav */}
         <nav className="hidden md:flex items-center gap-8">
-          {navLinks.map((item) => (
-            <div
-              key={item.href}
-              className="relative"
-              onMouseEnter={() => item.dropdown && setOpenDropdown(item.label)}
-              onMouseLeave={() => setOpenDropdown(null)}
-            >
-              {item.href ? (
-                <Link href={item.href} className="hover:text-gray-200 font-medium">
-                  {item.label}
-                </Link>
-              ) : (
-                <button className="flex items-center gap-1 font-medium">
-                  {item.label}
-                  <ChevronDown size={16} />
-                </button>
-              )}
+          {navLinks.map((item) => {
+            const hasDropdown = !!item.dropdown;
+            const isOpen = openDropdown === item.label;
 
-              {item.dropdown && openDropdown === item.label && (
-                <div className="absolute top-8 left-0 bg-white text-black rounded-xl shadow-lg py-3 w-64">
-                  {item.dropdown.map((d) => (
-                    <Link key={d.label} href={d.href} className="block px-5 py-2 hover:bg-gray-100">
-                      {d.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+            return (
+              <div
+                key={item.label}
+                className="relative py-2"
+                onMouseEnter={() => hasDropdown && handleOpenDropdown(item.label)}
+                onMouseLeave={() => hasDropdown && handleCloseDropdown()}
+              >
+                {item.href ? (
+                  <Link
+                    href={item.href}
+                    className="hover:text-gray-200 font-medium"
+                  >
+                    {item.label}
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    aria-haspopup="true"
+                    aria-expanded={isOpen}
+                    className="flex items-center gap-1 font-medium cursor-pointer"
+                  >
+                    {item.label}
+                    <ChevronDown
+                      size={16}
+                      className={`transition-transform ${isOpen ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                )}
+
+                {hasDropdown && isOpen && (
+                  /* 
+                    Wrapper sits flush against the trigger (top-full).
+                    Inner padding-top creates breathing room while still
+                    being part of the hover zone — eliminates the gap.
+                  */
+                  <div className="absolute top-full left-0 pt-2 z-50">
+                    <div className="bg-white text-black rounded-xl shadow-lg py-3 w-64">
+                      {item.dropdown!.map((d) => (
+                        <Link
+                          key={d.label}
+                          href={d.href}
+                          className="block px-5 py-2 hover:bg-gray-100"
+                        >
+                          {d.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </nav>
 
         {/* Right Section */}
         <div className="flex items-center gap-4">
 
-          {/* Search */}
-          {/* <Search className="cursor-pointer hidden md:block" size={20} /> */}
-
-          {/* Search */}
-          {/* <Search className="cursor-pointer hidden md:block" size={20} /> */}
-
           {/* Cart */}
-          <Link href="/checkout" className="relative cursor-pointer" aria-label="Cart">
+          <Link
+            href="/checkout"
+            className="relative cursor-pointer"
+            aria-label="Cart"
+          >
             <ShoppingCart size={22} />
             {cartCount > 0 && (
               <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-amber-400 text-[10px] font-bold text-[#0b328c] leading-none">
@@ -156,70 +195,73 @@ export default function Header() {
             )}
           </Link>
 
-          {/* ✅ My Orbit Dropdown */}
+          {/* My Orbit Dropdown — click-toggle, with click-outside close */}
           <div className="relative">
             <button
+              type="button"
               onClick={() => setOrbitOpen(!orbitOpen)}
-              className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-lg hover:bg-gray-200 transition"
+              aria-haspopup="true"
+              aria-expanded={orbitOpen}
+              className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-lg hover:bg-gray-200 transition cursor-pointer"
             >
               <User size={18} />
               My Orbit
-              <ChevronDown size={14} />
+              <ChevronDown
+                size={14}
+                className={`transition-transform ${orbitOpen ? "rotate-180" : ""}`}
+              />
             </button>
 
             {orbitOpen && (
-              <div className="absolute right-0 mt-2 bg-white text-black rounded-lg shadow-lg w-48 py-2">
-
-                {isLoggedIn ? (
-                  <>
-                    <Link href="/dashboard" className="block px-4 py-2 hover:bg-gray-100">
-                      Dashboard
-                    </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 hover:bg-red-100 text-red-600"
-                    >
-                      Logout
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <Link href="/login" className="block px-4 py-2 hover:bg-gray-100">
-                      Login
-                    </Link>
-                    <Link href="/register" className="block px-4 py-2 hover:bg-gray-100">
-                      Register
-                    </Link>
-                  </>
-                )}
-
-              </div>
+              <>
+                {/* invisible overlay to close on outside click */}
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setOrbitOpen(false)}
+                />
+                <div className="absolute right-0 mt-2 bg-white text-black rounded-lg shadow-lg w-48 py-2 z-50">
+                  {isLoggedIn ? (
+                    <>
+                      <Link
+                        href="/dashboard"
+                        className="block px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setOrbitOpen(false)}
+                      >
+                        Dashboard
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2 hover:bg-red-100 text-red-600"
+                      >
+                        Logout
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        href="/login"
+                        className="block px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setOrbitOpen(false)}
+                      >
+                        Login
+                      </Link>
+                      <Link
+                        href="/register"
+                        className="block px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setOrbitOpen(false)}
+                      >
+                        Register
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </>
             )}
           </div>
-
-          {/* Language */}
-          {/* <div className="relative">
-            <button
-              onClick={() => setLangOpen(!langOpen)}
-              className="flex items-center gap-2 font-medium"
-            >
-              🇺🇸 EN <ChevronDown size={14} />
-            </button>
-
-            {langOpen && (
-              <div className="absolute right-0 mt-2 bg-white text-black rounded-lg shadow-lg w-48 py-2">
-                {languages.map((lang) => (
-                  <div key={lang} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                    {lang}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div> */}
 
         </div>
       </div>
     </header>
   );
 }
-
