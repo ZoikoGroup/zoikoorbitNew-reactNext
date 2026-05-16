@@ -12,9 +12,9 @@ const navLinks = [
   {
     label: "Solutions",
     dropdown: [
-      { label: "For Personal Travelers", href: "/solutions/personal" },
-      { label: "For Enterprises", href: "/solutions/enterprise" },
-      { label: "For Ecosystem Partners", href: "/solutions/partners" },
+      { label: "For Personal Travelers", href: "/personal-travelers" },
+      { label: "For Enterprises", href: "/enterprises" },
+      { label: "For Ecosystem Partners", href: "/travel-ecosystem-partner" },
     ],
   },
   { label: "Plans", href: "/plans" },
