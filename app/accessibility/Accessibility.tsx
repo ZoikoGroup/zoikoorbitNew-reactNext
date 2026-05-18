@@ -79,7 +79,7 @@ export default function Accessibility() {
                 <p className="mt-5 text-white/90 text-sm sm:text-base md:text-xl leading-relaxed">
                   At Zoiko Orbit, we’re committed to ensuring that every user —
                   regardless of ability, geography, or device — can access our
-                  services with ease and confidence. We design and continuously
+                  services with ease & confidence. We design and continuously
                   test our platforms in accordance with WCAG 2.1 AA, the
                   Americans with Disabilities Act (ADA), and the UK Equality Act
                   2010.
