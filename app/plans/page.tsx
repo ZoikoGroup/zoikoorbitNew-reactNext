@@ -1,5 +1,5 @@
 "use client";
-
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { ActiveFiltersBar, type ActiveChip } from "../components/active-filters-bar";
 import { FilterSidebar } from "../components/filter-sidebar";
@@ -14,6 +14,13 @@ import { BuyPlanModal, type Plan } from "../components/BuyPlanModal";
 import { variationToPlan } from "../lib/variation-to-plan";
 
 export default function PlansPage() {
+  const searchParams = useSearchParams();
+
+  const selectedCountry =
+    searchParams.get("country");
+
+  const selectedDuration =
+    searchParams.get("duration");
     const [data, setData] = useState<VariationsFile | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState(1);
@@ -56,11 +63,35 @@ export default function PlansPage() {
   );
 
   // Compute matching variations + group + sort
+// Compute matching variations + sort
 const cards = useMemo(() => {
   if (!data) return [];
-  const matching = applyFilters(data.variations, filters);
-  return sortVariations(matching, sortKey);
-}, [data, filters, sortKey]);
+
+  // Merge dashboard params with sidebar filters
+  const updatedFilters = {
+    ...filters,
+    region: filters.region || selectedCountry,
+    duration: filters.duration || selectedDuration,
+  };
+
+  // Apply filters
+  let matching = applyFilters(
+    data.variations,
+    updatedFilters
+  );
+
+  // Sort plans
+  return sortVariations(
+    matching,
+    sortKey
+  );
+}, [
+  data,
+  filters,
+  sortKey,
+  selectedCountry,
+  selectedDuration,
+]);
 
 // Reset to page 1 whenever filters or sort change
 useEffect(() => {
