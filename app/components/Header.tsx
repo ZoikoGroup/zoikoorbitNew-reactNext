@@ -236,7 +236,8 @@ export default function Header() {
             </button>
 
             {orbitOpen && (
-              <div className="absolute right-0 mt-2 bg-white text-gray-800 rounded-xl shadow-xl w-48 py-2 border border-gray-100 z-50">
+              <div className="absolute right-0 mt-2 bg-skyfrost text-black rounded-lg shadow-lg w-48 py-2">
+
                 {isLoggedIn ? (
                   <>
                     <Link href="/dashboard" className="block px-4 py-2.5 hover:bg-gray-50 text-sm transition-colors" onClick={() => setOrbitOpen(false)}>
