@@ -17,6 +17,10 @@
   --border-light: #e5e7eb;
 }
 
+@theme {
+  --color-skyfrost: rgba(187, 235, 255, 0.92);
+}
+
 /* 🌙 DARK MODE */
 @media (prefers-color-scheme: dark) {
   :root {
@@ -98,3 +102,4 @@ body {
     color: white;
   }
 }
+

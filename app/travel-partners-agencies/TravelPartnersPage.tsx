@@ -291,7 +291,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElemen
         {/* Background Banner Image */}
         <div className="relative w-full h-[600px] md:h-[560px]">
           <Image
-            src="/image/file.jpg"
+            src="/image/fjgghjfghhj.png"
             alt="Partnership journey"
             fill
             className="object-cover"

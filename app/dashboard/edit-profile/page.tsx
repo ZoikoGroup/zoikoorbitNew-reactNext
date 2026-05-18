@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { FaUser, FaLock, FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 
+//const BASE_URL = "https://api.driverxmobile.com/api/editprofile/";
+
 const BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/editprofile/`;
 
 interface NameForm {
@@ -30,7 +32,7 @@ export default function EditProfilePage() {
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
 
-  // ── Load token & user from localStorage (optional — auth gating disabled) ──
+  // ── Load token & user from localStorage ──
   useEffect(() => {
     const storedToken = localStorage.getItem("driverx_token") || "";
     const storedUser = localStorage.getItem("driverx_user");
@@ -129,11 +131,24 @@ export default function EditProfilePage() {
     setPassLoading(false);
   };
 
-  // Auth gate intentionally disabled — page renders for everyone.
+  // ── Not logged in ──
+  if (!token) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <main className="grow dark:bg-gray-900 dark:text-white bg-gray-100 py-8 px-4">
+          <div className="max-w-5xl mx-auto">
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+              You are not logged in. Please log in first.
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
-      <main className="flex-grow dark:bg-gray-900 dark:text-white bg-gray-100 py-8 px-4">
+      <main className="grow dark:bg-gray-900 dark:text-white bg-gray-100 py-8 px-4">
         <div className="max-w-5xl mx-auto">
 
           {/* Page Header */}
