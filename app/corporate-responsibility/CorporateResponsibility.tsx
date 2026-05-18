@@ -36,7 +36,7 @@ export default function CorporateResponsibility() {
           />
 
           {/* Overlay */}
-          <div className="absolute inset-0 bg-black/40 md:bg-white/55" />
+          <div className="absolute inset-0 bg-black/40 md:bg-white/55 dark:bg-black/60 dark:md:bg-black/55" />
 
           {/* Content */}
           <div className="absolute inset-0 z-10">
@@ -67,6 +67,8 @@ export default function CorporateResponsibility() {
                   className="
               text-white
               md:text-[#2b2b2b]
+              dark:text-white
+              md:dark:text-white
               font-bold
               leading-tight
               text-4xl
@@ -78,23 +80,14 @@ export default function CorporateResponsibility() {
                   Corporate Responsibility
                 </h2>
 
-                <div
-                  className="
-              space-y-6
-              text-white
-              md:text-[#2b2b2b]
-              text-lg
-              leading-relaxed
-            "
-                >
-                  <p>
-                    Zoiko Orbit is deeply committed to responsible business
-                    practices that prioritize people, planet, and transparency.
-                    As part of Zoiko Group Inc., we align with global ESG
-                    frameworks and sustainability goals, embedding ethical
-                    governance, carbon awareness, and community engagement into
-                    every layer of our operations.
-                  </p>
+          <p className="text-lg md:text-xl mb-6 leading-relaxed">
+            Zoiko Orbit is deeply committed to responsible business
+            practices that prioritize people, planet, and transparency.
+            As part of Zoiko Group Inc, we align with global ESG frameworks
+            and sustainability goals, embedding ethical governance,
+            carbon awareness, and community engagement into every
+            layer of our operations.
+          </p>
 
                   <p>
                     Our infrastructure runs on energy-efficient provisioning
@@ -105,18 +98,28 @@ export default function CorporateResponsibility() {
               </div>
             </div>
           </div>
-        </div>
+        {/* </div> */}
       </section>
 
-      <section className="relative w-full bg-[#f7f7f7] py-14 md:py-20 overflow-hidden">
+      <section className="relative w-full bg-[#f7f7f7] dark:bg-[#0F172A] py-14 md:py-20 overflow-hidden">
         {/* Background Grid */}
-        <div className="absolute inset-0 opacity-40 pointer-events-none">
+        <div className="absolute inset-0 opacity-40 dark:opacity-30 pointer-events-none">
           <div
-            className="w-full h-full"
+            className="w-full h-full dark:hidden"
             style={{
               backgroundImage: `
               linear-gradient(to right, #d9dde3 1px, transparent 1px),
               linear-gradient(to bottom, #d9dde3 1px, transparent 1px)
+            `,
+              backgroundSize: "120px 120px",
+            }}
+          />
+          <div
+            className="w-full h-full hidden dark:block"
+            style={{
+              backgroundImage: `
+              linear-gradient(to right, #1e293b 1px, transparent 1px),
+              linear-gradient(to bottom, #1e293b 1px, transparent 1px)
             `,
               backgroundSize: "120px 120px",
             }}
@@ -129,7 +132,7 @@ export default function CorporateResponsibility() {
             {responsibilityCards.map((card) => (
               <div key={card.id}>
                 {/* Image */}
-                <div className="relative w-full h-60 sm:h-80 md:h-75 lg:h-85 overflow-hidden rounded-2xl shadow-md">
+                <div className="relative w-full h-60 sm:h-80 md:h-75 lg:h-85 overflow-hidden rounded-2xl shadow-md dark:shadow-none dark:ring-1 dark:ring-white/10">
                   <Image
                     src={card.image}
                     alt="Responsibility"
@@ -144,6 +147,7 @@ export default function CorporateResponsibility() {
                   <p
                     className="
                     text-[#2b2b2b]
+                    dark:text-gray-200
                     text-lg
                     sm:text-xl
                     leading-relaxed

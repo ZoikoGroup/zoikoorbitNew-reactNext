@@ -90,15 +90,25 @@ export default function Accessibility() {
         </div>
       </section>
 
-      <section className="relative w-full bg-[#f7f7f7] py-8 md:py-12 overflow-hidden">
+      <section className="relative w-full bg-[#f7f7f7] dark:bg-[#0F172A] py-8 md:py-12 overflow-hidden">
         {/* Grid Background */}
-        <div className="absolute inset-0 opacity-40 pointer-events-none">
+        <div className="absolute inset-0 opacity-40 dark:opacity-30 pointer-events-none">
           <div
-            className="w-full h-full"
+            className="w-full h-full dark:hidden"
             style={{
               backgroundImage: `
               linear-gradient(to right, #d9dde3 1px, transparent 1px),
               linear-gradient(to bottom, #d9dde3 1px, transparent 1px)
+            `,
+              backgroundSize: "120px 120px",
+            }}
+          />
+          <div
+            className="w-full h-full hidden dark:block"
+            style={{
+              backgroundImage: `
+              linear-gradient(to right, #1e293b 1px, transparent 1px),
+              linear-gradient(to bottom, #1e293b 1px, transparent 1px)
             `,
               backgroundSize: "120px 120px",
             }}
@@ -108,7 +118,7 @@ export default function Accessibility() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Heading */}
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#1f2937]">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#1f2937] dark:text-white">
               Our platform includes
             </h2>
           </div>
@@ -121,7 +131,7 @@ export default function Accessibility() {
                 className="flex flex-col items-center text-center"
               >
                 {/* Icon */}
-                <div className="w-20 h-20 rounded-full bg-[#007b95] flex items-center justify-center mb-6 shadow-md">
+                <div className="w-20 h-20 rounded-full bg-[#007b95] dark:bg-[#0891A6] flex items-center justify-center mb-6 shadow-md dark:shadow-none dark:ring-1 dark:ring-white/10">
                   <Image
                     src={feature.icon}
                     alt={feature.title}
@@ -132,7 +142,7 @@ export default function Accessibility() {
                 </div>
 
                 {/* Text */}
-                <p className="text-[#2b2b2b] text-sm md:text-base leading-relaxed max-w-60">
+                <p className="text-[#2b2b2b] dark:text-gray-300 text-sm md:text-base leading-relaxed max-w-60">
                   {feature.title}
                 </p>
               </div>
@@ -141,7 +151,7 @@ export default function Accessibility() {
         </div>
       </section>
 
-      <section className="w-full bg-[#f5f5f5] py-8 md:py-10 overflow-hidden">
+      <section className="w-full bg-[#f5f5f5] dark:bg-[#0F172A] py-8 md:py-10 overflow-hidden">
         <div className="w-full">
           {/* Main Wrapper */}
           <div className="relative">
@@ -168,9 +178,13 @@ export default function Accessibility() {
           w-full
           lg:w-[45%]
           bg-[#007b95]
+          dark:bg-[#0891A6]
           rounded-none
           sm:rounded-xl
           shadow-xl
+          dark:shadow-none
+          dark:ring-1
+          dark:ring-white/10
           z-20
         "
             >
