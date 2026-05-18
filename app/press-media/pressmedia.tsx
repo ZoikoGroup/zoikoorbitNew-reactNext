@@ -15,7 +15,7 @@ export default function PressMedia() {
         />
 
         {/* overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/20" />
+        <div className="absolute inset-0 bg-linear-to-r from-black/70 to-black/20" />
 
         {/* text */}
         <div className="absolute right-10 top-1/2 -translate-y-1/2 text-white max-w-md">

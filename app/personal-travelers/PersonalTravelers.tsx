@@ -88,7 +88,7 @@ export default function PersonalTravelers() {
           alt="Traveler at airport"
           className="absolute inset-0 w-full h-full object-cover object-center"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/50 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-r from-black/75 via-black/50 to-transparent" />
         <div className="relative z-10 flex flex-col justify-center h-full px-8 md:px-20 max-w-2xl">
           <h1 className="text-3xl md:text-5xl font-extrabold text-white leading-tight mb-4">
             Travel Freely. Stay<br />Connected Across<br />220+ Countries
@@ -200,7 +200,7 @@ export default function PersonalTravelers() {
                 <img
                   src={d.flag}
                   alt={d.label}
-                  className="w-7 h-5 object-cover rounded-sm flex-shrink-0"
+                  className="w-7 h-5 object-cover rounded-sm shrink-0"
                   onError={(e) => {
                     (e.currentTarget as HTMLImageElement).src =
                       "https://cdn-icons-png.flaticon.com/512/616/616408.png";
@@ -210,7 +210,7 @@ export default function PersonalTravelers() {
                   {d.label}
                 </span>
                 <svg
-                  className="w-4 h-4 text-gray-400 group-hover:text-teal-500 flex-shrink-0"
+                  className="w-4 h-4 text-gray-400 group-hover:text-teal-500 shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -300,7 +300,7 @@ export default function PersonalTravelers() {
                   <img
                     src="https://cdn-icons-png.flaticon.com/512/271/271228.png"
                     alt="chevron"
-                    className={`w-4 h-4 flex-shrink-0 transition-transform ${openFaq === i ? "rotate-90" : ""}`}
+                    className={`w-4 h-4 shrink-0 transition-transform ${openFaq === i ? "rotate-90" : ""}`}
                     style={{ filter: "invert(60%)" }}
                   />
                 </button>

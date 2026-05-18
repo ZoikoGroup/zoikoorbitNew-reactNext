@@ -69,7 +69,7 @@ export default function CorporatePage() {
     <div>
 
       {/* 🔹 HERO */}
-      <section className="section text-center bg-[var(--section-bg)]">
+      <section className="section text-center bg-(--section-bg)">
         <div className="container-custom">
           <h1 className="heading">
             Global mobility,<br />secured and simplified
@@ -110,7 +110,7 @@ export default function CorporatePage() {
       </section>
 
       {/* 🔹 CTA */}
-      <section className="section bg-[var(--primary)] text-white text-center">
+      <section className="section bg-(--primary) text-white text-center">
         <div className="container-custom">
           <h2 className="heading">
             Deploy, manage, and scale connectivity globally

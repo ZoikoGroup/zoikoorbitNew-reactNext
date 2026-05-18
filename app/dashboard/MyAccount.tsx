@@ -333,7 +333,7 @@ export default function MyAccountPage() {
   // ---------- Render ----------
   return (
     <div className="flex flex-col min-h-screen">
-      <main className="flex-grow dark:bg-gray-900 dark:text-white bg-gray-100 py-8 px-4">
+      <main className="grow dark:bg-gray-900 dark:text-white bg-gray-100 py-8 px-4">
         <div className="max-w-7xl mx-auto">
 
           {/* Subscriber not found */}
@@ -717,7 +717,7 @@ export default function MyAccountPage() {
                 ].map(({ step, title, desc, full }) => (
                   <div key={step} className={`${full ? "md:col-span-2" : ""} h-full p-4 rounded-lg border bg-gray-50`}>
                     <div className="flex gap-3">
-                      <div className="w-9 h-9 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
+                      <div className="w-9 h-9 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-sm shrink-0">
                         {step}
                       </div>
                       <div>

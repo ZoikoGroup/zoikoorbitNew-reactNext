@@ -188,7 +188,7 @@ export default function PartnerWithUs() {
           priority
         />
         {/* Dark overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0a2a2e]/90 via-[#0d6e7a]/60 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-r from-[#0a2a2e]/90 via-[#0d6e7a]/60 to-transparent" />
 
         {/* Hero text */}
         <div className="absolute inset-0 flex items-center">
@@ -242,7 +242,7 @@ export default function PartnerWithUs() {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
             {partnerAdvantages.map((adv) => (
               <div key={adv.label} className="flex flex-col items-center text-center gap-3">
-                <div className="w-16 h-16 rounded-full bg-[#0d6e7a] flex items-center justify-center flex-shrink-0">
+                <div className="w-16 h-16 rounded-full bg-[#0d6e7a] flex items-center justify-center shrink-0">
                   {adv.icon}
                 </div>
                 <p className="text-xs text-gray-600 leading-snug">{adv.label}</p>

@@ -14,7 +14,7 @@ export default function TravelEcosystemPartners() {
         />
 
         {/* Dark overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/50 to-transparent" />
 
         {/* Hero Content */}
         <div className="absolute inset-0 flex items-center">
