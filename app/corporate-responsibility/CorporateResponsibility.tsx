@@ -80,25 +80,14 @@ export default function CorporateResponsibility() {
                   Corporate Responsibility
                 </h2>
 
-                <div
-                  className="
-              space-y-6
-              text-white
-              md:text-[#2b2b2b]
-              dark:text-white
-              md:dark:text-gray-200
-              text-lg
-              leading-relaxed
-            "
-                >
-                  <p>
-                    Zoiko Orbit is deeply committed to responsible business
-                    practices that prioritize people, planet, and transparency.
-                    As part of Zoiko Group Inc., we align with global ESG
-                    frameworks and sustainability goals, embedding ethical
-                    governance, carbon awareness, and community engagement into
-                    every layer of our operations.
-                  </p>
+          <p className="text-lg md:text-xl mb-6 leading-relaxed">
+            Zoiko Orbit is deeply committed to responsible business
+            practices that prioritize people, planet, and transparency.
+            As part of Zoiko Group Inc, we align with global ESG frameworks
+            and sustainability goals, embedding ethical governance,
+            carbon awareness, and community engagement into every
+            layer of our operations.
+          </p>
 
                   <p>
                     Our infrastructure runs on energy-efficient provisioning
@@ -109,7 +98,7 @@ export default function CorporateResponsibility() {
               </div>
             </div>
           </div>
-        </div>
+        {/* </div> */}
       </section>
 
       <section className="relative w-full bg-[#f7f7f7] dark:bg-[#0F172A] py-14 md:py-20 overflow-hidden">
