@@ -20,10 +20,9 @@ jobs:
           ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
           "git config --global --add safe.directory /var/www/html/zoikoorbitNew-reactNext && \
           cd /var/www/html/zoikoorbitNew-reactNext && \
+          git checkout -- package.json package-lock.json && \
           git pull origin main && \
           npm install && \
           npm run build && \
           pm2 restart zoikoorbit-reactNext && \
           pm2 save"
-
-          rm /tmp/deploy_key
