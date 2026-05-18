@@ -81,7 +81,7 @@ function LoginPageContent() {
           {/* Logo */}
           <div className="flex items-center gap-3 mb-4">
             <Image
-              src="/images/Logo.svg.png"
+              src="/image/Rectangle 14.png"
               alt="Logo"
               width={140}
               height={40}
@@ -171,7 +171,7 @@ function LoginPageContent() {
         <div className="hidden md:flex justify-end">
           <div className="relative w-[420px] h-[560px] rounded-3xl overflow-hidden shadow-lg">
             <Image
-              src="/images/login-right-scaled.webp"
+              src="/image/Group-1597883272.webp"
               alt="Login"
               fill
               className="object-cover"
