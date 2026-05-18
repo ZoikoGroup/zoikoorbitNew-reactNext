@@ -45,7 +45,7 @@ export default function SupportCenter() {
           className="object-cover object-center"
         />
         {/* Dark gradient overlay — stronger on left for text */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-black/10" />
+        <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/55 to-black/10" />
 
         {/* Hero Text */}
         <div className="absolute inset-0 flex items-center">
@@ -136,7 +136,7 @@ export default function SupportCenter() {
 function FeatureCard({ icon, title }: { icon: string; title: string }) {
   return (
     <div className="flex flex-col items-center text-center">
-      <div className="mb-4 flex h-[60px] w-[60px] flex-shrink-0 items-center justify-center rounded-full bg-[#007C91]">
+      <div className="mb-4 flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-full bg-[#007C91]">
         <div className="relative h-7 w-7">
           <Image
             src={icon}

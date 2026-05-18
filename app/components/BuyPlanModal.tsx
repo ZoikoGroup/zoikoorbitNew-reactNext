@@ -168,7 +168,7 @@ const SimOptionCard = ({
         : "border-gray-200 dark:border-gray-600 hover:border-gray-300 bg-white dark:bg-gray-700"
     }`}
   >
-    <div className="w-11 h-11 rounded-xl bg-[#e6f4f1] flex items-center justify-center flex-shrink-0 mt-0.5">
+    <div className="w-11 h-11 rounded-xl bg-[#e6f4f1] flex items-center justify-center shrink-0 mt-0.5">
       {type === "esim" ? (
         <svg className="w-6 h-6 text-[#1a8a76]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" />
@@ -193,7 +193,7 @@ const SimOptionCard = ({
           <p className="text-gray-500 dark:text-gray-400 text-xs mb-2">Traditional SIM card that you insert into your phone</p>
           <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Works with all phones | Easy to transfer between devices | Familiar and reliable</p>
           <div className="flex items-center gap-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl px-3 py-2">
-            <svg className="w-4 h-4 text-amber-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="w-4 h-4 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <p className="text-xs text-amber-700 dark:text-amber-400">
@@ -203,7 +203,7 @@ const SimOptionCard = ({
         </>
       )}
     </div>
-    <div className={`ml-2 w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors ${
+    <div className={`ml-2 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
       selected ? "border-[#1a4a3f] bg-[#1a4a3f]" : "border-gray-300"
     }`}>
       {selected && <div className="w-2 h-2 rounded-full bg-white" />}
@@ -590,7 +590,7 @@ export const BuyPlanModal = ({
   const renderImeiBlock = () => (
     <div className="rounded-2xl border-2 border-[#1a4a3f] bg-[#f0faf8] dark:bg-[#1a4a3f]/20 p-4">
       <div className="flex items-start gap-4 mb-4">
-        <div className="w-11 h-11 rounded-xl bg-[#e6f4f1] flex items-center justify-center flex-shrink-0">
+        <div className="w-11 h-11 rounded-xl bg-[#e6f4f1] flex items-center justify-center shrink-0">
           <svg className="w-6 h-6 text-[#1a8a76]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" />
           </svg>
@@ -671,7 +671,7 @@ export const BuyPlanModal = ({
                 : "border-gray-200 dark:border-gray-600 hover:border-gray-300 bg-white dark:bg-gray-700"
             }`}
           >
-            <div className="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <div className="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center shrink-0 mt-0.5">
               <svg className="w-6 h-6 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                 <rect x="5" y="2" width="14" height="20" rx="2" strokeLinecap="round" strokeLinejoin="round" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 7h14M5 17h14" />
@@ -682,7 +682,7 @@ export const BuyPlanModal = ({
               <p className="text-gray-500 dark:text-gray-400 text-xs mb-2">Start fresh with a brand new phone number and SIM card</p>
               <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">Instant activation | New phone number | Quick setup</p>
             </div>
-            <div className={`ml-auto w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors ${
+            <div className={`ml-auto w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
               setupChoice === "new-sim" ? "border-[#1a4a3f] bg-[#1a4a3f]" : "border-gray-300"
             }`}>
               {setupChoice === "new-sim" && <div className="w-2 h-2 rounded-full bg-white" />}
@@ -699,7 +699,7 @@ export const BuyPlanModal = ({
             }`}
           >
             <div className="flex items-start gap-4">
-              <div className="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center shrink-0 mt-0.5">
                 <svg className="w-6 h-6 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
@@ -709,7 +709,7 @@ export const BuyPlanModal = ({
                 <p className="text-gray-500 dark:text-gray-400 text-xs mb-2">Transfer your existing phone number from another carrier</p>
                 <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">Keep your number | No interruption | Easy transfer</p>
               </div>
-              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors ${
+              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
                 setupChoice === "keep-number" ? "border-[#1a4a3f] bg-[#1a4a3f]" : "border-gray-300"
               }`}>
                 {setupChoice === "keep-number" && <div className="w-2 h-2 rounded-full bg-white" />}
@@ -744,13 +744,13 @@ export const BuyPlanModal = ({
                 {mdnError && <p className="text-red-500 text-xs mt-1.5">{mdnError}</p>}
                 {mdnEligible === true && (
                   <div className="mt-3 flex items-center gap-2 bg-green-50 dark:bg-green-900/20 border border-green-200 rounded-xl px-3 py-2">
-                    <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                    <svg className="w-4 h-4 text-green-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                     <p className="text-xs font-semibold text-green-800 dark:text-green-400">Your number is eligible to port!</p>
                   </div>
                 )}
                 {mdnEligible === false && (
                   <div className="mt-3 flex items-center gap-2 bg-red-50 dark:bg-red-900/20 border border-red-200 rounded-xl px-3 py-2">
-                    <svg className="w-4 h-4 text-red-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    <svg className="w-4 h-4 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                     <p className="text-xs font-semibold text-red-700 dark:text-red-400">This number is not eligible to port. Please contact support.</p>
                   </div>
                 )}
@@ -838,7 +838,7 @@ export const BuyPlanModal = ({
               }}
               className="w-full text-left rounded-2xl border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 bg-white dark:bg-gray-700 p-4 transition-all duration-200 flex items-start gap-4"
             >
-              <div className="w-11 h-11 rounded-xl bg-[#e6f4f1] flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-11 h-11 rounded-xl bg-[#e6f4f1] flex items-center justify-center shrink-0 mt-0.5">
                 <svg className="w-6 h-6 text-[#1a8a76]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V8l-5-5H9z" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 3v5h11" />
@@ -954,7 +954,7 @@ export const BuyPlanModal = ({
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div className="relative bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-modal-in">
-        <div className="h-1.5 w-full bg-gradient-to-r from-[#1a8a76] via-[#37C4A0] to-[#1a4a3f] rounded-t-3xl" />
+        <div className="h-1.5 w-full bg-linear-to-r from-[#1a8a76] via-[#37C4A0] to-[#1a4a3f] rounded-t-3xl" />
         <button onClick={onClose} aria-label="Close" className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors z-10">
           <svg className="w-4 h-4 text-gray-500 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

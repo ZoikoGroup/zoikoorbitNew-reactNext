@@ -105,7 +105,7 @@ export default function DevicesPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <main className="flex-grow dark:bg-gray-900 dark:text-white bg-gray-100 py-8 px-4">
+      <main className="grow dark:bg-gray-900 dark:text-white bg-gray-100 py-8 px-4">
         <div className="max-w-5xl mx-auto">
 
           {/* Loading */}
@@ -141,15 +141,15 @@ export default function DevicesPage() {
                   {/* Info */}
                   <div className="text-sm text-gray-600 dark:text-gray-300 space-y-1 mb-3">
                     <p className="mb-1 flex items-center gap-2">
-                      <FaSimCard className="text-green-500 flex-shrink-0" />
+                      <FaSimCard className="text-green-500 shrink-0" />
                       <strong>SIM Type:</strong> {d.simType}
                     </p>
                     <p className="mb-1 flex items-center gap-2">
-                      <FaMobileAlt className="text-green-500 flex-shrink-0" />
+                      <FaMobileAlt className="text-green-500 shrink-0" />
                       <strong>Phone Number:</strong> {d.phoneNumber}
                     </p>
                     <p className="mb-2 flex items-center gap-2">
-                      <FaDatabase className="text-green-500 flex-shrink-0" />
+                      <FaDatabase className="text-green-500 shrink-0" />
                       <strong>Data Used:</strong> {d.dataUsed} / {d.dataTotal}
                     </p>
 

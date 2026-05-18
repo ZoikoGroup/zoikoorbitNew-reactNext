@@ -202,7 +202,7 @@ export default function BillingPaymentPage() {
   // ---------- Render ----------
   return (
     <div className="flex flex-col min-h-screen">
-      <main className="flex-grow dark:bg-gray-900 bg-gray-100 py-8 px-4">
+      <main className="grow dark:bg-gray-900 bg-gray-100 py-8 px-4">
         <div className="max-w-6xl mx-auto">
 
           {/* Loading */}

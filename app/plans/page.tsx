@@ -109,7 +109,7 @@ const visibleCards = cards.slice(pageStart, pageStart + PAGE_SIZE);
       <header className="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-teal-500 to-teal-700 flex items-center justify-center">
+            <div className="h-8 w-8 rounded-lg bg-linear-to-br from-teal-500 to-teal-700 flex items-center justify-center">
               <span className="text-white font-bold text-sm">Z</span>
             </div>
             <span className="font-bold text-lg tracking-tight">

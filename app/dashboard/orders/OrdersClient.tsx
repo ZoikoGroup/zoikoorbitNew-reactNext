@@ -85,7 +85,7 @@ export default function OrdersPage() {
   // ---------- Render ----------
   return (
     <div className="flex flex-col min-h-screen">
-      <main className="flex-grow dark:bg-gray-900 dark:text-white bg-gray-100 py-8 px-4">
+      <main className="grow dark:bg-gray-900 dark:text-white bg-gray-100 py-8 px-4">
         <div className="max-w-6xl mx-auto">
 
           {/* Title */}
@@ -176,7 +176,7 @@ export default function OrdersPage() {
                     {order.date || order.created_at || "-"}
                   </small>
 
-                  <p className="text-gray-500 flex-grow mb-3">
+                  <p className="text-gray-500 grow mb-3">
                     {order.description || "Plan Purchase"}
                   </p>
 
