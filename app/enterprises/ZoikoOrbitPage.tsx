@@ -333,7 +333,7 @@ const ZoikoOrbitPage = () => {
   {/* Top Banner Image */}
   <div className="relative w-full h-[320px] md:h-[420px]">
     <Image
-      src="/image/test.jpg"
+      src="/image/Rectangle 19.png"
       alt="travel"
       fill
       className="object-cover"

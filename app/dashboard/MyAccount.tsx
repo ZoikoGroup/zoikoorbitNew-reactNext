@@ -59,7 +59,6 @@ interface Order {
   amount?: string | number;
   total?: string | number;
 }
-
 interface NewCard {
   card_number: string;
   card_holder_name: string;

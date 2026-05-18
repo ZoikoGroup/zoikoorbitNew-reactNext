@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-
+/* dhddhash */
 const responsibilityCards = [
   {
     id: 1,
@@ -88,6 +88,7 @@ export default function CorporateResponsibility() {
             carbon awareness, and community engagement into every
             layer of our operations.
           </p>
+          
 
                   <p>
                     Our infrastructure runs on energy-efficient provisioning
