@@ -33,10 +33,18 @@ export default function footer() {
         <div>
           <h3 className="font-semibold mb-4">Explore</h3>
           <ul className="space-y-2 text-gray-200 text-sm">
-            <li>Coverage</li>
-            <li>Plans</li>
-            <li>Ecosystem</li>
-            <li>About Us</li>
+            <li><a href="/coverage" className="hover:underline">
+              Coverage
+            </a></li>
+            <li><a href="/plans" className="hover:underline">
+              Plans
+            </a></li>
+            <li><a href="/travel-ecosystem-partner" className="hover:underline">
+              Ecosystem
+            </a></li>
+            <li><a href="/about-us" className="hover:underline">
+              About Us
+            </a></li>
           </ul>
         </div>
 
