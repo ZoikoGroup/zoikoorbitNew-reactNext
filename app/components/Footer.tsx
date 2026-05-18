@@ -17,8 +17,8 @@ export default function footer() {
             <Image
               src="/image/Rectangle 14.png"
               alt="Zoiko Orbit"
-              width={120}
-              height={50}
+              width={110}
+              height={40}
             />
           </div>
 
@@ -72,7 +72,13 @@ export default function footer() {
           </ul>
         </div>
 
-        {/* Business */}
+        
+      </div>
+
+      {/* MIDDLE SECTION */}
+      <div className="border-t border-white/20">
+        <div className="max-w-7xl mx-auto px-6 py-10 grid md:grid-cols-4 gap-10">
+          {/* Business */}
         <div>
           <h3 className="font-semibold mb-4">For Business</h3>
           <ul className="space-y-2 text-gray-200 text-sm">
@@ -82,12 +88,6 @@ export default function footer() {
             <li>API Integrations</li>
           </ul>
         </div>
-      </div>
-
-      {/* MIDDLE SECTION */}
-      <div className="border-t border-white/20">
-        <div className="max-w-7xl mx-auto px-6 py-10 grid md:grid-cols-3 gap-10">
-          
           {/* Corporate */}
           <div>
             <h3 className="font-semibold mb-4">Corporate & Responsibility</h3>

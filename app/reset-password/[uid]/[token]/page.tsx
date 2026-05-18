@@ -64,7 +64,7 @@ export default function ResetPasswordPage({ params }: PageProps) {
     <div className="flex flex-col min-h-screen">
         {/* extra header removed */}
 
-      <main className="flex-grow flex items-center justify-center bg-gray-100 py-8 px-4">
+      <main className="grow flex items-center justify-center bg-gray-100 py-8 px-4">
         <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
           <h2 className="text-2xl font-bold mb-6 text-center">
             Reset Password

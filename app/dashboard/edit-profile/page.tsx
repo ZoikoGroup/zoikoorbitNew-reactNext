@@ -135,7 +135,7 @@ export default function EditProfilePage() {
   if (!token) {
     return (
       <div className="flex flex-col min-h-screen">
-        <main className="flex-grow dark:bg-gray-900 dark:text-white bg-gray-100 py-8 px-4">
+        <main className="grow dark:bg-gray-900 dark:text-white bg-gray-100 py-8 px-4">
           <div className="max-w-5xl mx-auto">
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
               You are not logged in. Please log in first.
@@ -148,7 +148,7 @@ export default function EditProfilePage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <main className="flex-grow dark:bg-gray-900 dark:text-white bg-gray-100 py-8 px-4">
+      <main className="grow dark:bg-gray-900 dark:text-white bg-gray-100 py-8 px-4">
         <div className="max-w-5xl mx-auto">
 
           {/* Page Header */}

@@ -206,7 +206,7 @@ function HeroSection() {
             >
               {/* Teal icon container */}
               <div
-                className="flex-shrink-0 flex items-center justify-center rounded-xl"
+                className="shrink-0 flex items-center justify-center rounded-xl"
                 style={{
                   width: 42,
                   height: 42,
@@ -349,7 +349,7 @@ function EmpoweringSection() {
               className="w-full h-full object-cover"
             />
             {/* Quote overlay */}
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-5">
+            <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent p-5">
               <p className="text-white text-xs leading-relaxed italic mb-3">
                 "At Zoiko Orbit™, we empower people and businesses with seamless, secure global
                 connectivity. Our mission is to deliver smart, scalable eSIM solutions that enhance
@@ -430,7 +430,7 @@ function EcosystemPartners() {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 {/* Dark overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/20 to-transparent" />
                 <p className="absolute bottom-3 left-4 text-white font-bold text-base">
                   {partner.title}
                 </p>
@@ -569,7 +569,7 @@ function CustomerFeedback() {
               className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all"
             >
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-teal-100 text-teal-700 font-bold flex items-center justify-center text-sm flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-teal-100 text-teal-700 font-bold flex items-center justify-center text-sm shrink-0">
                   {r.name[0]}
                 </div>
                 <div className="flex-1">
