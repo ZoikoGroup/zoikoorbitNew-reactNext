@@ -168,7 +168,7 @@ export default function Header() {
             </button>
 
             {orbitOpen && (
-              <div className="absolute right-0 mt-2 bg-sky-frost text-black rounded-lg shadow-lg w-48 py-2">
+              <div className="absolute right-0 mt-2 bg-skyfrost text-black rounded-lg shadow-lg w-48 py-2">
 
                 {isLoggedIn ? (
                   <>
