@@ -196,7 +196,11 @@ function buildOrderItem(item: CartItemInput, startDate: string) {
           addedBucket: [
             {
               zone,
-              type: "current",
+              // Orange API rejects "current" with: "Bad API format : Bucket /
+              // type must be recurring". The original handover doc and the
+              // legacy WP plugin both used "current" but Orange has tightened
+              // validation — only "recurring" is accepted now.
+              type: "recurring",
               volume,
               endDate,
             },
@@ -258,6 +262,82 @@ export async function POST(req: Request) {
     });
   }
 
+  // ── Mode switch ──────────────────────────────────────────────────────────
+  //
+  //   MALIMA_MODE=mock        → return fake successes without calling Orange.
+  //                             For local dev / UI testing / CI.
+  //   MALIMA_MODE=sandbox     → call ORANGE_CREATE_ORDER_URL with sandbox
+  //                             credentials. URLs and credentials come from
+  //                             ORANGE_CLIENT_ID/SECRET/AUTH_URL/CREATE_ORDER_URL
+  //                             — set them to the sandbox values your Orange
+  //                             account team provides.
+  //   MALIMA_MODE=production  → same path as sandbox, with production creds.
+  //   (unset)                 → defaults to "production" behaviour.
+  //
+  // Sandbox and production are wire-compatible — the difference is just which
+  // URLs/credentials you point the env vars at. Only mock mode behaves
+  // differently in code, because it never reaches the network.
+
+  const mode = (process.env.MALIMA_MODE || "production").toLowerCase();
+
+  const tasks = eligible.flatMap(({ item, cartIndex }) => {
+    const qty = Math.max(1, Number(item.qty) || 1);
+    return Array.from({ length: qty }, (_, unitIndex) => ({
+      cartIndex,
+      unitIndex,
+      item,
+    }));
+  });
+
+  if (mode === "mock") {
+    const results: MalimaResult[] = tasks.map(({ item, cartIndex }, i) => {
+      const requestBody = {
+        id: "",
+        orderItem: [buildOrderItem(item, startDate)],
+      };
+      const fakeId = `MOCK-${Date.now()}-${i}`;
+      return {
+        cartIndex,
+        planId: item.planId ?? item.bqPlanID ?? null,
+        simType: item.simType ?? null,
+        status: 201,
+        ok: true,
+        request: requestBody,
+        response: {
+          id: fakeId,
+          status: "acknowledged",
+          mock: true,
+          orderItem: [
+            {
+              id: `${fakeId}-item`,
+              status: "acknowledged",
+              product: {
+                reliesOnProduct: {
+                  msisdn: item.msisdn || "",
+                  imsi: item.imsi || "",
+                  iccid: item.iccid || "",
+                },
+              },
+            },
+          ],
+        },
+        orangeOrderId: fakeId,
+        msisdn: item.msisdn ?? null,
+        imsi: item.imsi ?? null,
+        iccid: item.iccid ?? null,
+      };
+    });
+
+    return NextResponse.json({
+      status: true,
+      message: `Mock mode — ${results.length} order(s) generated locally, Orange not contacted.`,
+      mode: "mock",
+      results,
+    });
+  }
+
+  // ── Real call (sandbox or production) ────────────────────────────────────
+
   let token: string;
   try {
     token = await getOrangeAccessToken();
@@ -275,17 +355,6 @@ export async function POST(req: Request) {
     Authorization: `Bearer ${token}`,
     Accept: "application/json",
   };
-
-  // Fire all create-order calls in parallel — Orange supports this and the WP
-  // plugin uses Requests::request_multiple for the same reason.
-  const tasks = eligible.flatMap(({ item, cartIndex }) => {
-    const qty = Math.max(1, Number(item.qty) || 1);
-    return Array.from({ length: qty }, (_, unitIndex) => ({
-      cartIndex,
-      unitIndex,
-      item,
-    }));
-  });
 
   const results: MalimaResult[] = await Promise.all(
     tasks.map(async ({ item, cartIndex }) => {

@@ -496,8 +496,15 @@ export default function CheckoutPage() {
   // ── Derived helpers ───────────────────────────────────────────────────────
 
   /**
-   * Physical SIM items require shipping.
+   * Physical SIM items require shipping (carrier needs to mail a SIM card).
    * Triggered by:  simType === "pSIM"  OR  type === "device"
+   *
+   * NOTE: This flag now ONLY controls whether the shipping-option selector
+   * (Standard / Expedited / Overnight) and shipping fee appear. The billing
+   * address itself is ALWAYS captured, regardless of SIM type — we need
+   * Name / Email / Phone / Address for both Stripe AVS checks and for
+   * provisioning the line with the carrier (eSIM activations also require
+   * a billable contact on file).
    */
   const hasShippingItem = cart.some(
     (item) => item.simType.toLowerCase() === "psim" || item.type === "device"
@@ -658,26 +665,32 @@ export default function CheckoutPage() {
     const newErrors: FormErrors = {};
     const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRx = /^[0-9]{7,15}$/;
-    if (hasShippingItem) {
-      newErrors.billingFirstName = billingAddress.firstName ? "" : "Required";
-      newErrors.billingLastName = billingAddress.lastName ? "" : "Required";
-      newErrors.billingState = billingAddress.state ? "" : "Required";
-      newErrors.billingCity = billingAddress.city ? "" : "Required";
-      newErrors.billingHouseNumber = billingAddress.houseNumber ? "" : "Required";
-      newErrors.billingZip = billingAddress.zip ? "" : "Required";
-      newErrors.billingEmail = emailRx.test(billingAddress.email) ? "" : "Invalid email";
-      newErrors.billingPhone = phoneRx.test(billingAddress.phone) ? "" : "Invalid phone";
-    }
-    if (showShipping) {
-      newErrors.shippingFirstName = shippingAddress.firstName ? "" : "Required";
-      newErrors.shippingLastName = shippingAddress.lastName ? "" : "Required";
-      newErrors.shippingState = shippingAddress.state ? "" : "Required";
-      newErrors.shippingCity = shippingAddress.city ? "" : "Required";
+
+    // Billing address is ALWAYS required — we need it for payment
+    // (Stripe AVS), order receipts, and carrier provisioning. This
+    // applies whether the cart has eSIMs, pSIMs, or both.
+    newErrors.billingFirstName   = billingAddress.firstName ? "" : "Required";
+    newErrors.billingLastName    = billingAddress.lastName ? "" : "Required";
+    newErrors.billingState       = billingAddress.state ? "" : "Required";
+    newErrors.billingCity        = billingAddress.city ? "" : "Required";
+    newErrors.billingHouseNumber = billingAddress.houseNumber ? "" : "Required";
+    newErrors.billingZip         = billingAddress.zip ? "" : "Required";
+    newErrors.billingEmail       = emailRx.test(billingAddress.email) ? "" : "Invalid email";
+    newErrors.billingPhone       = phoneRx.test(billingAddress.phone) ? "" : "Invalid phone";
+
+    // Shipping address only required if user opted to ship to a different
+    // address AND the cart contains a physical SIM that actually ships.
+    if (showShipping && hasShippingItem) {
+      newErrors.shippingFirstName   = shippingAddress.firstName ? "" : "Required";
+      newErrors.shippingLastName    = shippingAddress.lastName ? "" : "Required";
+      newErrors.shippingState       = shippingAddress.state ? "" : "Required";
+      newErrors.shippingCity        = shippingAddress.city ? "" : "Required";
       newErrors.shippingHouseNumber = shippingAddress.houseNumber ? "" : "Required";
-      newErrors.shippingZip = shippingAddress.zip ? "" : "Required";
-      newErrors.shippingEmail = emailRx.test(shippingAddress.email) ? "" : "Invalid email";
-      newErrors.shippingPhone = phoneRx.test(shippingAddress.phone) ? "" : "Invalid phone";
+      newErrors.shippingZip         = shippingAddress.zip ? "" : "Required";
+      newErrors.shippingEmail       = emailRx.test(shippingAddress.email) ? "" : "Invalid email";
+      newErrors.shippingPhone       = phoneRx.test(shippingAddress.phone) ? "" : "Invalid phone";
     }
+
     setErrors(newErrors);
     return !Object.values(newErrors).some((e) => e.length > 0);
   };
@@ -730,7 +743,10 @@ export default function CheckoutPage() {
     const products = buildProducts();
     const orderContext = {
       billingAddress,
-      shippingAddress: showShipping ? shippingAddress : billingAddress,
+      // If the user didn't tick "ship to a different address", reuse billing.
+      // For eSIM-only carts we still send the billing address as the shipping
+      // address so downstream services have a single canonical contact.
+      shippingAddress: showShipping && hasShippingItem ? shippingAddress : billingAddress,
       shippingOption: hasShippingItem ? { ...selectedShippingOption } : null,
       coupon: discountData ? { ...discountData } : null,
       cart: products,
@@ -1010,10 +1026,16 @@ export default function CheckoutPage() {
               )}
             </div>
 
-            {/* Billing Address — only when cart has a physical SIM */}
-            {hasShippingItem && (
+            {/* Billing Address — ALWAYS shown (required for every order, eSIM or pSIM) */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <h2 className="font-bold text-gray-900 mb-5">Service / Billing Details</h2>
+              <h2 className="font-bold text-gray-900 mb-1">
+                {hasShippingItem ? "Service / Billing Details" : "Billing Details"}
+              </h2>
+              <p className="text-xs text-gray-500 mb-5">
+                {hasShippingItem
+                  ? "We'll use this for your payment and to ship your SIM card."
+                  : "We'll use this for your payment and to send your eSIM activation details."}
+              </p>
               <AddressForm
                 address={billingAddress}
                 setAddress={setBillingAddress}
@@ -1022,33 +1044,37 @@ export default function CheckoutPage() {
                 loading={loading}
               />
 
-              <label className="flex items-center gap-2.5 mt-5 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={showShipping}
-                  onChange={(e) => setShowShipping(e.target.checked)}
-                  disabled={loading}
-                  className="w-4 h-4 accent-red-500"
-                />
-                <span className="text-sm text-gray-700">Ship to a different address?</span>
-              </label>
+              {/* "Ship to different address" only meaningful when there's a physical SIM to ship */}
+              {hasShippingItem && (
+                <>
+                  <label className="flex items-center gap-2.5 mt-5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={showShipping}
+                      onChange={(e) => setShowShipping(e.target.checked)}
+                      disabled={loading}
+                      className="w-4 h-4 accent-red-500"
+                    />
+                    <span className="text-sm text-gray-700">Ship to a different address?</span>
+                  </label>
 
-              {showShipping && (
-                <div className="mt-5 pt-5 border-t border-gray-100">
-                  <h3 className="font-semibold text-gray-800 mb-4">Shipping Address</h3>
-                  <AddressForm
-                    address={shippingAddress}
-                    setAddress={setShippingAddress}
-                    prefix="shipping"
-                    errors={errors}
-                    loading={loading}
-                    includeShipping
-                  />
-                </div>
+                  {showShipping && (
+                    <div className="mt-5 pt-5 border-t border-gray-100">
+                      <h3 className="font-semibold text-gray-800 mb-4">Shipping Address</h3>
+                      <AddressForm
+                        address={shippingAddress}
+                        setAddress={setShippingAddress}
+                        prefix="shipping"
+                        errors={errors}
+                        loading={loading}
+                        includeShipping
+                      />
+                    </div>
+                  )}
+                </>
               )}
             </div>
-             )}
-</div>
+          </div>
           {/* ── Right Column ── */}
           <div className="w-full lg:w-96 space-y-6">
 
