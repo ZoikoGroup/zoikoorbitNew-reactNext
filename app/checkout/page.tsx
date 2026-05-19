@@ -756,7 +756,12 @@ export default function CheckoutPage() {
       createdAt: new Date().toISOString(),
     };
 
-    const result = await processOrderMalima(products as unknown[], orderContext);
+    // Pass the RAW cart to processOrderMalima, not buildProducts() output.
+    // toMalimaCart needs access to durationDays / dataVolume / roamingZone /
+    // _raw / formData — buildProducts strips those down to a billing summary.
+    // (The lightweight `products` is still sent in `orderContext.cart` so
+    // Django saves what the customer actually checked out with.)
+    const result = await processOrderMalima(cart as unknown[], orderContext);
     console.log("✅ Malima pipeline result:", result);
 
     if (!result.status) {
