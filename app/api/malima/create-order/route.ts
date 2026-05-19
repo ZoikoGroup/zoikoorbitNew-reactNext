@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { randomUUID } from "crypto";
 
 /**
  * Malima / Orange IoT — Create Product Order
@@ -8,11 +9,23 @@ import { NextResponse } from "next/server";
  *   1. Obtains an OAuth2 Bearer token from Orange (client_credentials grant)
  *      and caches it in memory until expiry (-60s safety buffer).
  *   2. Builds a `productOrders` payload (`action: "add"`) per cart item,
- *      mirroring the spec from the handover doc (API 1.1) and the existing
- *      WordPress plugin's `build_orderItem_node`.
+ *      mirroring the WordPress plugin's `build_orderItem_node` (which is the
+ *      only version we know Orange historically accepts) — with two
+ *      modernisations forced by Orange's tightened validation:
+ *         a) addedBucket.type = "recurring"  (was "current")
+ *         b) addedBucket.nextReset = endDate (was "")
  *   3. POSTs one request per SIM to
  *      https://api.orange.com/iot-wholesale-data-supervision/v1/productOrders/
  *   4. Returns an aggregated response with one entry per cart item.
+ *
+ * Volume convention
+ * -----------------
+ * The WP plugin sends `addedBucket.volume` as a string of **megabytes**
+ *   ("2000" means 2 GB, "500" means 500 MB)
+ * — see `class-malima-api-client.php::build_orange_item` line ~1328:
+ *   `$data_volume = $value * 1000;  // convert GB → MB`
+ * The caller (`utils/malimaOrangeApi.ts::toMalimaCart`) is now responsible
+ * for normalising to MB. This route forwards the value as-is.
  *
  * Why server-side: the Bearer token must NEVER reach the browser.
  * `ORANGE_CLIENT_ID` and `ORANGE_CLIENT_SECRET` are server-only env vars.
@@ -23,6 +36,7 @@ import { NextResponse } from "next/server";
  *   ORANGE_AUTH_URL          — defaults to https://api.orange.com/oauth/v3/token
  *   ORANGE_CREATE_ORDER_URL  — defaults to
  *     https://api.orange.com/iot-wholesale-data-supervision/v1/productOrders/
+ *   MALIMA_MODE              — "mock" | "sandbox" | "production" (default)
  */
 
 export const dynamic = "force-dynamic";
@@ -39,13 +53,11 @@ interface CartItemInput {
   simType?: string | null;           // "eSIM" | "pSIM" | other
   /** Plan duration in days. Either a number or a string like "30 Days". */
   durationDays?: number | string | null;
-  /** Data allowance in MB. The handover doc uses "0.2" (GB-as-string for fairUseVolume CO);
-   *  the WP plugin normalises GB→MB. We accept either and forward as a string. */
+  /** Data allowance in **MB** (string). Aligned with the WP plugin. */
   dataVolume?: number | string | null;
   /** Roaming zone, e.g. "Europe", "France". */
   roamingZone?: string | null;
-  /** SIM identifiers — required by Orange. If your SIM inventory lives elsewhere
-   *  (e.g. Django), populate these before calling this route. */
+  /** SIM identifiers — required by Orange. */
   msisdn?: string | null;
   imsi?: string | null;
   iccid?: string | null;
@@ -84,7 +96,6 @@ interface CachedToken {
 let _cachedToken: CachedToken | null = null;
 
 async function getOrangeAccessToken(): Promise<string> {
-  // Reuse if still valid (60s safety buffer)
   if (_cachedToken && _cachedToken.expiresAt > Date.now() + 60_000) {
     return _cachedToken.accessToken;
   }
@@ -100,9 +111,7 @@ async function getOrangeAccessToken(): Promise<string> {
     );
   }
 
-  // Orange supports either Basic-auth + grant_type, or form-encoded credentials.
-  // The WP plugin uses form-encoded body — match it for consistency.
-  const body = new URLSearchParams({
+  const params = new URLSearchParams({
     grant_type: "client_credentials",
     client_id: clientId,
     client_secret: clientSecret,
@@ -110,39 +119,32 @@ async function getOrangeAccessToken(): Promise<string> {
 
   const res = await fetch(authUrl, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Accept: "application/json",
-    },
-    body: body.toString(),
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: params.toString(),
   });
-
-  const text = await res.text();
-  let data: { access_token?: string; expires_in?: number; error?: string };
-  try {
-    data = JSON.parse(text);
-  } catch {
-    throw new Error(`Orange OAuth2 returned non-JSON (${res.status}): ${text.slice(0, 200)}`);
-  }
-
-  if (!res.ok || !data.access_token) {
+  const json = (await res.json().catch(() => ({}))) as {
+    access_token?: string;
+    expires_in?: number;
+    error_description?: string;
+    error?: string;
+  };
+  if (!res.ok || !json.access_token) {
     throw new Error(
-      `Orange OAuth2 failed (${res.status}): ${data.error || text.slice(0, 200)}`
+      `Orange auth failed (${res.status}): ${json.error_description || json.error || "unknown"}`
     );
   }
 
-  const expiresInMs = (Number(data.expires_in) || 3600) * 1000;
   _cachedToken = {
-    accessToken: data.access_token,
-    expiresAt: Date.now() + expiresInMs,
+    accessToken: json.access_token,
+    expiresAt: Date.now() + (json.expires_in ?? 3600) * 1000,
   };
-  return data.access_token;
+  return _cachedToken.accessToken;
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 function todayISO(): string {
-  return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  return new Date().toISOString().slice(0, 10);
 }
 
 function addDaysISO(startISO: string, days: number): string {
@@ -160,22 +162,54 @@ function parseDurationDays(raw: unknown): number {
 }
 
 /**
- * Build a single orderItem node — matches API 1.1 spec exactly.
- * Mirrors the WP plugin's `build_orderItem_node`.
+ * Normalise volume to a string of **megabytes**. Matches the WP plugin.
+ *
+ *   - Numbers and numeric strings are assumed to be MB already (caller's job).
+ *   - Strings like "2GB", "500MB", "2 GB", "1gb" are normalised here as a
+ *     belt-and-braces safety net in case a caller forgets to normalise.
+ *   - Default fallback is "200" (200 MB ≈ 0.2 GB, matching the old default).
+ */
+function normaliseVolumeMB(raw: unknown): string {
+  if (raw == null || raw === "") return "200";
+  // Pure number or numeric string → trust it's MB.
+  if (typeof raw === "number" && Number.isFinite(raw)) {
+    return String(Math.max(0, Math.round(raw)));
+  }
+  const s = String(raw).trim();
+  // Numeric-only string ("2000", "500", "0.2") — convert GB-decimal to MB if < 50.
+  // Anything below 50 is implausible as MB for a plan; assume GB.
+  if (/^\d+(\.\d+)?$/.test(s)) {
+    const n = parseFloat(s);
+    if (!Number.isFinite(n) || n <= 0) return "200";
+    if (n < 50) return String(Math.round(n * 1000));   // GB → MB
+    return String(Math.round(n));                       // already MB
+  }
+  const m = s.toUpperCase().replace(/\s+/g, "").match(/^(\d+(?:\.\d+)?)(GB|MB|G|M)?$/);
+  if (m) {
+    const val = parseFloat(m[1]);
+    const unit = (m[2] || "GB").toUpperCase();
+    if (unit.startsWith("M")) return String(Math.round(val));
+    return String(Math.round(val * 1000));
+  }
+  return "200";
+}
+
+/**
+ * Build a single orderItem node — mirrors the WP plugin's
+ * `build_orderItem_node`, with two modernisations:
+ *   • `addedBucket.type = "recurring"`  (Orange rejected "current")
+ *   • `addedBucket.nextReset = endDate` (required for recurring buckets)
  */
 function buildOrderItem(item: CartItemInput, startDate: string) {
   const durationDays = parseDurationDays(item.durationDays);
   const endDate = addDaysISO(startDate, durationDays);
   const zone = item.roamingZone || "Europe";
-  // Volume is forwarded as a string — Orange accepts both GB-as-decimal ("0.2")
-  // and integer MB ("2048") depending on the offer. We do not coerce units.
-  const volume =
-    item.dataVolume == null || item.dataVolume === ""
-      ? "0.2"
-      : String(item.dataVolume);
+  const volumeMB = normaliseVolumeMB(item.dataVolume);
 
   return {
-    id: "",
+    // Client-supplied idempotency key per item. Orange isn't strict about it
+    // today, but having one makes retries safe and order tracing easier.
+    id: randomUUID(),
     action: "add",
     offerCode: "",
     status: "no offer",
@@ -191,17 +225,19 @@ function buildOrderItem(item: CartItemInput, startDate: string) {
         data: {
           frequency: String(durationDays),
           frequencyUnit: "Day",
-          nextReset: "",
+          // "recurring" buckets must have a reset date. For a single-period
+          // plan that's the same as the bucket's endDate.
+          nextReset: endDate,
           fairUseVolume: "CO",
           addedBucket: [
             {
               zone,
-              // Orange API rejects "current" with: "Bad API format : Bucket /
-              // type must be recurring". The original handover doc and the
-              // legacy WP plugin both used "current" but Orange has tightened
+              // Orange API rejects "current" with:
+              //   "Bad API format : Bucket / type must be recurring"
+              // The original WP plugin used "current" but Orange has tightened
               // validation — only "recurring" is accepted now.
               type: "recurring",
-              volume,
+              volume: volumeMB,
               endDate,
             },
           ],
@@ -245,7 +281,6 @@ export async function POST(req: Request) {
     "https://api.orange.com/iot-wholesale-data-supervision/v1/productOrders/";
 
   // Only SIM products go to Orange — skip topups, device protection, etc.
-  // Same gate the WP plugin uses (only esim/psim).
   const eligible = cart
     .map((item, cartIndex) => ({ item, cartIndex }))
     .filter(({ item }) => {
@@ -254,29 +289,12 @@ export async function POST(req: Request) {
     });
 
   if (eligible.length === 0) {
-    // Not an error — just nothing to do for Orange.
     return NextResponse.json({
       status: true,
       message: "No eSIM/pSIM items in cart — Malima/Orange skipped.",
       results: [],
     });
   }
-
-  // ── Mode switch ──────────────────────────────────────────────────────────
-  //
-  //   MALIMA_MODE=mock        → return fake successes without calling Orange.
-  //                             For local dev / UI testing / CI.
-  //   MALIMA_MODE=sandbox     → call ORANGE_CREATE_ORDER_URL with sandbox
-  //                             credentials. URLs and credentials come from
-  //                             ORANGE_CLIENT_ID/SECRET/AUTH_URL/CREATE_ORDER_URL
-  //                             — set them to the sandbox values your Orange
-  //                             account team provides.
-  //   MALIMA_MODE=production  → same path as sandbox, with production creds.
-  //   (unset)                 → defaults to "production" behaviour.
-  //
-  // Sandbox and production are wire-compatible — the difference is just which
-  // URLs/credentials you point the env vars at. Only mock mode behaves
-  // differently in code, because it never reaches the network.
 
   const mode = (process.env.MALIMA_MODE || "production").toLowerCase();
 
@@ -292,7 +310,7 @@ export async function POST(req: Request) {
   if (mode === "mock") {
     const results: MalimaResult[] = tasks.map(({ item, cartIndex }, i) => {
       const requestBody = {
-        id: "",
+        id: randomUUID(),
         orderItem: [buildOrderItem(item, startDate)],
       };
       const fakeId = `MOCK-${Date.now()}-${i}`;
@@ -359,7 +377,7 @@ export async function POST(req: Request) {
   const results: MalimaResult[] = await Promise.all(
     tasks.map(async ({ item, cartIndex }) => {
       const requestBody = {
-        id: "",
+        id: randomUUID(),
         orderItem: [buildOrderItem(item, startDate)],
       };
 
@@ -427,9 +445,6 @@ export async function POST(req: Request) {
         : "All Malima/Orange orders created.",
       results,
     },
-    // We still return 200 even on partial failure so the client can inspect
-    // each result and decide what to do per item; the `status` flag is the
-    // boolean the checkout flow checks.
     { status: 200 }
   );
 }
