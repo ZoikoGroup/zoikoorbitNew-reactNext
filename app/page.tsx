@@ -483,7 +483,7 @@ function ExperienceBanner() {
     <section className="relative overflow-hidden">
       <div className="w-full h-80 md:h-96 relative">
         <img
-          src="/image/banner-cityview.webp"
+          src="/image/Rectangle 19 (2).png"
           alt="Travel banner"
           className="w-full h-full object-cover"
         />

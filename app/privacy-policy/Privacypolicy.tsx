@@ -14,7 +14,7 @@ export default function PrivacyPolicy() {
             alt="Privacy Shield"
             fill
             priority
-            className="object-cover object-center"
+            className="object-cover object-center"  
           />
           {/* Dark Overlay */}
           <div className="absolute inset-0 bg-[#0f1b2d]/60" />

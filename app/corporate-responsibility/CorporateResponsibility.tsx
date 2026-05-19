@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-
+/* dhddhash */
 const responsibilityCards = [
   {
     id: 1,
