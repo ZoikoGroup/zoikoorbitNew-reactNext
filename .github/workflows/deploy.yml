@@ -20,9 +20,18 @@ jobs:
           ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
           "git config --global --add safe.directory /var/www/html/zoikoorbitNew-reactNext && \
           cd /var/www/html/zoikoorbitNew-reactNext && \
-          git checkout -- package.json package-lock.json && \
+
           git pull origin main && \
+
+          rm -rf node_modules .next package-lock.json && \
+          npm cache clean --force && \
+
           npm install && \
+
+          npm install @tailwindcss/oxide-linux-x64-gnu --save-dev && \
+          npm install lightningcss-linux-x64-gnu --save-dev && \
+
           npm run build && \
+
           pm2 restart zoikoorbit-reactNext && \
           pm2 save"
