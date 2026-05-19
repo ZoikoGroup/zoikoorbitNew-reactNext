@@ -108,26 +108,58 @@ export function toMalimaCart(items: unknown[]): MalimaCartItem[] {
 
     const formData = (item.formData ?? {}) as Record<string, unknown>;
     const rawNested = (item._raw ?? {}) as Record<string, unknown>;
+    const planTitle =
+      (item.planTitle as string | null) ??
+      (item.planName as string | null) ??
+      "";
 
+    // Try every place a duration could live, including the new `duration`
+    // field your cart uses ("8 Days" as a string).
     const durationDays =
       item.durationDays ??
+      item.duration ??              // ← "8 Days" style
       item.planDuration ??
       rawNested.durationDays ??
       null;
 
-    const dataVolume =
+    // Data volume: explicit fields first, then try to extract from the plan
+    // title. "Orbit Explore — 2GB • Europe & UK • 8 days" → "2" (GB).
+    let dataVolume: unknown =
       item.dataVolume ??
       item.data_volume ??
       rawNested.dataVolume ??
       null;
+    if (dataVolume == null && planTitle) {
+      // Match "2GB", "500MB", "2 GB" (case-insensitive). Capture number + unit.
+      const m = planTitle.match(/(\d+(?:\.\d+)?)\s*(GB|MB|G|M)\b/i);
+      if (m) {
+        const num = parseFloat(m[1]);
+        const unit = m[2].toUpperCase();
+        // Orange's `addedBucket.volume` is a string. The legacy WP plugin
+        // passes GB-as-decimal like "0.2" or "2". MB users prefer integer
+        // MB. We send GB-decimal because the doc examples use that style.
+        dataVolume = (unit.startsWith("M") ? num / 1024 : num).toString();
+      }
+    }
 
-    const roamingZone =
+    // Roaming zone: explicit fields first, then try a few well-known zone
+    // names in the plan title.
+    let roamingZone: unknown =
       item.roamingZone ??
       item.roaming_zone ??
       rawNested.roamingZone ??
       null;
+    if (roamingZone == null && planTitle) {
+      const lower = planTitle.toLowerCase();
+      const zones = ["Europe", "UK", "USA", "World", "France", "Spain"];
+      const found = zones.find((z) => lower.includes(z.toLowerCase()));
+      if (found) roamingZone = found;
+    }
 
-    const qty = Math.max(1, Number(formData.priceQty ?? item.qty ?? 1) || 1);
+    const qty = Math.max(
+      1,
+      Number(item.quantity ?? formData.priceQty ?? item.qty ?? 1) || 1,
+    );
 
     for (let unitIndex = 0; unitIndex < qty; unitIndex++) {
       out.push({

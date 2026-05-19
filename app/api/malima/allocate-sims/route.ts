@@ -47,23 +47,20 @@ export async function POST(req: Request) {
     );
   }
 
-  const base =
-    process.env.DJANGO_API_BASE_URL ||
-    process.env.NEXT_PUBLIC_API_BASE_URL ||
-    "";
+  const base = process.env.NEXT_PUBLIC_API_BASE_URL;
+
   if (!base) {
     return NextResponse.json(
       {
         success: false,
         message:
-          "DJANGO_API_BASE_URL (or NEXT_PUBLIC_API_BASE_URL) is not configured.",
+          "BACKEND_API_BASE_URL is not configured.",
       },
       { status: 500 }
     );
   }
 
-  const path =
-    process.env.DJANGO_ALLOCATE_SIMS_PATH || "/api/v1/malima/allocate-sims/";
+  const path = process.env.NEXT_PUBLIC_API_BASE_URL + "/api/v1/malima/allocate-sims/";
   const url = base.replace(/\/$/, "") + path;
 
   const headers: Record<string, string> = {
@@ -75,7 +72,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const res = await fetch(url, {
+    const res = await fetch(path, {
       method: "POST",
       headers,
       body: JSON.stringify({
