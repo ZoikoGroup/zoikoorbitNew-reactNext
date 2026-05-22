@@ -38,7 +38,7 @@ export default function Aboutus() {
           <div>
             <h2 className="text-3xl font-bold mb-4 text-zinc-900  dark:text-white dark:bg-gray-900">Who We Are</h2>
             <p className="text-gray-800 leading-relaxed  dark:text-white dark:bg-gray-900">
-              Zoiko Orbit™ is the premier global travel connectivity platform under Zoiko Communications Group Inc., part of the dynamic Zoiko Group — a diversified multinational enterprise spanning telecommunications, fintech, healthcare, technology, and consumer brands.
+              Zoiko Orbit™ is the premier global ravel connectivity platform under Zoiko Communications Group Inc., part of the dynamic Zoiko Group — a diversified multinational enterprise spanning telecommunications, fintech, healthcare, technology, and consumer brands.
             </p >
 
 
