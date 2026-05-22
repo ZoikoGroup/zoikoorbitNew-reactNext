@@ -188,7 +188,7 @@ export default function RegisterPage() {
         <div className="hidden md:flex justify-end">
           <div className="relative w-[420px] h-[560px]">
             <Image
-              src="/images/register-bg.webp"
+              src="/image/Group-1597883272.webp"
               alt="Register"
               fill
               className="object-cover"
