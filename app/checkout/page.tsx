@@ -794,7 +794,7 @@ export default function CheckoutPage() {
         </div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
         <p className="text-gray-500 mb-8">Looks like you haven't added anything yet.</p>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-2xl">
+        {/* <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-2xl">
           {[
             { href: "/prepaid-plans",  label: "Prepaid Plans" },
             { href: "/postpaid-plans", label: "Postpaid Plans" },
@@ -809,7 +809,7 @@ export default function CheckoutPage() {
               {link.label}
             </a>
           ))}
-        </div>
+        </div> */}
       </div>
     );
   }
