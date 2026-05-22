@@ -198,7 +198,7 @@ export default function PartnerWithUs() {
               <br />
               of global connectivity.
             </h1>
-            <p className="text-sm leading-relaxed text-gray-200 mb-7">
+            <p className="text-sm leading-relaxed  text-gray-200 mb-7">
               The Zoiko Orbit Partner Network is a high-performance ecosystem
               designed for scale, trust, and mutual growth. Whether you&apos;re a
               telecom disruptor, enterprise platform, or international reseller,
@@ -213,13 +213,13 @@ export default function PartnerWithUs() {
       </div>
 
       {/* ── PARTNERSHIP PATHWAYS ── */}
-      <section className="py-16 px-6 bg-white">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-12">
+      <section className="py-16 px-6 dark:bg-gray-900 dark:text-white bg-white">
+        <h2 className="text-2xl md:text-3xl font-bold text-center dark:bg-gray-900 dark:text-white text-gray-800 mb-12">
           Partnership Pathways
         </h2>
 
         {/* Row 1 — 3 cards */}
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="max-w-5xl dark:bg-gray-900 dark:text-white mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           {partnershipPathways.slice(0, 3).map((p) => (
             <PathwayCard key={p.title} {...p} />
           ))}
@@ -228,24 +228,24 @@ export default function PartnerWithUs() {
         {/* Row 2 — 2 cards centered */}
         <div className="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
           {partnershipPathways.slice(3).map((p) => (
-            <PathwayCard key={p.title} {...p} />
+            <PathwayCard  key={p.title} {...p} />
           ))}
         </div>
       </section>
 
       {/* ── PARTNER ADVANTAGES ── */}
-      <section className="py-16 px-6 bg-[#f0f7f8]">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-12">
+      <section className="py-16 px-6 dark:bg-gray-900 dark:text-white bg-[#f0f7f8]">
+        <h2 className="text-2xl md:text-3xl font-bold text-center dark:bg-gray-900 dark:text-white text-gray-800 mb-12">
           Partner Advantages
-        </h2>
-        <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-sm p-8">
+        </h2> 
+        <div className="max-w-5xl mx-auto dark:bg-gray-900 dark:text-white bg-white rounded-2xl shadow-sm p-8">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
             {partnerAdvantages.map((adv) => (
               <div key={adv.label} className="flex flex-col items-center text-center gap-3">
                 <div className="w-16 h-16 rounded-full bg-[#0d6e7a] flex items-center justify-center shrink-0">
                   {adv.icon}
                 </div>
-                <p className="text-xs text-gray-600 leading-snug">{adv.label}</p>
+                <p className="text-xs dark:bg-gray-900 dark:text-white text-gray-600 leading-snug">{adv.label}</p>
               </div>
             ))}
           </div>
@@ -298,8 +298,8 @@ function PathwayCard({
       <div className="w-16 h-16 rounded-full bg-[#0d6e7a] flex items-center justify-center mb-4">
         {icon}
       </div>
-      <h3 className="font-bold text-gray-800 text-sm mb-2">{title}</h3>
-      <p className="text-xs text-gray-500 leading-relaxed">{desc}</p>
+      <h3 className="font-bold dark:text-white dark:bg-gray-900 text-gray-800 text-sm mb-2">{title}</h3>
+      <p className="text-xs text-gray-500 leading-relaxed dark:text-white dark:bg-gray-900 ">{desc}</p>
     </div>
   );
 }
