@@ -52,7 +52,7 @@ export default function footer() {
         <div>
           <h3 className="font-semibold mb-4">Support & Help</h3>
           <ul className="space-y-2 text-gray-200 text-sm">
-            <li>Support Center</li>
+            <li> <a href="/support">Support Center</a></li>
             <li><a href="/faqs" className="hover:underline">
               FAQs
             </a></li>
@@ -66,9 +66,9 @@ export default function footer() {
         <div>
           <h3 className="font-semibold mb-4">Legal & Privacy</h3>
           <ul className="space-y-2 text-gray-200 text-sm">
-            <li>Privacy Policy</li>
-            <li>Terms Of Service</li>
-            <li>Cookie Preferences</li>
+            <li> <a href="/privacy-policy"> Privacy Policy</a></li>
+            <li> <a href="/terms-of-service"> Terms Of Service</a></li>
+            <li><a href="/cookie-preferences">Cookie Preferences </a></li>
           </ul>
         </div>
 
@@ -82,10 +82,10 @@ export default function footer() {
         <div>
           <h3 className="font-semibold mb-4">For Business</h3>
           <ul className="space-y-2 text-gray-200 text-sm">
-            <li>Partner With Us</li>
-            <li>Travel Agencies & OTAs</li>
-            <li>Corporate Travel Solutions</li>
-            <li>API Integrations</li>
+            <li><a href="/partner-with-us">Partner With Us</a> </li>
+            <li> <a href="/travel-agencies-otas"> Travel Agencies & OTAs</a> </li>
+            <li> <a href="/corporate-travel-solutions/">Corporate Travel Solutions</a></li>
+            <li> <a href="/api-integrations">API Integrations</a></li>
           </ul>
         </div>
           {/* Corporate */}

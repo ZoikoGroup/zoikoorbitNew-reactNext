@@ -24,24 +24,41 @@ const navLinks = [
     dropdown: [
       { label: "Travelers", href: "/travelers" },
       { label: "Businesses & Enterprises", href: "/businesses-enterprises" },
-       { label: "travel Partner & Agencies", href: "/travel-partners-agencies" },
-        { label: "Our Impact", href: "/our-impact" },
+      { label: "travel Partner & Agencies", href: "/travel-partners-agencies" },
+      { label: "Our Impact", href: "/our-impact" },
     ],
   },
   { label: "Support", href: "/support" },
 ];
 
+// ── Languages with Google Translate locale codes ─────────────
+// `gt` is the lowercase 2-letter code Google Translate expects.
 const languages = [
-  { code: "EN", flag: "🇺🇸", label: "English" },
-  { code: "AR", flag: "🇸🇦", label: "Arabic" },
-  { code: "NL", flag: "🇳🇱", label: "Dutch" },
-  { code: "FR", flag: "🇫🇷", label: "French" },
-  { code: "DE", flag: "🇩🇪", label: "German" },
-  { code: "IT", flag: "🇮🇹", label: "Italian" },
-  { code: "PT", flag: "🇵🇹", label: "Portuguese" },
+  { code: "EN", gt: "en", flag: "🇺🇸", label: "English" },
+  { code: "AR", gt: "ar", flag: "🇸🇦", label: "Arabic" },
+  { code: "NL", gt: "nl", flag: "🇳🇱", label: "Dutch" },
+  { code: "FR", gt: "fr", flag: "🇫🇷", label: "French" },
+  { code: "DE", gt: "de", flag: "🇩🇪", label: "German" },
+  { code: "IT", gt: "it", flag: "🇮🇹", label: "Italian" },
+  { code: "PT", gt: "pt", flag: "🇵🇹", label: "Portuguese" },
 ];
 
 const CART_KEY = "driverx_checkout";
+
+// Tell TypeScript about the globals Google Translate adds to window.
+declare global {
+  interface Window {
+    googleTranslateElementInit?: () => void;
+    google?: {
+      translate: {
+        TranslateElement: new (
+          options: { pageLanguage: string; includedLanguages: string; autoDisplay: boolean },
+          elementId: string
+        ) => void;
+      };
+    };
+  }
+}
 
 export default function Header() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -63,11 +80,47 @@ export default function Header() {
   const headerRef = useRef<HTMLElement>(null);
   const mobileSearchRef = useRef<HTMLInputElement>(null);
 
-  // Timer to delay dropdown close so cursor can travel onto the panel
   const dropdownCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Mount flag for portal
   useEffect(() => { setMounted(true); }, []);
+
+  // ── Load Google Translate script once ──────────────────
+  useEffect(() => {
+    // Avoid double-injection on hot reload
+    if (document.getElementById("google-translate-script")) return;
+
+    window.googleTranslateElementInit = () => {
+      if (window.google?.translate) {
+        new window.google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: languages.map((l) => l.gt).join(","),
+            autoDisplay: false,
+          },
+          "google_translate_element"
+        );
+      }
+    };
+
+    const script = document.createElement("script");
+    script.id = "google-translate-script";
+    script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
+
+  // ── Language switcher — finds Google's hidden <select> and changes it ─
+  const switchLanguage = (langGtCode: string) => {
+    // Google's widget renders a <select class="goog-te-combo"> we drive programmatically.
+    const select = document.querySelector(".goog-te-combo") as HTMLSelectElement | null;
+    if (!select) {
+      // Widget hasn't initialised yet — retry shortly.
+      setTimeout(() => switchLanguage(langGtCode), 200);
+      return;
+    }
+    select.value = langGtCode;
+    select.dispatchEvent(new Event("change"));
+  };
 
   // Measure header height — re-runs when search bar or mobile menu toggles
   useEffect(() => {
@@ -122,14 +175,12 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  // Cleanup pending close-timer on unmount
   useEffect(() => {
     return () => {
       if (dropdownCloseTimer.current) clearTimeout(dropdownCloseTimer.current);
     };
   }, []);
 
-  // ── Nav dropdown handlers — open immediately, close with 150ms grace ──
   const handleDropdownOpen = (label: string) => {
     if (dropdownCloseTimer.current) {
       clearTimeout(dropdownCloseTimer.current);
@@ -155,6 +206,9 @@ export default function Header() {
 
   return (
     <>
+      {/* Hidden Google Translate widget — must be in the DOM, but we hide it visually */}
+      <div id="google_translate_element" style={{ display: "none" }} />
+
       <header
         ref={headerRef}
         className="bg-[#0b7285] text-white sticky top-0 z-50 shadow-md"
@@ -208,11 +262,6 @@ export default function Header() {
                   )}
 
                   {hasDropdown && isOpen && (
-                    /*
-                      KEY FIX: dropdown sits flush against the trigger (top-full).
-                      Inner pt-2 wrapper provides visual spacing while staying inside
-                      the hover zone — eliminates the gap that was causing snap-shut.
-                    */
                     <div className="absolute top-full left-0 pt-2 z-50">
                       <div className="bg-white text-gray-800 rounded-xl shadow-xl py-2 w-56 border border-gray-100">
                         {item.dropdown!.map((d) => (
@@ -331,7 +380,7 @@ export default function Header() {
                 onClick={() => { setLangOpen(!langOpen); setOrbitOpen(false); }}
                 aria-haspopup="true"
                 aria-expanded={langOpen}
-                className="flex items-center gap-1.5 font-medium text-sm hover:text-gray-200 transition-colors"
+                className="flex items-center gap-1.5 font-medium text-sm hover:text-gray-200 transition-colors notranslate"
               >
                 <span>{selectedLang.flag}</span>
                 <span>{selectedLang.code}</span>
@@ -342,12 +391,16 @@ export default function Header() {
               </button>
 
               {langOpen && (
-                <div className="absolute right-0 mt-2 bg-white text-gray-800 rounded-xl shadow-xl w-44 py-2 border border-gray-100 z-50">
+                <div className="absolute right-0 mt-2 bg-white text-gray-800 rounded-xl shadow-xl w-44 py-2 border border-gray-100 z-50 notranslate">
                   {languages.map((lang) => (
                     <button
                       key={lang.code}
                       type="button"
-                      onClick={() => { setSelectedLang(lang); setLangOpen(false); }}
+                      onClick={() => {
+                        setSelectedLang(lang);
+                        setLangOpen(false);
+                        switchLanguage(lang.gt);
+                      }}
                       className={`w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm flex items-center gap-2 transition-colors ${selectedLang.code === lang.code ? "text-[#0b7285] font-semibold" : ""}`}
                     >
                       <span>{lang.flag}</span>
@@ -476,9 +529,61 @@ export default function Header() {
               </div>
             ))}
           </nav>
+
+          {/* Mobile language switcher — same Google Translate handler */}
+          <div className="border-t border-gray-100 px-5 py-4">
+            <p className="text-xs font-semibold text-gray-500 mb-3 uppercase tracking-wide">Language</p>
+            <div className="grid grid-cols-2 gap-2 notranslate">
+              {languages.map((lang) => (
+                <button
+                  key={lang.code}
+                  type="button"
+                  onClick={() => {
+                    setSelectedLang(lang);
+                    switchLanguage(lang.gt);
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`flex items-center gap-2 px-3 py-2.5 rounded-md text-sm transition-colors ${
+                    selectedLang.code === lang.code
+                      ? "bg-[#0b7285] text-white font-semibold"
+                      : "bg-gray-50 text-gray-700 hover:bg-gray-100"
+                  }`}
+                >
+                  <span>{lang.flag}</span>
+                  <span>{lang.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>,
         document.body
       )}
+
+      {/* ── Hide Google Translate's default UI ── */}
+      <style jsx global>{`
+        /* Hide the floating Google Translate banner at the top of the page */
+        .goog-te-banner-frame,
+        .skiptranslate iframe {
+          display: none !important;
+        }
+        body {
+          top: 0 !important;
+        }
+        /* Hide the tooltip / "powered by" elements */
+        .goog-tooltip,
+        .goog-tooltip:hover,
+        .goog-text-highlight {
+          background-color: transparent !important;
+          box-shadow: none !important;
+        }
+        /* Hide the dropdown widget itself — we drive it programmatically */
+        #google_translate_element .goog-te-gadget {
+          font-size: 0 !important;
+        }
+        #google_translate_element .goog-te-gadget-simple {
+          display: none !important;
+        }
+      `}</style>
     </>
   );
 }
