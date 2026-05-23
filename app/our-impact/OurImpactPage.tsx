@@ -8,17 +8,17 @@ import { useState } from "react";
 
 const giveBackItems = [
   {
-    image: "/image/giveback-ngos.png",
+    image: "/image/Rectangle 908 (5).png",
     title: "2% of Sales to NGOs",
     desc: "We donate a % of every eSIM purchase to trusted wildlife protection organizations.",
   },
   {
-    image: "/image/giveback-sanctuary.png",
+    image: "/image/Rectangle 909 (5).png",
     title: "Direct Sanctuary Support",
     desc: "From feeding programs to medical care, we directly fund wildlife sanctuaries.",
   },
   {
-    image: "/image/giveback-education.png",
+    image: "/image/Rectangle 910 (5).png",
     title: "Education & Anti-Poaching",
     desc: "Supporting on-ground educational initiatives and anti-poaching patrols in vulnerable regions.",
   },
@@ -26,15 +26,15 @@ const giveBackItems = [
 
 const stories = [
   {
-    image: "/image/story-rangers.png",
+    image: "/image/image (3).png",
     text: "Funding ranger patrols in Maasai Mara to protect elephants and lions",
   },
   {
-    image: "/image/story-rhinos.png",
+    image: "/image/image (4).png",
     text: "Supported the rehabilitation of injured orangutans in Borneo",
   },
   {
-    image: "/image/story-trees.png",
+    image: "/image/image (5).png",
     text: "Contributing to the preservation of 50,000 hectares of rainforest",
   },
 ];
@@ -48,21 +48,21 @@ const stats = [
 
 const testimonials = [
   {
-    avatar: "/image/avatar-partner-1.png",
+    avatar: "/image/Rectangle 729.png",
     name: "Wildlife NGO Director.",
     quote:
       "Zoiko Orbit's contributions have helped us expand our anti-poaching units.",
     rating: 5,
   },
   {
-    avatar: "/image/avatar-partner-2.png",
+    avatar: "/image/Rectangle 729 (3).png",
     name: "Sanctuary Manager.",
     quote:
       "Their consistent donations fund sanctuary food and veterinary care.",
     rating: 5,
   },
   {
-    avatar: "/image/avatar-partner-3.png",
+    avatar: "/image/Rectangle 729 (2).png",
     name: "NGO Partner.",
     quote:
       "It's inspiring to see a tech company driving real-world conservation.",
@@ -107,7 +107,7 @@ export default function OurImpactPage() {
       <section className="relative w-full overflow-hidden">
         <div className="relative h-[420px] md:h-[480px] w-full">
           <img
-            src="/image/impact-hero.png"
+            src="/image/Rectangle 4 (4).png"
             alt="Hands holding a small grass globe representing Earth"
             className="absolute inset-0 w-full h-full object-cover"
           />
