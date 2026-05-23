@@ -205,9 +205,9 @@ export default function PartnerWithUs() {
               we empower you to deliver world-class eSIM solutions — tailored to
               your business model and brand vision.
             </p>
-            <button className="bg-[#0d6e7a] hover:bg-[#0a5a65] text-white text-sm font-semibold px-7 py-3 rounded-full transition-colors">
+         <a href="/partner-with-us">   <button className="bg-[#0d6e7a] hover:bg-[#0a5a65] text-white text-sm font-semibold px-7 py-3 rounded-full transition-colors">
               Partner with Us
-            </button>
+            </button></a>
           </div>
         </div>
       </div>
