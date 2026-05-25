@@ -87,20 +87,88 @@ export default function IntegrationInterestForm() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.agreed) {
-      alert("Please agree to be contacted by Zoiko Orbit.");
-      return;
-    }
-    if (!formData.isRobot) {
-      alert("Please confirm you are not a robot.");
-      return;
-    }
-    console.log("Form submitted:", formData);
-    // TODO: wire up to API endpoint
-  };
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
+  if (!formData.agreed) {
+    alert("Please agree to be contacted by Zoiko Orbit.");
+    return;
+  }
+
+  if (!formData.isRobot) {
+    alert("Please confirm you are not a robot.");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:8000/api/integration-interest/",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          full_name: formData.fullName,
+          job_title: formData.jobTitle,
+          company_name: formData.companyName,
+          business_email: formData.businessEmail,
+          phone_number: formData.phoneNumber,
+          business_website: formData.businessWebsite,
+
+          integration_interests: formData.integrationInterests,
+
+          operating_regions: formData.operatingRegions,
+
+          traveler_volume: formData.travelerVolume,
+
+          distribution_channels: formData.distributionChannels,
+
+          business_objective: formData.businessObjective,
+
+          agreed: formData.agreed,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Form submitted successfully!");
+
+      console.log(data);
+
+      // Reset form
+      setFormData({
+        fullName: "",
+        jobTitle: "",
+        companyName: "",
+        businessEmail: "",
+        phoneNumber: "",
+        businessWebsite: "",
+        integrationInterests: [],
+        operatingRegions: "",
+        travelerVolume: "1K-5K",
+        distributionChannels: [],
+        businessObjective: "",
+        agreed: false,
+        isRobot: false,
+      });
+
+    } else {
+      console.error(data);
+
+      alert("Failed to submit form");
+    }
+
+  } catch (error) {
+    console.error(error);
+
+    alert("Something went wrong");
+  }
+};
   return (
     <main className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300 min-h-screen">
       <section className="max-w-5xl mx-auto px-6 lg:px-12 py-16 md:py-20">
