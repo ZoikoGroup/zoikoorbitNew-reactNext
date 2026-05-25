@@ -18,6 +18,15 @@
  * The orchestrator `processOrderMalima` wires all three steps together so
  * the checkout component just calls it once.
  *
+ * Volume convention
+ * -----------------
+ * Aligned with the WP plugin (`class-malima-api-client.php::build_orange_item`):
+ * `addedBucket.volume` is sent to Orange as a string of **megabytes**.
+ *   - 2 GB → "2000"
+ *   - 500 MB → "500"
+ * `toMalimaCart` normalises any reasonable input (GB / MB / decimal / suffix)
+ * to MB before forwarding to the server route.
+ *
  * The browser never sees the Orange OAuth2 bearer; it lives server-side.
  */
 
@@ -31,6 +40,7 @@ export interface MalimaCartItem {
   planName?: string | null;
   simType?: string | null;             // "eSIM" | "pSIM" (others filtered out)
   durationDays?: number | string | null;
+  /** Data allowance in **MB** (string). */
   dataVolume?: number | string | null;
   roamingZone?: string | null;
   msisdn?: string | null;              // filled by Django allocation
@@ -80,54 +90,158 @@ export interface MalimaCreateResponse {
 export interface ProcessOrderResult {
   status: boolean;
   message: string;
-  /** Reason it stopped, if status === false. One of:
-   *  "empty_cart" | "allocate_failed" | "malima_failed" | "save_failed" | "ok" */
+  /** Reason it stopped, if status === false. */
   stage: "empty_cart" | "allocate_failed" | "malima_failed" | "save_failed" | "ok";
   allocations: SimAllocation[];
   malima: MalimaCreateResponse;
   saved?: { success: boolean; message: string; response?: unknown };
 }
 
+// ── Extraction helpers ───────────────────────────────────────────────────────
+
+/**
+ * Convert any reasonable volume input into a string of **megabytes**.
+ * Mirrors the WP plugin's `build_orange_item`.
+ *
+ *   "2GB"      → "2000"
+ *   "500 MB"   → "500"
+ *   "2"        → "2000"   (decimal numbers < 50 assumed GB)
+ *   "2000"     → "2000"   (decimal numbers ≥ 50 assumed MB)
+ *   2          → "2"      (numbers assumed already MB unless very small)
+ *   0.2        → "200"    (< 50 → assumed GB → MB)
+ *   null       → null     (caller decides default)
+ */
+export function normaliseVolumeMB(raw: unknown): string | null {
+  if (raw == null || raw === "") return null;
+
+  if (typeof raw === "number" && Number.isFinite(raw)) {
+    if (raw <= 0) return null;
+    return raw < 50 ? String(Math.round(raw * 1000)) : String(Math.round(raw));
+  }
+
+  const s = String(raw).trim();
+  if (!s) return null;
+
+  const numeric = s.match(/^(\d+(?:\.\d+)?)$/);
+  if (numeric) {
+    const n = parseFloat(numeric[1]);
+    if (!Number.isFinite(n) || n <= 0) return null;
+    return n < 50 ? String(Math.round(n * 1000)) : String(Math.round(n));
+  }
+
+  const withUnit = s.toUpperCase().replace(/\s+/g, "").match(/^(\d+(?:\.\d+)?)(GB|MB|G|M)$/);
+  if (withUnit) {
+    const val = parseFloat(withUnit[1]);
+    const unit = withUnit[2];
+    if (!Number.isFinite(val) || val <= 0) return null;
+    return unit.startsWith("M") ? String(Math.round(val)) : String(Math.round(val * 1000));
+  }
+
+  return null;
+}
+
+/** Parse "8 Days" / "30-days" / "30" / 30 → integer days. Returns null on miss. */
+export function parseDurationDays(raw: unknown): number | null {
+  if (raw == null) return null;
+  if (typeof raw === "number" && Number.isFinite(raw)) return Math.max(1, Math.round(raw));
+  const s = String(raw).trim();
+  if (!s) return null;
+  const m = s.match(/(\d+)/);
+  if (!m) return null;
+  const n = parseInt(m[1], 10);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+/**
+ * Extract a roaming zone from a plan title.
+ *   "Orbit Explore — 2GB • Europe & UK • 8 days" → "Europe"
+ */
+const KNOWN_ZONES = ["Europe", "UK", "USA", "World", "France", "Spain", "Germany", "Italy"];
+function zoneFromTitle(title: string): string | null {
+  if (!title) return null;
+  const lower = title.toLowerCase();
+  const found = KNOWN_ZONES.find((z) => lower.includes(z.toLowerCase()));
+  return found ?? null;
+}
+
+/** Pull a value from any of a list of fields on an object. */
+function pick<T = unknown>(obj: Record<string, unknown> | null | undefined, keys: string[]): T | null {
+  if (!obj) return null;
+  for (const k of keys) {
+    const v = obj[k];
+    if (v !== undefined && v !== null && v !== "") return v as T;
+  }
+  return null;
+}
+
 // ── Cart shaping ─────────────────────────────────────────────────────────────
 
 /**
  * Flatten the checkout cart into one MalimaCartItem per SIM **unit**.
- * Only eSIM/pSIM items go to Orange. Non-SIM lines (topups, device
- * protection, etc.) are dropped at this stage so allocations and Malima
- * calls all line up index-for-index.
+ *
+ * The input can be either:
+ *   • the raw localStorage cart (rich fields, possibly with `_raw`/`formData`), or
+ *   • the lightweight `buildProducts()` output (planTitle, duration, simType…).
+ *
+ * For each item we resolve durationDays / dataVolume (MB) / roamingZone from
+ * the first available source — explicit field → nested `_raw` → plan title
+ * regex. Only eSIM/pSIM items are emitted; non-SIM lines are dropped here so
+ * allocations and Malima calls line up index-for-index.
  */
 export function toMalimaCart(items: unknown[]): MalimaCartItem[] {
   if (!Array.isArray(items)) return [];
   const out: MalimaCartItem[] = [];
 
   items.forEach((raw, cartIndex) => {
-    const item = raw as Record<string, unknown>;
+    const item = (raw ?? {}) as Record<string, unknown>;
+
+    // ── simType gate ────────────────────────────────────────────────────
     const simTypeRaw = (item.simType as string | null) ?? null;
     const simType = (simTypeRaw || "").toLowerCase();
     if (simType !== "esim" && simType !== "psim") return;
 
     const formData = (item.formData ?? {}) as Record<string, unknown>;
-    const rawNested = (item._raw ?? {}) as Record<string, unknown>;
+    const nested = (item._raw ?? {}) as Record<string, unknown>;
 
+    const planTitle =
+      (item.planTitle as string | null) ??
+      (item.planName as string | null) ??
+      (nested.planTitle as string | null) ??
+      (nested.planName as string | null) ??
+      "";
+
+    // ── durationDays ─────────────────────────────────────────────────────
     const durationDays =
-      item.durationDays ??
-      item.planDuration ??
-      rawNested.durationDays ??
-      null;
+      parseDurationDays(
+        pick<number | string>(item, ["durationDays", "duration", "planDuration"]) ??
+        pick<number | string>(nested, ["durationDays", "duration", "planDuration"]) ??
+        planTitle
+      ) ?? null;
 
-    const dataVolume =
-      item.dataVolume ??
-      item.data_volume ??
-      rawNested.dataVolume ??
-      null;
+    // ── dataVolume (always MB string) ────────────────────────────────────
+    let dataVolume =
+      normaliseVolumeMB(
+        pick<number | string>(item, ["dataVolume", "data_volume", "dataVolumeMB", "dataAllowance"]) ??
+        pick<number | string>(nested, ["dataVolume", "data_volume", "dataVolumeMB", "dataAllowance"])
+      );
+    if (dataVolume == null) {
+      // Last resort: scan the plan title for "2GB" / "500MB".
+      const m = planTitle.match(/(\d+(?:\.\d+)?)\s*(GB|MB|G|M)\b/i);
+      if (m) dataVolume = normaliseVolumeMB(`${m[1]}${m[2]}`);
+    }
 
-    const roamingZone =
-      item.roamingZone ??
-      item.roaming_zone ??
-      rawNested.roamingZone ??
+    // ── roamingZone ──────────────────────────────────────────────────────
+    let roamingZone =
+      pick<string>(item, ["roamingZone", "roaming_zone"]) ??
+      pick<string>(nested, ["roamingZone", "roaming_zone"]) ??
       null;
+    if (!roamingZone) roamingZone = zoneFromTitle(planTitle);
 
-    const qty = Math.max(1, Number(formData.priceQty ?? item.qty ?? 1) || 1);
+    // ── quantity ─────────────────────────────────────────────────────────
+    const qty = Math.max(
+      1,
+      Number(item.quantity ?? formData.priceQty ?? item.qty ?? 1) || 1,
+    );
 
     for (let unitIndex = 0; unitIndex < qty; unitIndex++) {
       out.push({
@@ -140,9 +254,9 @@ export function toMalimaCart(items: unknown[]): MalimaCartItem[] {
           (item.planTitle as string | null) ??
           null,
         simType: simTypeRaw,
-        durationDays: durationDays as number | string | null,
-        dataVolume: dataVolume as number | string | null,
-        roamingZone: roamingZone as string | null,
+        durationDays,
+        dataVolume,
+        roamingZone,
         msisdn: null,
         imsi: null,
         iccid: null,
@@ -157,9 +271,6 @@ export function toMalimaCart(items: unknown[]): MalimaCartItem[] {
 
 // ── Step 1: allocate ─────────────────────────────────────────────────────────
 
-/**
- * Ask Django to reserve SIM identifiers for every unit in the cart.
- */
 export async function allocateSimsFromDjango(
   cart: MalimaCartItem[]
 ): Promise<AllocateResponse> {
@@ -186,10 +297,6 @@ export async function allocateSimsFromDjango(
   };
 }
 
-/**
- * Merge Django's allocations onto the cart. Match strictly by
- * (cartIndex, unitIndex) so re-ordering or partial allocations are safe.
- */
 export function applyAllocations(
   cart: MalimaCartItem[],
   allocations: SimAllocation[]
@@ -264,23 +371,10 @@ export async function saveMalimaOrderToDjango(
 /**
  * Full Malima order pipeline. Replaces `processOrderStripe`.
  *
- * @param rawCart    cart from localStorage / state (the same `products`
- *                   array previously passed to processOrderStripe)
+ * @param rawCart    cart from localStorage / state. Can be the raw cart
+ *                   (richer, preferred) or the buildProducts() output.
  * @param context    extra metadata to persist alongside the Malima record
  *                   (billing address, totals, payment intent id, etc.)
- *
- * Behaviour:
- *   - If the cart has no eSIM/pSIM items → returns status:true, stage:"empty_cart".
- *     The checkout flow should treat that as "nothing to do on Orange" and
- *     proceed (this would happen for a pure topup or device-protection cart).
- *   - If allocation fails → returns status:false, stage:"allocate_failed".
- *     Nothing has been sent to Orange yet; checkout should refund / surface
- *     the error.
- *   - If at least one Orange call fails → returns status:false,
- *     stage:"malima_failed". The Django save still runs so operators can
- *     reconcile, and `result.malima.results[i]` shows per-SIM outcomes.
- *   - If save fails but Orange succeeded → returns status:false,
- *     stage:"save_failed". Operator must reconcile from Orange directly.
  */
 export async function processOrderMalima(
   rawCart: unknown[],
@@ -307,23 +401,41 @@ export async function processOrderMalima(
   // 1️⃣ Allocate SIMs via Django
   const alloc = await allocateSimsFromDjango(flatCart);
   if (!alloc.success || !alloc.allocations || alloc.allocations.length === 0) {
+    // Even on allocate failure, snapshot the attempt to Django so ops have
+    // a trail of *why* it failed (e.g. out-of-inventory for that zone/profile).
+    const savedFailure = await saveMalimaOrderToDjango(empty, {
+      ...context,
+      stage: "allocate_failed",
+      allocations: alloc.allocations ?? [],
+      allocation_error: alloc.message,
+    }).catch(() => undefined);
+
     return {
       status: false,
       message: alloc.message || "SIM allocation failed.",
       stage: "allocate_failed",
       allocations: alloc.allocations ?? [],
       malima: empty,
+      saved: savedFailure,
     };
   }
 
   const { enriched, missing } = applyAllocations(flatCart, alloc.allocations);
   if (missing.length > 0) {
+    const savedFailure = await saveMalimaOrderToDjango(empty, {
+      ...context,
+      stage: "allocate_incomplete",
+      allocations: alloc.allocations,
+      missing_units: missing,
+    }).catch(() => undefined);
+
     return {
       status: false,
       message: `SIM allocation incomplete — ${missing.length} unit(s) without identifiers.`,
       stage: "allocate_failed",
       allocations: alloc.allocations,
       malima: empty,
+      saved: savedFailure,
     };
   }
 
@@ -376,4 +488,6 @@ export default {
   createMalimaOrder,
   saveMalimaOrderToDjango,
   processOrderMalima,
+  normaliseVolumeMB,
+  parseDurationDays,
 };

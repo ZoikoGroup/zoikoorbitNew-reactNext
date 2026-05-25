@@ -28,9 +28,11 @@ import { NextResponse } from "next/server";
  *   ]
  * }
  *
- * If Django can't satisfy the full request, it should return success: false
- * with a `message` and ideally any partially-reserved ids so the caller
- * can release them.
+ * Env vars:
+ *   DJANGO_API_BASE_URL          — e.g. https://api.zoiko.example
+ *   NEXT_PUBLIC_API_BASE_URL     — fallback if DJANGO_API_BASE_URL not set
+ *   DJANGO_API_TOKEN             — optional bearer/api token
+ *   DJANGO_ALLOCATE_SIMS_PATH    — defaults to /api/v1/malima/allocate-sims/
  */
 
 export const dynamic = "force-dynamic";
@@ -47,10 +49,13 @@ export async function POST(req: Request) {
     );
   }
 
+  // Prefer the server-only var, fall back to the public one for existing
+  // deployments. Whichever is set must be the BASE URL only — not the full path.
   const base =
     process.env.DJANGO_API_BASE_URL ||
     process.env.NEXT_PUBLIC_API_BASE_URL ||
     "";
+
   if (!base) {
     return NextResponse.json(
       {
