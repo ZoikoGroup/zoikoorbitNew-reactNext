@@ -97,12 +97,12 @@ export default function TravelInsuranceProviders() {
               Deliver bundled global connectivity with every policy — seamless eSIM activation,
               real-time data, and a smarter insurance experience.
             </p>
-            <button className="group inline-flex items-center gap-2 px-7 py-3.5 bg-teal-500 hover:bg-teal-400 text-white font-semibold rounded-lg shadow-lg shadow-teal-500/30 hover:shadow-teal-400/40 transition-all duration-300 hover:-translate-y-0.5">
+           <a href="/travel-insurance-providers-form"> <button className="group inline-flex items-center gap-2 px-7 py-3.5 bg-teal-500 hover:bg-teal-400 text-white font-semibold rounded-lg shadow-lg shadow-teal-500/30 hover:shadow-teal-400/40 transition-all duration-300 hover:-translate-y-0.5">
               Request Integration Demo
               <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
-            </button>
+            </button></a>
           </div>
         </div>
       </section>
@@ -123,9 +123,15 @@ export default function TravelInsuranceProviders() {
                 key={index}
                 className="group relative bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-100 dark:border-gray-700 hover:border-teal-300 dark:hover:border-teal-500 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
               >
-                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center mb-5 shadow-lg shadow-teal-500/20 group-hover:scale-110 transition-transform duration-300">
-                  {benefit.icon}
-                </div>
+            <div>
+  <Image
+    src={benefit.icon}
+    alt={benefit.title}
+    width={60}
+    height={60}
+    className="object-contain"
+  />
+</div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
                   {benefit.title}
                 </h3>
@@ -281,12 +287,12 @@ export default function TravelInsuranceProviders() {
                   Schedule a strategy call or explore how Zoiko Orbit can increase your plan conversion,
                   reduce operational friction, and enhance customer protection.
                 </p>
-                <button className="group inline-flex items-center gap-2 px-7 py-3.5 bg-teal-500 hover:bg-teal-400 text-white font-semibold rounded-lg shadow-lg shadow-teal-500/30 transition-all duration-300 hover:-translate-y-0.5">
+               <a href="/travel-insurance-providers-form"> <button className="group inline-flex items-center gap-2 px-7 py-3.5 bg-teal-500 hover:bg-teal-400 text-white font-semibold rounded-lg shadow-lg shadow-teal-500/30 transition-all duration-300 hover:-translate-y-0.5">
                   Talk to a Solutions Consultant
                   <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                   </svg>
-                </button>
+                </button></a>
               </div>
 
               {/* Image side */}
