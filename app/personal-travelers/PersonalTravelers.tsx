@@ -97,7 +97,7 @@ export default function PersonalTravelers() {
             Instant eSIM activation. No roaming shocks. Every plan supports animal welfare.
           </p>
           <a
-            href="#"
+            href="/plans"
             className="inline-flex items-center gap-2 w-fit bg-teal-500 hover:bg-teal-600 text-white font-semibold text-sm px-6 py-3 rounded-full transition-colors"
           >
             <img
