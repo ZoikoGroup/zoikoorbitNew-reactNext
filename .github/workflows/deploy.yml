@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Deploy to GCP VM
         run: |
           echo "${{ secrets.SSH_KEY }}" > /tmp/deploy_key
@@ -17,21 +18,26 @@ jobs:
 
           ssh -i /tmp/deploy_key \
           -o StrictHostKeyChecking=no \
-          ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-          "git config --global --add safe.directory /var/www/html/zoikoorbitNew-reactNext && \
-          cd /var/www/html/zoikoorbitNew-reactNext && \
+          ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
 
-          git pull origin main && \
+          git config --global --add safe.directory /var/www/html/zoikoorbitNew-reactNext
 
-          rm -rf node_modules .next package-lock.json && \
-          npm cache clean --force && \
+          cd /var/www/html/zoikoorbitNew-reactNext
 
-          npm install && \
+          git fetch origin
 
-          npm install @tailwindcss/oxide-linux-x64-gnu --save-dev && \
-          npm install lightningcss-linux-x64-gnu --save-dev && \
+          git reset --hard origin/main
+          git clean -fd
 
-          npm run build && \
+          rm -rf node_modules .next
 
-          pm2 restart zoikoorbit-reactNext && \
-          pm2 save"
+          npm cache clean --force
+
+          npm install
+
+          npm run build
+
+          pm2 restart zoikoorbit-reactNext
+          pm2 save
+
+          EOF
