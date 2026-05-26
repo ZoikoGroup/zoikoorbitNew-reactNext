@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, CheckCircle2, AlertCircle, X } from "lucide-react";
 
 interface FormData {
   fullName: string;
@@ -17,6 +17,12 @@ interface FormData {
   businessObjective: string;
   agreed: boolean;
   isRobot: boolean;
+}
+
+interface Toast {
+  type: "success" | "error" | "warning";
+  title: string;
+  message: string;
 }
 
 export default function IntegrationInterestForm() {
@@ -36,6 +42,15 @@ export default function IntegrationInterestForm() {
     isRobot: false,
   });
 
+  const [toast, setToast] = useState<Toast | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const showToast = (toastData: Toast) => {
+    setToast(toastData);
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => setToast(null), 5000);
+  };
+
   const integrationInterestOptions = [
     "Embed eSIM with digital travel policies",
     "One-click activation integration",
@@ -54,20 +69,16 @@ export default function IntegrationInterestForm() {
   ];
 
   const operatingRegionOptions = [
-  
     "Europe",
     "Asia Pacific",
     "Middle East & Africa",
     "Americas",
-    
   ];
 
   const travelerVolumeOptions = [
-  
     "1K-5K",
     "5K-20K",
     "20K+",
-    
   ];
 
   const handleInputChange = (field: keyof FormData, value: string | boolean) => {
@@ -87,90 +98,181 @@ export default function IntegrationInterestForm() {
     });
   };
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  if (!formData.agreed) {
-    alert("Please agree to be contacted by Zoiko Orbit.");
-    return;
-  }
-
-  if (!formData.isRobot) {
-    alert("Please confirm you are not a robot.");
-    return;
-  }
-
-  try {
-    const response = await fetch(
-      "http://127.0.0.1:8000/api/integration-interest/",
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json",
-        },
-
-        body: JSON.stringify({
-          full_name: formData.fullName,
-          job_title: formData.jobTitle,
-          company_name: formData.companyName,
-          business_email: formData.businessEmail,
-          phone_number: formData.phoneNumber,
-          business_website: formData.businessWebsite,
-
-          integration_interests: formData.integrationInterests,
-
-          operating_regions: formData.operatingRegions,
-
-          traveler_volume: formData.travelerVolume,
-
-          distribution_channels: formData.distributionChannels,
-
-          business_objective: formData.businessObjective,
-
-          agreed: formData.agreed,
-        }),
-      }
-    );
-
-    const data = await response.json();
-
-    if (response.ok) {
-      alert("Form submitted successfully!");
-
-      console.log(data);
-
-      // Reset form
-      setFormData({
-        fullName: "",
-        jobTitle: "",
-        companyName: "",
-        businessEmail: "",
-        phoneNumber: "",
-        businessWebsite: "",
-        integrationInterests: [],
-        operatingRegions: "",
-        travelerVolume: "1K-5K",
-        distributionChannels: [],
-        businessObjective: "",
-        agreed: false,
-        isRobot: false,
+    if (!formData.agreed) {
+      showToast({
+        type: "warning",
+        title: "Consent Required",
+        message: "Please agree to be contacted by Zoiko Orbit before submitting.",
       });
-
-    } else {
-      console.error(data);
-
-      alert("Failed to submit form");
+      return;
     }
 
-  } catch (error) {
-    console.error(error);
+    if (!formData.isRobot) {
+      showToast({
+        type: "warning",
+        title: "Verification Required",
+        message: "Please confirm you are not a robot to continue.",
+      });
+      return;
+    }
 
-    alert("Something went wrong");
-  }
-};
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/integration-interest/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            full_name: formData.fullName,
+            job_title: formData.jobTitle,
+            company_name: formData.companyName,
+            business_email: formData.businessEmail,
+            phone_number: formData.phoneNumber,
+            business_website: formData.businessWebsite,
+            integration_interests: formData.integrationInterests,
+            operating_regions: formData.operatingRegions,
+            traveler_volume: formData.travelerVolume,
+            distribution_channels: formData.distributionChannels,
+            business_objective: formData.businessObjective,
+            agreed: formData.agreed,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        showToast({
+          type: "success",
+          title: "Request Submitted Successfully!",
+          message: "Thank you for your interest. Our team will reach out to you within 24 hours.",
+        });
+        console.log(data);
+
+        // Reset form
+        setFormData({
+          fullName: "",
+          jobTitle: "",
+          companyName: "",
+          businessEmail: "",
+          phoneNumber: "",
+          businessWebsite: "",
+          integrationInterests: [],
+          operatingRegions: "",
+          travelerVolume: "1K-5K",
+          distributionChannels: [],
+          businessObjective: "",
+          agreed: false,
+          isRobot: false,
+        });
+      } else {
+        console.error(data);
+        showToast({
+          type: "error",
+          title: "Submission Failed",
+          message: "We couldn't process your request. Please verify your details and try again.",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      showToast({
+        type: "error",
+        title: "Connection Error",
+        message: "Unable to reach our servers. Please check your connection and try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Toast styling helper
+  const getToastStyles = (type: Toast["type"]) => {
+    switch (type) {
+      case "success":
+        return {
+          bg: "bg-emerald-50 dark:bg-emerald-950/40",
+          border: "border-emerald-200 dark:border-emerald-800",
+          iconBg: "bg-emerald-500",
+          icon: <CheckCircle2 className="w-5 h-5 text-white" />,
+          titleColor: "text-emerald-900 dark:text-emerald-100",
+          messageColor: "text-emerald-700 dark:text-emerald-300",
+        };
+      case "error":
+        return {
+          bg: "bg-red-50 dark:bg-red-950/40",
+          border: "border-red-200 dark:border-red-800",
+          iconBg: "bg-red-500",
+          icon: <AlertCircle className="w-5 h-5 text-white" />,
+          titleColor: "text-red-900 dark:text-red-100",
+          messageColor: "text-red-700 dark:text-red-300",
+        };
+      case "warning":
+        return {
+          bg: "bg-amber-50 dark:bg-amber-950/40",
+          border: "border-amber-200 dark:border-amber-800",
+          iconBg: "bg-amber-500",
+          icon: <AlertCircle className="w-5 h-5 text-white" />,
+          titleColor: "text-amber-900 dark:text-amber-100",
+          messageColor: "text-amber-700 dark:text-amber-300",
+        };
+    }
+  };
+
   return (
     <main className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300 min-h-screen">
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed top-6 right-6 z-50 animate-slide-in-right">
+          <div
+            className={`flex items-start gap-3 max-w-md p-4 rounded-xl border ${getToastStyles(toast.type).bg} ${getToastStyles(toast.type).border} shadow-2xl backdrop-blur-sm`}
+            role="alert"
+          >
+            <div className={`flex-shrink-0 w-9 h-9 rounded-lg ${getToastStyles(toast.type).iconBg} flex items-center justify-center shadow-md`}>
+              {getToastStyles(toast.type).icon}
+            </div>
+            <div className="flex-1 min-w-0 pt-0.5">
+              <h4 className={`font-semibold text-sm ${getToastStyles(toast.type).titleColor} mb-0.5`}>
+                {toast.title}
+              </h4>
+              <p className={`text-xs ${getToastStyles(toast.type).messageColor} leading-relaxed`}>
+                {toast.message}
+              </p>
+            </div>
+            <button
+              onClick={() => setToast(null)}
+              className={`flex-shrink-0 ${getToastStyles(toast.type).titleColor} hover:opacity-70 transition-opacity`}
+              aria-label="Close notification"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Inline animation keyframes */}
+      <style jsx>{`
+        @keyframes slide-in-right {
+          from {
+            opacity: 0;
+            transform: translateX(100%);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        .animate-slide-in-right {
+          animation: slide-in-right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+      `}</style>
+
       <section className="max-w-5xl mx-auto px-6 lg:px-12 py-16 md:py-20">
         {/* Heading */}
         <div className="text-center mb-12 max-w-3xl mx-auto">
@@ -442,22 +544,35 @@ const handleSubmit = async (e: React.FormEvent) => {
           {/* Submit button */}
           <button
             type="submit"
-            className="group inline-flex items-center gap-2 px-7 py-3.5 bg-teal-500 hover:bg-teal-400 text-white font-semibold rounded-lg shadow-lg shadow-teal-500/30 hover:shadow-teal-400/40 transition-all duration-300 hover:-translate-y-0.5"
+            disabled={isSubmitting}
+            className="group inline-flex items-center gap-2 px-7 py-3.5 bg-teal-500 hover:bg-teal-400 disabled:bg-teal-400 disabled:cursor-not-allowed text-white font-semibold rounded-lg shadow-lg shadow-teal-500/30 hover:shadow-teal-400/40 transition-all duration-300 hover:-translate-y-0.5 disabled:hover:translate-y-0"
           >
-            Request Integration Demo
-            <svg
-              className="w-4 h-4 group-hover:translate-x-1 transition-transform"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M14 5l7 7m0 0l-7 7m7-7H3"
-              />
-            </svg>
+            {isSubmitting ? (
+              <>
+                <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                Submitting...
+              </>
+            ) : (
+              <>
+                Request Integration Demo
+                <svg
+                  className="w-4 h-4 group-hover:translate-x-1 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                  />
+                </svg>
+              </>
+            )}
           </button>
         </form>
       </section>

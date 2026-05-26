@@ -67,8 +67,8 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElemen
         website: formData.website.trim() ? formData.website : null,
       };
 
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/travel-partners/",
+     const response = await fetch(
+  `${process.env.NEXT_PUBLIC_API_URL}/api/travel-partners/`,
         {
           method: "POST",
           headers: {
