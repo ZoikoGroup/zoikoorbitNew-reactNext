@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { getUser, isLoggedIn } from "@/app/utils/auth";
+import { getUser, isLoggedIn } from "@/utils/auth";
 
 // ── Types matching the Django response ───────────────────────────────────────
 
