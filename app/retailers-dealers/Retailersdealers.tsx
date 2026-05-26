@@ -50,10 +50,10 @@ export default function RetailersDealers() {
   ];
 
   const trustedLogos = [
-    { name: "Global Travel Alliance", image: "/image/logo-global-travel.png" },
-    { name: "Orange", image: "/image/logo-orange.png" },
-    { name: "WWF", image: "/image/logo-wwf.png" },
-    { name: "Alliance Airlines", image: "/image/logo-alliance.png" },
+    { name: "Global Travel Alliance", image: "/image/logo1.png" },
+    { name: "Orange", image: "/image/logo2.png"},
+    { name: "WWF", image: "/image/logo3.png" },
+    { name: "Alliance Airlines", image: "/image/logo4.png" },
   ];
 
   const bonusFeatures = [
@@ -201,7 +201,7 @@ export default function RetailersDealers() {
             {/* Image side */}
             <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl">
               <Image
-                src="/image/Vector .png"
+                src="/image/Rectangle 935 (3).png"
                 alt="Retailers meeting"
                 fill
                 className="object-cover"
@@ -219,7 +219,7 @@ export default function RetailersDealers() {
                 Whether you're a single store or a multi-location franchise, Zoiko Orbit scales with you.
               </p>
               <a
-                href="/dealer-application"
+                href="/travel-insurance-providers-form"
                 className="inline-flex items-center gap-2 text-white font-semibold border-b-2 border-white pb-1 hover:gap-3 transition-all duration-300"
               >
                 Apply to Become an Authorized Dealer
@@ -299,56 +299,18 @@ export default function RetailersDealers() {
             <div className="relative">
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-700">
                 {/* Testimonial image */}
-                <div className="relative aspect-[16/10] bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800">
+                <div className="relative aspect-[4/3] ">
                   <Image
-                    src="/image/testimonial-retailer.png"
+                    src="/image/Group 691314720 (1).png"
                     alt="Retail partner testimonial"
                     fill
                     className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 50vw"
+                    sizes="(max-width: 100% 100vw, 50vw"
                   />
-                  {/* Trustpilot badge */}
-                  <div className="absolute bottom-3 right-3 bg-white dark:bg-gray-900 rounded-lg px-3 py-1.5 shadow-md flex items-center gap-1.5">
-                    <span className="text-xs font-bold text-gray-900 dark:text-white">Excellent</span>
-                    <div className="flex gap-0.5">
-                      {[...Array(5)].map((_, i) => (
-                        <div key={i} className="w-3 h-3 bg-green-500 flex items-center justify-center">
-                          <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                          </svg>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+
                 </div>
 
-                {/* Quote */}
-                <div className="p-6">
-                  <p className="text-base font-semibold text-gray-900 dark:text-white mb-2 leading-relaxed">
-                    &quot;We sold out in 4 days during peak summer. Our average sale per transaction increased by 18%.&quot;
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 italic mb-5">
-                    — Kiran D., Orbit Retail Partner
-                  </p>
-
-                  {/* Engagement bar */}
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
-                    <div className="flex items-center gap-4">
-                      <button className="text-red-500 hover:scale-110 transition-transform">
-                        <Heart className="w-5 h-5 fill-current" />
-                      </button>
-                      <button className="text-gray-400 hover:text-teal-500 transition-colors">
-                        <MessageSquare className="w-5 h-5" />
-                      </button>
-                      <button className="text-gray-400 hover:text-teal-500 transition-colors">
-                        <Share2 className="w-5 h-5" />
-                      </button>
-                    </div>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      122 people viewed
-                    </span>
-                  </div>
-                </div>
+                
               </div>
             </div>
           </div>
@@ -408,7 +370,7 @@ export default function RetailersDealers() {
                   ))}
                 </ul>
 
-                <a href="/dealer-application">
+                <a href="/travel-insurance-providers-form">
                   <button className="group inline-flex items-center gap-2 px-7 py-3.5 bg-teal-500 hover:bg-teal-400 text-white font-semibold rounded-lg shadow-lg shadow-teal-500/30 transition-all duration-300 hover:-translate-y-0.5">
                     Join Now — Claim Bonus Package
                     <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -421,7 +383,7 @@ export default function RetailersDealers() {
               {/* Image side — exclusive onboarding offer badge */}
               <div className="relative min-h-[280px] md:min-h-full bg-gradient-to-br from-slate-900 via-blue-900 to-blue-950 flex items-center justify-center p-6">
                 <Image
-                  src="/image/onboarding-offer-badge.png"
+                  src="/image/Rectangle 41601 (1).png"
                   alt="Exclusive onboarding offer"
                   fill
                   className="object-cover"
