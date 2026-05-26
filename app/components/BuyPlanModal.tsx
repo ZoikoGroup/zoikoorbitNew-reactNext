@@ -218,8 +218,8 @@ export const BuyPlanModal = ({
   checkoutPath = "/checkout",
   cartKey = "zo_checkout",
 }: BuyPlanModalProps) => {
-  const [step, setStep] = useState<ModalStep>("choose-setup");
-  const [setupChoice, setSetupChoice] = useState<"new-sim" | "keep-number">("new-sim");
+  const [step, setStep] = useState<ModalStep>("choose-sim-type");
+  const [setupChoice] = useState<"new-sim">("new-sim");
   // simType is always "esim" | "psim" — never anything else
   const [simChoice, setSimChoice] = useState<"esim" | "psim">("esim");
 

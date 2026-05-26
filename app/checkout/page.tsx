@@ -1320,7 +1320,7 @@ export default function CheckoutPage() {
         onClose={() => {
           setShowThankYou(false);
           setCart([]);
-          window.location.href = "/dashboard";
+          window.location.href = "/dashboard/orders";
         }}
         title=""
       >
@@ -1371,7 +1371,7 @@ export default function CheckoutPage() {
             onClick={() => {
               setShowThankYou(false);
               setCart([]);
-              window.location.href = "/dashboard";
+              window.location.href = "/dashboard/orders";
             }}
             className="w-full py-3 rounded-xl bg-linear-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white font-bold text-sm transition-all shadow-md hover:shadow-lg mb-2"
           >
