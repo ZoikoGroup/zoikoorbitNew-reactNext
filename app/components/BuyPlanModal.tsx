@@ -36,7 +36,7 @@ export interface BuyPlanModalProps {
   onClose: () => void;
   /** Optional: override the checkout redirect path (default: "/checkout") */
   checkoutPath?: string;
-  /** Optional: override the localStorage cart key (default: "driverx_checkout") */
+  /** Optional: override the localStorage cart key (default: "zo_checkout") */
   cartKey?: string;
 }
 
@@ -216,7 +216,7 @@ const SimOptionCard = ({
 export const BuyPlanModal = ({
   plan, onClose,
   checkoutPath = "/checkout",
-  cartKey = "driverx_checkout",
+  cartKey = "zo_checkout",
 }: BuyPlanModalProps) => {
   const [step, setStep] = useState<ModalStep>("choose-setup");
   const [setupChoice, setSetupChoice] = useState<"new-sim" | "keep-number">("new-sim");

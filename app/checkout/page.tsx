@@ -462,7 +462,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     try {
       const storedCart = JSON.parse(
-        localStorage.getItem("driverx_checkout") ?? "[]"
+        localStorage.getItem("zo_checkout") ?? "[]"
       ) as RawCartItem[];
       const normalized: CartItem[] = (Array.isArray(storedCart) ? storedCart : []).map(
         normalizeCartItem
@@ -539,7 +539,7 @@ export default function CheckoutPage() {
   
   setCart(newCart);
   localStorage.setItem(
-    "driverx_checkout",
+    "zo_checkout",
     JSON.stringify(newCart.map((i) => i._raw))
   );
 };
@@ -548,12 +548,12 @@ export default function CheckoutPage() {
     const newCart = [...cart];
     newCart.splice(index, 1);
     setCart(newCart);
-    localStorage.setItem("driverx_checkout", JSON.stringify(newCart.map((i) => i._raw)));
+    localStorage.setItem("zo_checkout", JSON.stringify(newCart.map((i) => i._raw)));
   };
 
   const handleClearCart = () => {
     setCart([]);
-    localStorage.removeItem("driverx_checkout");
+    // localStorage.removeItem("zo_checkout");
   };
 
   // ── Coupon ────────────────────────────────────────────────────────────────
@@ -777,7 +777,7 @@ export default function CheckoutPage() {
       setShowOrderErrorPopup(true);
       return;
     }
-    localStorage.removeItem("driverx_checkout");
+    localStorage.removeItem("zo_checkout");
     setShowThankYou(true);
     
     console.log("✅ showThankYou set to true");  // ← ADD
