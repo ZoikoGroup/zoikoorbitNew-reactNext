@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import QRCode from "@/app/components/QRCode";
+import QRCode from "@/components/QRCode";
 import { getUser, isLoggedIn } from "@/utils/auth";
 
 // ── Types (kept in sync with the orders list page) ──────────────────────────
