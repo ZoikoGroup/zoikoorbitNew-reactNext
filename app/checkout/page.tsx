@@ -267,21 +267,7 @@ const AddressForm = ({
 
       return (
         <InputField key={key} label={meta.label} required={isRequired} error={errors[errKey]}>
-          {key === "state" ? (
-            <select
-              className={selectClass(errors[errKey])}
-              value={address.state}
-              onChange={(e) => setAddress({ ...address, state: e.target.value })}
-              disabled={loading}
-            >
-              <option value="">Select state</option>
-              {usStates.map((s) => (
-                <option key={s.code} value={s.code}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-          ) : (
+          
             <input
               type="text"
               className={inputClass(errors[errKey])}
@@ -290,7 +276,7 @@ const AddressForm = ({
               disabled={meta.disabled || loading}
               onChange={(e) => setAddress({ ...address, [key]: e.target.value })}
             />
-          )}
+          
         </InputField>
       );
     })}
