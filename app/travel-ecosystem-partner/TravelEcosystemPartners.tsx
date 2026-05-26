@@ -118,7 +118,7 @@ export default function TravelEcosystemPartners() {
               </p>
 
               <a
-                href="#"
+                href="/partner-with-us"
                 className="inline-block rounded-md bg-teal-600 px-7 py-3 text-sm font-semibold text-white transition-colors hover:bg-teal-700"
               >
                 Become a Partner

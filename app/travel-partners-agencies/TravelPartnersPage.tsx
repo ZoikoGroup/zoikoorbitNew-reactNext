@@ -136,9 +136,10 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElemen
             <p className="text-white text-base mb-8">
               Offer cutting-edge connectivity — and earn.
             </p>
-            <button className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-8 py-3 rounded-md text-base transition-all shadow-lg">
+              <a href="/partner-with-us">  <button className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-8 py-3 rounded-md text-base transition-all shadow-lg">
               Become a Partner
-            </button>
+            </button></a>
+          
           </div>
         </div>
       </section>

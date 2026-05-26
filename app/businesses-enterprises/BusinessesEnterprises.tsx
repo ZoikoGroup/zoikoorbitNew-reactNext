@@ -444,7 +444,7 @@ const handleChange = (
 
             {/* LINK */}
             <a
-              href={item.link}
+              href="/plans"
               className="
                 mt-5
                 inline-flex
