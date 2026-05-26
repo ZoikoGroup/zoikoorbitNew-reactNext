@@ -39,7 +39,7 @@ const languages = [
   { code: "PT", flag: "🇵🇹", label: "Portuguese" },
 ];
 
-const CART_KEY = "driverx_checkout";
+const CART_KEY = "zo_checkout";
 
 export default function Header() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
