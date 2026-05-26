@@ -256,7 +256,7 @@ const AddressForm = ({
   loading: boolean;
   includeShipping?: boolean;
 }) => (
-  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-900">
     {(Object.keys(address) as Array<keyof Address>).map((key) => {
       const meta = billingFieldMeta[key] || { label: key, placeholder: key };
       const errKey = `${prefix}${key.charAt(0).toUpperCase() + key.slice(1)}`;
@@ -1036,7 +1036,7 @@ export default function CheckoutPage() {
               <h2 className="font-bold text-gray-900 mb-1">
                 {hasShippingItem ? "Service / Billing Details" : "Billing Details"}
               </h2>
-              <p className="text-xs text-gray-500 mb-5">
+              <p className="text-xs text-gray-900 mb-5">
                 {hasShippingItem
                   ? "We'll use this for your payment and to ship your SIM card."
                   : "We'll use this for your payment and to send your eSIM activation details."}
