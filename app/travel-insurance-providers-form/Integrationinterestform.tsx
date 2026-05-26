@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 
 interface FormData {
-  FullName: string;
+  fullName: string;
   jobTitle: string;
   companyName: string;
   businessEmail: string;
@@ -21,7 +21,7 @@ interface FormData {
 
 export default function IntegrationInterestForm() {
   const [formData, setFormData] = useState<FormData>({
-    FullName: "",
+    fullName: "",
     jobTitle: "",
     companyName: "",
     businessEmail: "",
@@ -111,7 +111,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         },
 
         body: JSON.stringify({
-          full_name: formData.FullName,
+          full_name: formData.fullName,
           job_title: formData.jobTitle,
           company_name: formData.companyName,
           business_email: formData.businessEmail,
@@ -142,7 +142,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
       // Reset form
       setFormData({
-        FullName: "",
+        fullName: "",
         jobTitle: "",
         companyName: "",
         businessEmail: "",
@@ -199,8 +199,8 @@ const handleSubmit = async (e: React.FormEvent) => {
               <input
                 type="text"
                 required
-                value={formData.FullName}
-                onChange={(e) => handleInputChange("FullName", e.target.value)}
+                value={formData.fullName}
+                onChange={(e) => handleInputChange("fullName", e.target.value)}
                 placeholder="Enter Full Name"
                 className="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
               />
