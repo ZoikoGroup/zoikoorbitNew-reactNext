@@ -43,7 +43,7 @@ const languages = [
   { code: "PT", gt: "pt", flag: "🇵🇹", label: "Portuguese" },
 ];
 
-const CART_KEY = "driverx_checkout";
+const CART_KEY = "zo_checkout";
 
 // Tell TypeScript about the globals Google Translate adds to window.
 declare global {

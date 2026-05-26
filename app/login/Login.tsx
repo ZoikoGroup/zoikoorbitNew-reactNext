@@ -59,7 +59,7 @@ function LoginPageContent() {
       localStorage.setItem("zoikoorbit_token", data.token);
       localStorage.setItem("zoikoorbit_user", JSON.stringify(data.user));
 
-      router.replace(redirect || "/dashboard");
+      router.replace(redirect || "/dashboard/orders");
     } catch (err: any) {
       setError(err.message || "Login failed");
     } finally {

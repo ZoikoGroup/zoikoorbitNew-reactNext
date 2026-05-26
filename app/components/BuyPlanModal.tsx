@@ -36,7 +36,7 @@ export interface BuyPlanModalProps {
   onClose: () => void;
   /** Optional: override the checkout redirect path (default: "/checkout") */
   checkoutPath?: string;
-  /** Optional: override the localStorage cart key (default: "driverx_checkout") */
+  /** Optional: override the localStorage cart key (default: "zo_checkout") */
   cartKey?: string;
 }
 
@@ -54,7 +54,6 @@ export interface BuyPlanModalProps {
  *                                             → [checkout]  (pSIM)
  */
 type ModalStep =
-  | "choose-setup"
   | "choose-sim-type"  // New SIM: pick eSIM or pSIM
   | "esim-check"       // Both flows: IMEI compatibility check
   | "port-form"        // Keep Number: port details
@@ -216,10 +215,10 @@ const SimOptionCard = ({
 export const BuyPlanModal = ({
   plan, onClose,
   checkoutPath = "/checkout",
-  cartKey = "driverx_checkout",
+  cartKey = "zo_checkout",
 }: BuyPlanModalProps) => {
-  const [step, setStep] = useState<ModalStep>("choose-setup");
-  const [setupChoice, setSetupChoice] = useState<"new-sim" | "keep-number">("new-sim");
+  const [step, setStep] = useState<ModalStep>("choose-sim-type");
+  const [setupChoice] = useState<"new-sim">("new-sim");
   // simType is always "esim" | "psim" — never anything else
   const [simChoice, setSimChoice] = useState<"esim" | "psim">("esim");
 
@@ -259,18 +258,16 @@ export const BuyPlanModal = ({
   // New SIM:      Step 1 (Setup) → Step 2 (SIM type + IMEI if eSIM)  → 2 steps total
   // Keep Number:  Step 1 (Setup) → Step 2 (Port form) → Step 3 (SIM type + IMEI if eSIM) → 3 steps total
 
-  const totalSteps = setupChoice === "keep-number" ? 3 : 2;
+  const totalSteps = 2;
 
   const stepNumber: Record<ModalStep, number> = {
-    "choose-setup":   1,
-    "choose-sim-type":2,
+    "choose-sim-type":1,
     "esim-check":     2,  // New SIM eSIM path — still step 2
     "port-form":      2,  // Keep Number — step 2
     "port-sim-type":  3,  // Keep Number — step 3
   };
   // esim-check from Keep Number path is step 3
-  const currentStepNumber =
-    step === "esim-check" && setupChoice === "keep-number" ? 3 : stepNumber[step];
+  const currentStepNumber = stepNumber[step];
 
   // ── Cart ───────────────────────────────────────────────────────────────────
 
@@ -655,140 +652,12 @@ export const BuyPlanModal = ({
   const renderStep = () => {
 
     // ── STEP 1: Choose Setup ──────────────────────────────────────────────────
-    if (step === "choose-setup") return (
-      <>
-        <StepIndicator currentStep={1} totalSteps={totalSteps} />
-        <h2 className="text-xl font-extrabold text-gray-900 dark:text-white text-center mb-1">Get Started with Your Plan</h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">Choose how you'd like to set up your new mobile service</p>
-
-        <div className="space-y-3 mb-8">
-          {/* Get a New SIM */}
-          <button
-            onClick={() => setSetupChoice("new-sim")}
-            className={`w-full text-left rounded-2xl border-2 p-4 transition-all duration-200 flex items-start gap-4 ${
-              setupChoice === "new-sim"
-                ? "border-[#1a4a3f] bg-[#f0faf8] dark:bg-[#1a4a3f]/20"
-                : "border-gray-200 dark:border-gray-600 hover:border-gray-300 bg-white dark:bg-gray-700"
-            }`}
-          >
-            <div className="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center shrink-0 mt-0.5">
-              <svg className="w-6 h-6 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                <rect x="5" y="2" width="14" height="20" rx="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 7h14M5 17h14" />
-              </svg>
-            </div>
-            <div>
-              <p className="font-bold text-gray-900 dark:text-white text-sm mb-0.5">Get a New SIM</p>
-              <p className="text-gray-500 dark:text-gray-400 text-xs mb-2">Start fresh with a brand new phone number and SIM card</p>
-              <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">Instant activation | New phone number | Quick setup</p>
-            </div>
-            <div className={`ml-auto w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
-              setupChoice === "new-sim" ? "border-[#1a4a3f] bg-[#1a4a3f]" : "border-gray-300"
-            }`}>
-              {setupChoice === "new-sim" && <div className="w-2 h-2 rounded-full bg-white" />}
-            </div>
-          </button>
-
-          {/* Keep My Number */}
-          <div
-            onClick={() => setSetupChoice("keep-number")}
-            className={`w-full text-left rounded-2xl border-2 p-4 transition-all duration-200 cursor-pointer ${
-              setupChoice === "keep-number"
-                ? "border-[#1a4a3f] bg-[#f0faf8] dark:bg-[#1a4a3f]/20"
-                : "border-gray-200 dark:border-gray-600 hover:border-gray-300 bg-white dark:bg-gray-700"
-            }`}
-          >
-            <div className="flex items-start gap-4">
-              <div className="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center shrink-0 mt-0.5">
-                <svg className="w-6 h-6 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <p className="font-bold text-gray-900 dark:text-white text-sm mb-0.5">Keep My Number</p>
-                <p className="text-gray-500 dark:text-gray-400 text-xs mb-2">Transfer your existing phone number from another carrier</p>
-                <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">Keep your number | No interruption | Easy transfer</p>
-              </div>
-              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
-                setupChoice === "keep-number" ? "border-[#1a4a3f] bg-[#1a4a3f]" : "border-gray-300"
-              }`}>
-                {setupChoice === "keep-number" && <div className="w-2 h-2 rounded-full bg-white" />}
-              </div>
-            </div>
-
-            {/* Inline MDN check */}
-            {setupChoice === "keep-number" && (
-              <div className="mt-4 border-t border-[#1a4a3f]/20 pt-4" onClick={(e) => e.stopPropagation()}>
-                <p className="text-sm font-bold text-gray-800 dark:text-white mb-3">Check If Eligible to Port</p>
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <input
-                    type="tel"
-                    value={mdn}
-                    onChange={(e) => setMdn(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === "Enter") handleCheckMdn(); }}
-                    placeholder="Enter your MDN/MSISDN number"
-                    className={`flex-1 px-4 py-2.5 rounded-xl border text-sm bg-white dark:bg-gray-700 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1a8a76] transition ${
-                      mdnError ? "border-red-400" : "border-gray-200 dark:border-gray-500"
-                    }`}
-                  />
-                  <button
-                    onClick={handleCheckMdn}
-                    disabled={mdnChecking}
-                    className="flex items-center gap-1.5 px-4 py-2.5 bg-[#22c55e] hover:bg-[#16a34a] disabled:opacity-70 disabled:cursor-not-allowed text-white font-semibold text-sm rounded-xl transition-colors whitespace-nowrap"
-                  >
-                    {mdnChecking
-                      ? <><svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>Checking…</>
-                      : "Check My Number"}
-                  </button>
-                </div>
-                {mdnError && <p className="text-red-500 text-xs mt-1.5">{mdnError}</p>}
-                {mdnEligible === true && (
-                  <div className="mt-3 flex items-center gap-2 bg-green-50 dark:bg-green-900/20 border border-green-200 rounded-xl px-3 py-2">
-                    <svg className="w-4 h-4 text-green-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                    <p className="text-xs font-semibold text-green-800 dark:text-green-400">Your number is eligible to port!</p>
-                  </div>
-                )}
-                {mdnEligible === false && (
-                  <div className="mt-3 flex items-center gap-2 bg-red-50 dark:bg-red-900/20 border border-red-200 rounded-xl px-3 py-2">
-                    <svg className="w-4 h-4 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                    <p className="text-xs font-semibold text-red-700 dark:text-red-400">This number is not eligible to port. Please contact support.</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className=" flex-col flex items-center md:flex-row  justify-between gap-3">
-          <button onClick={onClose} className="px-6 py-2.5 rounded-full border-2 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 font-semibold text-sm hover:border-gray-300 transition-colors">
-            Cancel
-          </button>
-          {setupChoice === "new-sim" && (
-            <button
-              onClick={() => { setSimChoice("esim"); setCompatResult(null); setImei(""); setStep("choose-sim-type"); }}
-              className="flex items-center gap-2 px-7 py-2.5 bg-[#1a4a3f] hover:bg-[#133830] text-white font-semibold text-sm rounded-full transition-colors duration-200"
-            >
-              Continue
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
-            </button>
-          )}
-          {setupChoice === "keep-number" && mdnEligible === true && (
-            <button
-              onClick={() => setStep("port-form")}
-              className="flex items-center gap-2 px-7 py-2.5 bg-[#1a4a3f] hover:bg-[#133830] text-white font-semibold text-sm rounded-full transition-colors duration-200"
-            >
-              Continue
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
-            </button>
-          )}
-        </div>
-      </>
-    );
+  
 
     // ── STEP 2a: Choose SIM Type — New SIM flow ───────────────────────────────
     if (step === "choose-sim-type") return (
       <>
-        <StepIndicator currentStep={2} totalSteps={2} />
+        <StepIndicator currentStep={1} totalSteps={2} />
         <h2 className="text-xl font-extrabold text-gray-900 dark:text-white text-center mb-1">Choose Your SIM Type</h2>
         <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">Select how you'd like to receive your SIM</p>
 
@@ -802,7 +671,7 @@ export const BuyPlanModal = ({
         </div>
 
         <div className="flex items-center justify-between gap-3">
-          <button onClick={() => setStep("choose-setup")} className="flex items-center gap-1.5 px-5 py-2.5 rounded-full border-2 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 font-semibold text-sm hover:border-gray-300 transition-colors">
+          <button onClick={onClose} className="flex items-center gap-1.5 px-5 py-2.5 rounded-full border-2 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 font-semibold text-sm hover:border-gray-300 transition-colors">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
             Back
           </button>
@@ -818,8 +687,8 @@ export const BuyPlanModal = ({
 
     // ── STEP 2b / 3b: eSIM IMEI Check — shared by both flows ─────────────────
     if (step === "esim-check") {
-      const isPortFlow = setupChoice === "keep-number";
-      const backStep: ModalStep = isPortFlow ? "port-sim-type" : "choose-sim-type";
+      
+      const backStep: ModalStep = "choose-sim-type";
       return (
         <>
           <StepIndicator currentStep={currentStepNumber} totalSteps={totalSteps} />
@@ -834,7 +703,7 @@ export const BuyPlanModal = ({
               onClick={() => {
                 setSimChoice("psim");
                 setCompatResult(null); setImei("");
-                setStep(isPortFlow ? "port-sim-type" : "choose-sim-type");
+                setStep( "choose-sim-type");
               }}
               className="w-full text-left rounded-2xl border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 bg-white dark:bg-gray-700 p-4 transition-all duration-200 flex items-start gap-4"
             >
@@ -861,7 +730,7 @@ export const BuyPlanModal = ({
             </button>
             {compatResult?.compatible && (
               <button
-                onClick={isPortFlow ? handlePortEsimCheckout : handleNewSimEsimCheckout}
+                onClick={handleNewSimEsimCheckout}
                 className="flex items-center gap-2 px-7 py-2.5 bg-[#1a4a3f] hover:bg-[#133830] text-white font-semibold text-sm rounded-full transition-colors duration-200"
               >
                 Continue to Checkout
@@ -900,10 +769,10 @@ export const BuyPlanModal = ({
         </div>
 
         <div className="flex items-center justify-between gap-3">
-          <button onClick={() => setStep("choose-setup")} className="flex items-center gap-1.5 px-5 py-2.5 rounded-full border-2 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 font-semibold text-sm hover:border-gray-300 transition-colors">
+          {/* <button onClick={() => setStep("choose-setup")} className="flex items-center gap-1.5 px-5 py-2.5 rounded-full border-2 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 font-semibold text-sm hover:border-gray-300 transition-colors">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
             Back
-          </button>
+          </button> */}
           <button onClick={handlePortFormNext} className="flex items-center gap-2 px-7 py-2.5 bg-[#1a4a3f] hover:bg-[#133830] text-white font-semibold text-sm rounded-full transition-colors duration-200">
             Next: Choose SIM
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>

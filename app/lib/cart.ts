@@ -1,8 +1,8 @@
 // Cart helpers — read/write the localStorage cart and notify listeners.
 // The cart key must match whatever BuyPlanModal writes to. We currently use
-// "driverx_checkout" which is the BuyPlanModal default.
+// "zo_checkout" which is the BuyPlanModal default.
 
-export const CART_KEY = "driverx_checkout";
+export const CART_KEY = "zo_checkout";
 
 /** Raw shape of one cart line as written by BuyPlanModal. We're lenient about
  *  fields because users may have stale carts in their browser from earlier
