@@ -90,14 +90,7 @@ export default function PrivacyPolicy() {
               },
             ].map((item, i) => (
               <div key={i} className="flex items-start gap-3">
-                <div className="mt-0.5 flex-shrink-0 w-5 h-5 relative">
-                  <Image
-                    src={item.img}
-                    alt={item.alt}
-                    fill
-                    className="object-contain"
-                  />
-                </div>
+               
                 <p>
                   <span className="font-bold text-zinc-900 dark:text-white">{item.bold}</span>
                   {item.text}
@@ -143,14 +136,7 @@ export default function PrivacyPolicy() {
                 },
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-3">
-                  <div className="mt-0.5 flex-shrink-0 w-5 h-5 relative">
-                    <Image
-                      src={item.img}
-                      alt={item.alt}
-                      fill
-                      className="object-contain"
-                    />
-                  </div>
+                 
                   <span>{item.text}</span>
                 </li>
               ))}

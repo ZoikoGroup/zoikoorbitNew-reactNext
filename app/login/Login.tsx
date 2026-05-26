@@ -74,7 +74,7 @@ function LoginPageContent() {
         {/* LEFT */}
         <div className="w-full max-w-md mx-auto">
 
-          <Link href="/" className="text-sm text-gray-500 mb-4 inline-block">
+          <Link href="/" className="text-sm dark:bg-gray-900 dark:text-white text-gray-500 mb-4 inline-block">
             ← Back to Site
           </Link>
 
@@ -108,13 +108,13 @@ function LoginPageContent() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Username or Email"
-                className="w-full mt-1 px-4 py-3 rounded-lg border bg-gray-50 focus:ring-2 focus:ring-teal-600"
+                className="w-full mt-1 px-4 py-3 rounded-lg border dark:bg-gray-900 dark:text-white bg-gray-50 focus:ring-2 focus:ring-teal-600"
               />
             </div>
 
             {/* Password */}
             <div>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center ">
                 <label className="text-sm font-medium">
                   Password
                 </label>
@@ -129,7 +129,7 @@ function LoginPageContent() {
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 pr-10 rounded-lg border bg-gray-50 focus:ring-2 focus:ring-teal-600"
+                  className="w-full px-4 py-3 pr-10 rounded-lg border dark:bg-gray-900 dark:text-white bg-gray-50 focus:ring-2 focus:ring-teal-600"
                 />
 
                 <button
