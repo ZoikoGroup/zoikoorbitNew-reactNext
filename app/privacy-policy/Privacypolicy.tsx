@@ -53,50 +53,50 @@ export default function PrivacyPolicy() {
           <div className="space-y-4">
             {[
               {
-                img: "/image/Group 1597883246.png",
+                //img: "/image/Group 1597883246.png",
                 alt: "Collected",
                 bold: "Collected —",
                 text: " including personal identifiers, device metadata, SIM/eSIM profile details, and real-time network diagnostics",
               },
               {
-                img: "/image/used.png",
+                //img: "/image/used.png",
                 alt: "Used",
                 bold: "Used",
                 text: " — for service activation, account management, network optimization, fraud prevention, and personalized support",
               },
               {
-                img: "/image/shared.png",
+               // img: "/image/shared.png",
                 alt: "Shared",
                 bold: "Shared —",
                 text: " only with vetted processors and regulatory authorities where required by law",
               },
               {
-                img: "/image/protected.png",
+               // img: "/image/protected.png",
                 alt: "Protected",
                 bold: "Protected",
                 text: " — using zero-trust access controls, end-to-end encryption, and geographically distributed, SOC 2-compliant data centers",
               },
               {
-                img: "/image/stored.png",
+               // img: "/image/stored.png",
                 alt: "Stored",
                 bold: "Stored & Retained —",
                 text: " only for as long as necessary to meet legal, billing, and service continuity requirements",
               },
               {
-                img: "/image/deleted.png",
+               // img: "/image/deleted.png",
                 alt: "Deleted",
                 bold: "Deleted or Ported",
                 text: " — upon request, in accordance with your data rights",
               },
             ].map((item, i) => (
-              <div key={i} className="flex items-start gap-3">
+              <div key={i} className="flex items-start ">
                 <div className="mt-0.5 flex-shrink-0 w-5 h-5 relative">
-                  <Image
+                 {/* <Image
                     src={item.img}
                     alt={item.alt}
                     fill
                     className="object-contain"
-                  />
+                  />*/}
                 </div>
                 <p>
                   <span className="font-bold text-zinc-900 dark:text-white">{item.bold}</span>
@@ -117,39 +117,40 @@ export default function PrivacyPolicy() {
             <ul className="space-y-3 text-gray-700 dark:text-gray-300">
               {[
                 {
-                  img: "/image/access.png",
+                  //img: "/image/access.png",
                   alt: "Access",
                   text: "How to access, correct, restrict, or delete your personal information",
                 },
                 {
-                  img: "/image/object.png",
+                  //img: "/image/object.png",
                   alt: "Object",
                   text: "Your right to object to data profiling or direct marketing",
                 },
                 {
-                  img: "/image/lawful.png",
+                  //img: "/image/lawful.png",
                   alt: "Lawful",
                   text: "Our lawful bases for data processing (consent, contract, legal obligation, legitimate interest)",
                 },
                 {
-                  img: "/image/children.png",
+                  //img: "/image/children.png",
                   alt: "Children",
                   text: "How we handle children's data and ensure age-appropriate safeguards",
                 },
                 {
-                  img: "/image/dpo.png",
+                 // img: "/image/dpo.png",
                   alt: "DPO",
                   text: "How to file a concern with our Data Protection Officer (DPO) or local supervisory authority",
                 },
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-3">
+                  
                   <div className="mt-0.5 flex-shrink-0 w-5 h-5 relative">
-                    <Image
+                    {/*<Image
                       src={item.img}
                       alt={item.alt}
                       fill
                       className="object-contain"
-                    />
+                    />*/}
                   </div>
                   <span>{item.text}</span>
                 </li>

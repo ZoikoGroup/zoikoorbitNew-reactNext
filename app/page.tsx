@@ -33,6 +33,7 @@ const ecosystemPartners = [
       "Staff training & marketing toolkits",
     ],
     cta: "Become an Authorized Dealer",
+     link: "#"
   },
   {
     title: "Travel Agencies & OTAs",
@@ -42,6 +43,7 @@ const ecosystemPartners = [
       "Add eSIM to every booking",
     ],
     cta: "Integrate Zoiko Orbit",
+     link: "/travel-agencies-otas"
   },
   {
     title: "Travel Insurance Providers",
@@ -51,6 +53,7 @@ const ecosystemPartners = [
       "Customisable client dashboards",
     ],
     cta: "Offer Seamless Coverage",
+    link: "/travel-insurance-providers"
   },
 ];
 
@@ -73,6 +76,26 @@ const reviews = [
     rating: 4,
     text: "From Lagos to Dubai, my eSIM worked instantly. Proud to support a brand that helps animal shelters.",
   },
+  {
+   name: "Rajeev Nair",
+   location: "Mumbai, India",
+   rating: 5,
+   text:"Retailers are thrilled to carry Zoiko Orbit — superior tech, global reach, and a wildlife cause that truly sells."
+  },
+  {
+   name: "Camille Dupont",
+   location: "Marseille, France",
+   rating: 5,
+   text:"Kept me connected across four continents. Knowing every MB helps wildlife makes it twice as rewarding."
+  },
+  {
+   name: "Kenji Matsuda",
+   location: "Osaka, Japan",
+   rating: 5,
+   text:"Cut our corporate travel comms costs by 30%. Staff love the brand's heart for conservation."
+  },
+
+
 ];
 
 const trustedBrands = [
@@ -322,9 +345,9 @@ function EmpoweringSection() {
               <p className="text-xs font-semibold  dark:bg-gray-900 dark:text-white  text-gray-400 uppercase tracking-wider">
                 Value Gained
               </p>
-              <button className="text-teal-600 text-xs font-semibold hover:underline">
+              {/*<button className="text-teal-600 text-xs font-semibold hover:underline">
                 Show Us Why →
-              </button>
+              </button>*/}
             </div>
 
             {stats.map((stat, i) => (
@@ -405,8 +428,8 @@ function EcosystemPartners() {
                 <div className="border-t  dark:bg-gray-900 dark:text-white  border-gray-100" />
 
                 {/* CTA link */}
-                <a
-                  href="#"
+                <Link
+                    href={partner.link}
                   className="text-teal-600 text-sm font-semibold hover:text-teal-700 flex items-center gap-1.5 transition-colors"
                 >
                   {partner.cta}
@@ -421,7 +444,7 @@ function EcosystemPartners() {
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                   </svg>
-                </a>
+                </Link>
               </div>
             </div>
           ))}
@@ -513,6 +536,30 @@ function ExperienceBanner() {
 
 /** 7. CUSTOMER FEEDBACK */
 function CustomerFeedback() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const itemsPerPage = 3;
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) =>
+      prev === 0
+        ? reviews.length - itemsPerPage
+        : prev - 1
+    );
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) =>
+      prev >= reviews.length - itemsPerPage
+        ? 0
+        : prev + 1
+    );
+  };
+
+  const visibleReviews = reviews.slice(
+    currentIndex,
+    currentIndex + itemsPerPage
+  );
   return (
     <section className="py-16 px-4 md:px-16  dark:bg-gray-900 dark:text-white  bg-white">
       <div className="max-w-5xl mx-auto">
@@ -522,17 +569,21 @@ function CustomerFeedback() {
             <p className="text-gray-400 text-sm mt-1">Don't take our word for it. Trust our customers</p>
           </div>
           <div className="flex gap-2">
-            <button className="border border-gray-300 text-gray-600 text-xs px-3 py-1.5 rounded-md  dark:bg-gray-900 dark:text-white  hover:bg-gray-50 transition-all">
+            <button 
+             onClick={handlePrev}
+            className="border border-gray-300 text-gray-600 text-xs px-3 py-1.5 rounded-md  dark:bg-gray-900 dark:text-white  hover:bg-gray-50 transition-all">
               ‹ Previous
             </button>
-            <button className="border border-teal-600 text-teal-600 text-xs px-3 py-1.5 rounded-md  dark:bg-gray-900 dark:text-white  hover:bg-teal-50 transition-all">
+            <button 
+             onClick={handleNext}
+            className="border border-teal-600 text-teal-600 text-xs px-3 py-1.5 rounded-md  dark:bg-gray-900 dark:text-white  hover:bg-teal-50 transition-all">
               Next ›
             </button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5  dark:bg-gray-900 dark:text-white ">
-          {reviews.map((r, i) => (
+          {visibleReviews.map((r, i) => (
             <div
               key={i}
               className="bg-white border  dark:bg-gray-900 dark:text-white  border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all"

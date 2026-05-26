@@ -17,6 +17,8 @@ const ZoikoOrbitPage = () => {
     consent: false,
   });
 
+  const [showMore, setShowMore] = useState(false);
+  const [showMore2, setShowMore2] = useState(false);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -142,9 +144,11 @@ const ZoikoOrbitPage = () => {
             <p className="text-white dark:text-white text-lg mb-8 max-w-md">
               Enterprise eSIM solutions for corporate travel, remote teams, and global device deployments
             </p>
+            <a href="/plans">
             <button className="bg-cyan-400 hover:bg-cyan-300 text-gray-900 font-bold px-8 py-3 rounded-full text-base transition-all shadow-lg">
               Get Your eSIM
             </button>
+            </a>
           </div>
       
         </div>
@@ -233,7 +237,7 @@ const ZoikoOrbitPage = () => {
                 </div>
                 <h3 className="font-bold text-gray-900 dark:text-white mb-2">{item.title}</h3>
                 <p className="text-gray-500 dark:text-white text-sm mb-3">{item.desc}</p>
-                <a href="#" className="text-teal-700 dark:text-teal-400 text-sm font-semibold hover:underline">Learn More →</a>
+                <a href="/plans" className="text-teal-700 dark:text-teal-400 text-sm font-semibold hover:underline">Learn More →</a>
               </div>
             ))}
           </div>
@@ -300,26 +304,161 @@ const ZoikoOrbitPage = () => {
                 Industry: Legal Services, International Arbitration, Corporate Law<br />
                 Use Case Focus: Executive Airport Mobility & Real-Time Connectivity
               </p>
-              <a href="#" className="text-teal-700 dark:text-teal-400 text-sm font-semibold hover:underline">Read More →</a>
-            </div>
+<>
+  {showMore && (
+    <div className="mt-5">
+      <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">
+        The Challenge
+      </h3>
+
+      <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+        <li>Excessive roaming charges across international transit hubs.</li>
+        <li>Inconsistent network access during executive travel.</li>
+        <li>Unreliable video-call quality during urgent legal proceedings.</li>
+        <li>Fragmented IT controls for global mobile device usage.</li>
+      </ul>
+
+      <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">
+        The Zoiko Orbit™ Solution
+      </h3>
+
+      <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+        <li>Enterprise-grade eSIM deployment across 20+ countries.</li>
+        <li>Smart regional network routing for low latency connectivity.</li>
+        <li>Centralized policy-driven authentication and billing controls.</li>
+        <li>SLA-backed roaming plans with geo-fencing support.</li>
+        <li>Automated onboarding with GDPR & ISO 27001 compliance.</li>
+      </ul>
+
+      <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">
+        The Results
+      </h3>
+
+      <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+        <li>62% reduction in roaming costs.</li>
+        <li>89% improvement in HD video-call stability.</li>
+        <li>Zero downtime during urgent legal transactions.</li>
+        <li>Full deployment completed in less than 2 weeks.</li>
+      </ul>
+
+      <p className="italic text-sm text-gray-600 dark:text-white mb-5">
+        “Zoiko Orbit redefined how our partners connect globally —
+        seamless, compliant, and always-on.”
+      </p>
+    </div>
+  )}
+
+  <button
+    onClick={() => setShowMore(!showMore)}
+    className="text-teal-700 dark:text-teal-400 text-sm font-semibold hover:underline"
+  >
+    {showMore ? "Read less →" : "Read More →"}
+  </button>
+</>            </div>
           </div>
 
           {/* Case Study 2 - Text left, image right */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
             <div>
-              <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">
-                Luxury Reimagined: How a Global Hospitality Group Delivered Always-On VIP Connectivity Across 17 Countries
-              </h3>
-              <p className="text-sm text-gray-500 dark:text-white font-semibold mb-2">Client Overview</p>
-              <p className="text-sm text-gray-600 dark:text-white mb-3">
-                A premier hospitality chain operating over 200 properties across the Caribbean, LATAM, Europe, and Southeast Asia, catering to elite travellers and high-net-worth clientele.
-              </p>
-              <p className="text-xs text-gray-500 dark:text-white mb-4">
-                Industry: Travel, Leisure & Hospitality<br />
-                Use Case Focus: Guest eSIM Integration & Staff Mobility
-              </p>
-              <a href="#" className="text-teal-700 dark:text-teal-400 text-sm font-semibold hover:underline">Read More →</a>
-            </div>
+  <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">
+    Luxury Reimagined: How a Global Hospitality Group Delivered Always-On VIP Connectivity Across 17 Countries
+  </h3>
+
+  <p className="text-sm text-gray-500 dark:text-white font-semibold mb-2">
+    Client Overview
+  </p>
+
+  <p className="text-sm text-gray-600 dark:text-white mb-3">
+    A premier hospitality chain operating over 200 properties across the Caribbean,
+    LATAM, Europe, and Southeast Asia, catering to elite travellers and
+    high-net-worth clientele.
+  </p>
+
+  <p className="text-xs text-gray-500 dark:text-white mb-4">
+    Industry: Travel, Leisure & Hospitality<br />
+    Use Case Focus: Guest eSIM Integration & Staff Mobility
+  </p>
+
+  {showMore2 && (
+    <>
+      <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">
+        The Challenge
+      </h3>
+
+      <p className="text-sm text-gray-600 dark:text-white mb-3">
+        Guests arriving from international markets faced:
+      </p>
+
+      <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+        <li>Costly and complex SIM-swapping</li>
+        <li>Unreliable roaming with inconsistent speeds</li>
+        <li>Delayed concierge communications and check-in friction</li>
+      </ul>
+
+      <p className="text-sm text-gray-600 dark:text-white mb-3">
+        Internal staff — especially front-of-house teams — relied on local SIM cards that led to:
+      </p>
+
+      <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+        <li>Frequent disconnections</li>
+        <li>Missed VIP engagements</li>
+        <li>Lack of visibility into staff communication uptime</li>
+      </ul>
+
+      <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">
+        The Zoiko Orbit™ Solution
+      </h3>
+
+      <p className="text-sm text-gray-600 dark:text-white mb-3">
+        Zoiko Orbit delivered a white-labelled solution embedded within the brand’s loyalty ecosystem, enabling:
+      </p>
+
+      <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+        <li>Instant eSIM activation via QR codes at check-in</li>
+        <li>Dedicated VIP mobile plans with high-speed roaming in 190+ countries</li>
+        <li>Regional management dashboards to track usage per property</li>
+        <li>eSIM-based roaming for guest services teams with failover protection</li>
+        <li>Multi-language setup interface for global guest accessibility</li>
+      </ul>
+
+      <p className="text-sm text-gray-600 dark:text-white mb-5">
+        The Orbit Concierge Suite also provided guest behavior analytics,
+        enabling premium upsells and loyalty tracking.
+      </p>
+
+      <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">
+        The Results
+      </h3>
+
+      <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+        <li>41% boost in VIP satisfaction metrics across SEA and the Caribbean</li>
+        <li>96% reduction in guest mobile complaints</li>
+        <li>30% increase in staff response time efficiency</li>
+        <li>Introduced new $29.99 revenue stream per eSIM at flagship properties</li>
+        <li>100% guest services staff fully migrated in under 4 weeks</li>
+      </ul>
+
+      <p className="text-sm text-gray-600 dark:text-white mb-2">
+        Testimonial:
+      </p>
+
+      <p className="italic text-sm text-gray-600 dark:text-white mb-5">
+        “Zoiko Orbit gave our brand a connectivity edge — guests feel the luxury from the moment they land, and our teams never miss a beat.”
+      </p>
+
+      <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white mb-5">
+        <li>Group Director of Guest Experience</li>
+      </ul>
+    </>
+  )}
+
+  <button
+    onClick={() => setShowMore2(!showMore2)}
+    className="text-teal-700 dark:text-teal-400 text-sm font-semibold hover:underline"
+  >
+    {showMore2 ? "Read Less →" : "Read More →"}
+  </button>
+</div>
             <div className="relative w-full h-80 rounded-2xl overflow-hidden">
               <Image src="/image/x.png" alt="Hospitality case study" fill className="object-cover" />
             </div>
