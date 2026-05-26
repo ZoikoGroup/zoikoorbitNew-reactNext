@@ -24,7 +24,7 @@ const navLinks = [
     dropdown: [
       { label: "Travelers", href: "/travelers" },
       { label: "Businesses & Enterprises", href: "/businesses-enterprises" },
-      { label: "travel Partner & Agencies", href: "/travel-partners-agencies" },
+      { label: "Travel Partner & Agencies", href: "/travel-partners-agencies" },
       { label: "Our Impact", href: "/our-impact" },
     ],
   },

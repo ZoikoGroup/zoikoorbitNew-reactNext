@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 import { useState } from "react";
 import Image from "next/image";
@@ -85,11 +86,13 @@ const cards = [
     icon: "/image/Content.png",
     title: "For Individuals",
     desc: "One eSIM, global coverage, no hidden fees.",
+    location :"/personal-travelers",
   },
   {
     icon: "/image/Bag.png",
     title: "For Businesses",
     desc: "Retailers & Distributors, Travel Agencies & Tour Operators, Insurance & Loyalty Programs, Airlines & OTAs.",
+    location :"/businesses-enterprises",
   },
 ];
 const logos = [
@@ -154,55 +157,56 @@ function HeroSection() {
       </div>
 
       {/* ─── Info Cards ─── */}
-      <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 pb-6 sm:pb-8 -mt-4 sm:-mt-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-          {cards.map((card) => (
-            <div
-              key={card.title}
-              className="flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-4 sm:py-5 cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-xl bg-white/[0.98] rounded-[10px] shadow-[0_10px_30px_rgba(0,0,0,0.18),0_2px_6px_rgba(0,0,0,0.06)]"
-            >
-              {/* Icon container */}
-              <div className="flex-shrink-0 flex items-center justify-center rounded-full w-[56px] h-[56px] bg-[#2850b4]/10">
-                <Image
-                  src={card.icon}
-                  alt={card.title}
-                  width={60}
-                  height={60}
-                  unoptimized
-                  className="object-contain"
-                />
-              </div>
-
-              {/* Text */}
-              <div className="flex-1 text-left min-w-0">
-                <p className="font-bold leading-snug text-[clamp(0.95rem,1.4vw,1.05rem)] text-[#2a3a8c]">
-                  {card.title}
-                </p>
-                <p className="text-gray-500 leading-relaxed mt-1 text-[clamp(0.75rem,1.1vw,0.85rem)]">
-                  {card.desc}
-                </p>
-              </div>
-
-              {/* SVG Arrow */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="flex-shrink-0 w-[18px] h-[18px] text-[#2a3a8c]"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </div>
-          ))}
+     <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 pb-6 sm:pb-8 -mt-4 sm:-mt-6">
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+    {cards.map((card) => (
+      <Link
+        key={card.title}
+        href={card.location}
+        className="group flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-4 sm:py-5 cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-xl bg-white/[0.98] rounded-[10px] shadow-[0_10px_30px_rgba(0,0,0,0.18),0_2px_6px_rgba(0,0,0,0.06)]"
+      >
+        {/* Icon container */}
+        <div className="flex-shrink-0 flex items-center justify-center rounded-full w-[56px] h-[56px] bg-[#2850b4]/10">
+          <Image
+            src={card.icon}
+            alt={card.title}
+            width={60}
+            height={60}
+            unoptimized
+            className="object-contain"
+          />
         </div>
-      </div>
+
+        {/* Text */}
+        <div className="flex-1 text-left min-w-0">
+          <p className="font-bold leading-snug text-[clamp(0.95rem,1.4vw,1.05rem)] text-[#2a3a8c]">
+            {card.title}
+          </p>
+          <p className="text-gray-500 leading-relaxed mt-1 text-[clamp(0.75rem,1.1vw,0.85rem)]">
+            {card.desc}
+          </p>
+        </div>
+
+        {/* SVG Arrow */}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="flex-shrink-0 w-[18px] h-[18px] text-[#2a3a8c] group-hover:translate-x-1 transition-transform"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+          aria-hidden="true"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M9 5l7 7-7 7"
+          />
+        </svg>
+      </Link>
+    ))}
+  </div>
+</div>
     </section>
   );
 }
