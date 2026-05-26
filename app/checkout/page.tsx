@@ -229,7 +229,7 @@ const billingFieldMeta: Record<string, { label: string; placeholder: string; dis
   firstName:   { label: "First Name",       placeholder: "Enter your first name" },
   lastName:    { label: "Last Name",        placeholder: "Enter your last name" },
   companyName: { label: "Company Name",     placeholder: "Company name (optional)" },
-  region:      { label: "Country / Region", placeholder: "United States (US)", disabled: true },
+  region:      { label: "Country / Region", placeholder: "United States (US)"},
   state:       { label: "State",            placeholder: "Select state" },
   city:        { label: "City",             placeholder: "Enter your city" },
   street:      { label: "Street Address",   placeholder: "Enter your street address" },
