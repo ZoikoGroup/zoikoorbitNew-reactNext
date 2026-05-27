@@ -363,9 +363,11 @@ export default function Faqs() {
                       anywhere.
                     </p>
 
+                    <a href="https://zoiko-orbit-chatbot-git-722985113446.europe-west1.run.app/ui/">
                     <button className="text-[#007b95] dark:text-[#22D3EE] font-semibold hover:underline">
                       Chat Now →
                     </button>
+                    </a>
                   </div>
 
                   {/* Watch Videos */}
