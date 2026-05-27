@@ -59,8 +59,8 @@ export default function TravelEcosystemPartners() {
         website: formData.website.trim() ? formData.website : null,
       };
 
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/travel-ecosystem-partner/travel-ecosystem-inquiry/",
+    const response = await fetch(
+  `${process.env.NEXT_PUBLIC_API_URL}/api/travel-ecosystem-partner/travel-ecosystem-inquiry/`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

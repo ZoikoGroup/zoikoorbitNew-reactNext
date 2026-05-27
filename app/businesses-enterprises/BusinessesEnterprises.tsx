@@ -80,7 +80,7 @@ const handleSubmit = async (
   try {
 
     const response = await fetch(
-      "http://127.0.0.1:8000/api/business-enterprise/enterprise-inquiry/",
+  `${process.env.NEXT_PUBLIC_API_URL}/api/business-enterprise/enterprise-inquiry/`,
       {
         method: "POST",
 

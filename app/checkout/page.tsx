@@ -229,7 +229,7 @@ const billingFieldMeta: Record<string, { label: string; placeholder: string; dis
   firstName:   { label: "First Name",       placeholder: "Enter your first name" },
   lastName:    { label: "Last Name",        placeholder: "Enter your last name" },
   companyName: { label: "Company Name",     placeholder: "Company name (optional)" },
-  region:      { label: "Country / Region", placeholder: "United States (US)", disabled: true },
+  region:      { label: "Country / Region", placeholder: "United States (US)"},
   state:       { label: "State",            placeholder: "Select state" },
   city:        { label: "City",             placeholder: "Enter your city" },
   street:      { label: "Street Address",   placeholder: "Enter your street address" },
@@ -256,7 +256,7 @@ const AddressForm = ({
   loading: boolean;
   includeShipping?: boolean;
 }) => (
-  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-900">
     {(Object.keys(address) as Array<keyof Address>).map((key) => {
       const meta = billingFieldMeta[key] || { label: key, placeholder: key };
       const errKey = `${prefix}${key.charAt(0).toUpperCase() + key.slice(1)}`;
@@ -267,21 +267,7 @@ const AddressForm = ({
 
       return (
         <InputField key={key} label={meta.label} required={isRequired} error={errors[errKey]}>
-          {key === "state" ? (
-            <select
-              className={selectClass(errors[errKey])}
-              value={address.state}
-              onChange={(e) => setAddress({ ...address, state: e.target.value })}
-              disabled={loading}
-            >
-              <option value="">Select state</option>
-              {usStates.map((s) => (
-                <option key={s.code} value={s.code}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-          ) : (
+          
             <input
               type="text"
               className={inputClass(errors[errKey])}
@@ -290,7 +276,7 @@ const AddressForm = ({
               disabled={meta.disabled || loading}
               onChange={(e) => setAddress({ ...address, [key]: e.target.value })}
             />
-          )}
+          
         </InputField>
       );
     })}
@@ -462,7 +448,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     try {
       const storedCart = JSON.parse(
-        localStorage.getItem("driverx_checkout") ?? "[]"
+        localStorage.getItem("zo_checkout") ?? "[]"
       ) as RawCartItem[];
       const normalized: CartItem[] = (Array.isArray(storedCart) ? storedCart : []).map(
         normalizeCartItem
@@ -539,7 +525,7 @@ export default function CheckoutPage() {
   
   setCart(newCart);
   localStorage.setItem(
-    "driverx_checkout",
+    "zo_checkout",
     JSON.stringify(newCart.map((i) => i._raw))
   );
 };
@@ -548,12 +534,12 @@ export default function CheckoutPage() {
     const newCart = [...cart];
     newCart.splice(index, 1);
     setCart(newCart);
-    localStorage.setItem("driverx_checkout", JSON.stringify(newCart.map((i) => i._raw)));
+    localStorage.setItem("zo_checkout", JSON.stringify(newCart.map((i) => i._raw)));
   };
 
   const handleClearCart = () => {
     setCart([]);
-    localStorage.removeItem("driverx_checkout");
+    // localStorage.removeItem("zo_checkout");
   };
 
   // ── Coupon ────────────────────────────────────────────────────────────────
@@ -777,7 +763,7 @@ export default function CheckoutPage() {
       setShowOrderErrorPopup(true);
       return;
     }
-    localStorage.removeItem("driverx_checkout");
+    localStorage.removeItem("zo_checkout");
     setShowThankYou(true);
     
     console.log("✅ showThankYou set to true");  // ← ADD
@@ -1319,7 +1305,7 @@ export default function CheckoutPage() {
         onClose={() => {
           setShowThankYou(false);
           setCart([]);
-          window.location.href = "/dashboard";
+          window.location.href = "/dashboard/orders";
         }}
         title=""
       >
@@ -1370,7 +1356,7 @@ export default function CheckoutPage() {
             onClick={() => {
               setShowThankYou(false);
               setCart([]);
-              window.location.href = "/dashboard";
+              window.location.href = "/dashboard/orders";
             }}
             className="w-full py-3 rounded-xl bg-linear-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white font-bold text-sm transition-all shadow-md hover:shadow-lg mb-2"
           >
