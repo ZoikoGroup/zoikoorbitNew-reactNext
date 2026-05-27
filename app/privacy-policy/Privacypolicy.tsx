@@ -42,7 +42,7 @@ export default function PrivacyPolicy() {
 
       {/* ================= POLICY CONTENT ================= */}
       <section className="bg-white py-14 dark:bg-gray-900 dark:text-white">
-        <div className="mx-auto max-w-4xl px-6 md:px-12 space-y-8 text-sm text-gray-800 dark:text-gray-200 leading-relaxed">
+        <div className="mx-auto max-w-5xl px-6 md:px-2 space-y-5 text-l text-gray-800 dark:text-gray-200 leading-relaxed">
 
           {/* Intro line */}
           <p className="font-bold text-zinc-900 dark:text-white">

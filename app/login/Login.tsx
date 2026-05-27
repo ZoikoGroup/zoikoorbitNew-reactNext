@@ -30,7 +30,14 @@ function LoginPageContent() {
     e.preventDefault();
     setError(null);
     setLoading(true);
+    // ✅ Validate email before API call
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+if (!emailRegex.test(email)) {
+  setError("Please enter a valid email ID");
+  setLoading(false);
+  return;
+}
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/accounts/login/`,
