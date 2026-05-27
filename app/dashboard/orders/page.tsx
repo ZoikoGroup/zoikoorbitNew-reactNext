@@ -101,10 +101,10 @@ export default function MyOrdersPage() {
     <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
       <header className="mb-8 flex items-end justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+          <h1 className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
             My Orders
           </h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             Your purchases and SIM activation codes.
           </p>
         </div>
@@ -119,7 +119,7 @@ export default function MyOrdersPage() {
       {loading && <OrdersSkeleton />}
 
       {!loading && error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:text-red-400">
           {error}
         </div>
       )}
@@ -159,12 +159,12 @@ function OrderCard({ order }: { order: Order }) {
       >
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <p className="truncate text-base font-semibold text-gray-900">
+            <p className="truncate text-base font-semibold text-gray-900 dark:text-white">
               {planSummary}
             </p>
             <StatusBadge status={order.status} />
           </div>
-          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
+          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
             <span>Order #{order.id}</span>
             <span aria-hidden>•</span>
             <span>{date}</span>
@@ -183,12 +183,12 @@ function OrderCard({ order }: { order: Order }) {
         </div>
 
         <div className="flex shrink-0 items-center gap-4">
-          <span className="text-sm font-semibold text-gray-900">
+          <span className="text-sm font-semibold text-gray-900 dark:text-white">
             {formatMoney(order.total, order.currency)}
           </span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4 text-gray-400"
+            className="h-4 w-4 text-gray-400 dark:text-gray-500"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -232,7 +232,7 @@ function OrdersSkeleton() {
       {[0, 1, 2].map((i) => (
         <li
           key={i}
-          className="h-24 animate-pulse rounded-xl border border-gray-200 bg-gray-50"
+          className="h-24 animate-pulse rounded-xl border border-gray-200 bg-gray-50 dark:border-gray-600 dark:bg-gray-800"
         />
       ))}
     </ul>
@@ -241,11 +241,11 @@ function OrdersSkeleton() {
 
 function EmptyState() {
   return (
-    <div className="rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center">
-      <h2 className="text-base font-semibold text-gray-900">
+    <div className="rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center dark:bg-gray-800">
+      <h2 className="text-base font-semibold text-gray-900 dark:text-white">
         No orders yet
       </h2>
-      <p className="mt-1 text-sm text-gray-500">
+      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
         Once you purchase a plan, it'll show up here with your activation QR code.
       </p>
       <Link

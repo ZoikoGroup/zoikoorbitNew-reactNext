@@ -89,22 +89,22 @@ export default function TermsOfService() {
 
       {/* ================= CONTENT SECTION ================= */}
       <section className="bg-white py-14 dark:bg-gray-900 dark:text-white">
-        <div className="mx-auto max-w-4xl px-6 md:px-12 space-y-8 text-sm leading-relaxed text-gray-800 dark:text-gray-200">
+        <div className="mx-auto max-w-7xl px-4 md:px-8 space-y-8 text-sm md:text-base leading-relaxed text-gray-800 dark:text-gray-200">
 
           {/* Intro paragraph */}
-          <p>
+          <p className="text-base md:text-lg text-gray-700 dark:text-gray-300">
             Our goal is to deliver reliable, transparent service — and protect both your rights and
             ours — with fairness, precision, and full regulatory compliance.
           </p>
 
           {/* Key provisions */}
           <div className="space-y-3">
-            <p className="font-bold text-zinc-900 dark:text-white">
+            <p className="text-base md:text-lg font-bold text-zinc-900 dark:text-white">
               Key provisions include:
             </p>
 
             {provisions.map((item, i) => (
-              <p key={i}>
+              <p key={i} className="text-gray-700 dark:text-gray-300">
                 <span className="font-bold text-zinc-900 dark:text-white">
                   {item.bold}
                 </span>

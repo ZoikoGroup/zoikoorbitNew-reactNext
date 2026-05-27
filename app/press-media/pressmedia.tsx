@@ -18,11 +18,11 @@ export default function PressMedia() {
         <div className="absolute inset-0 bg-linear-to-r from-black/70 to-black/20" />
 
         {/* text */}
-        <div className="absolute right-10 top-1/2 -translate-y-1/2 text-white max-w-md">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">
+        <div className="absolute right-0 md:right-20 top-1/2 -translate-y-1/2 text-white max-w-md">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
             Press & Media
           </h1>
-          <p className="text-sm leading-relaxed text-gray-200">
+          <p className="text-sm md:text-base leading-relaxed text-gray-200">
             Stay informed with the latest developments from Zoiko Orbit —
             including product innovations, global rollouts, strategic alliances,
             sustainability initiatives, and thought leadership from our executive team.
