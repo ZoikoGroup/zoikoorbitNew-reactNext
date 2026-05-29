@@ -16,6 +16,13 @@ export default function CookiePreferences() {
             priority
             className="object-cover object-center"
           />
+            <Image
+                src="/image/cookie-settingmobile.png"
+                alt="cookie settings"
+                fill
+                priority
+                className="block md:hidden object-cover object-center"
+              />
           {/* Dark overlay */}
           <div className="absolute inset-0 bg-[#0f1b2d]/60" />
         </div>
@@ -28,7 +35,7 @@ export default function CookiePreferences() {
               <br />
               Powered by Consent
             </h1>
-            <p className="text-xs leading-relaxed text-gray-300 md:text-sm">
+            <p className="text-l leading-relaxed text-gray-300 md:text-sm">
               At Zoiko Orbit, we treat your data with the same precision as we deliver your
               connectivity. Our use of cookies and similar technologies is guided by
               global privacy law, ethical design, and your absolute right to control how
@@ -41,7 +48,7 @@ export default function CookiePreferences() {
 
       {/* ================= CONTENT SECTION ================= */}
       <section className="bg-white py-12 dark:bg-gray-900 dark:text-white">
-        <div className="mx-auto max-w-4xl px-6 md:px-12 space-y-8 text-sm leading-relaxed text-gray-700 dark:text-gray-300">
+        <div className="mx-auto max-w-6xl px-6 md:px-12 space-y-8 text-l leading-relaxed text-gray-700 dark:text-gray-300">
 
           {/* Intro */}
           <p>
