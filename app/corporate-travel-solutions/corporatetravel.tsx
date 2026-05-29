@@ -50,7 +50,7 @@ const testimonials = [
     image: "/image/Rectangle 729.png",
     rating: 5,
     message:
-      "Seamless connectivity everywhere I've traveled. Our executives stay connected without interruptions.",
+      "Seamless connectivity everywhere I've Seamless connectivity everywhere I’ve traveled — plus I’m helping save animals. Best travel choice I’ve made all year.. Our executives stay connected without interruptions.",
   },
   {
     name: "James Fielding",
@@ -58,7 +58,7 @@ const testimonials = [
     image: "/image/Rectangle 729 (1).png",
     rating: 5,
     message:
-      "Zoiko Orbit transformed the way our enterprise handles global mobility.",
+      "Zoiko Orbit transformed the way Zoiko Orbit integrated effortlessly into our agency’s portfolio. Clients love that it combines tech with a mission. enterprise handles global mobility.",
   },
   {
     name: "Nkechi Okafor",
@@ -66,7 +66,7 @@ const testimonials = [
     image: "/image/Rectangle 729 (2).png",
     rating: 4,
     message:
-      "Reliable enterprise-grade connectivity with impressive support worldwide.",
+      "Reliable enterprise-grade connectivity with From Lagos to Dubai, my eSIM worked instantly. Proud to support a brand that helps animal shelters support worldwide.",
   },
 ];
 
@@ -135,20 +135,19 @@ export default function page() {
               </h1>
 
               <p className="mt-6 text-[15px] md:text-[17px] leading-relaxed text-gray-200">
-                Zoiko Orbit delivers enterprise-ready eSIM connectivity
-                for organizations that move across borders, sectors,
-                and time zones.
+                Zoiko Orbit delivers enterprise-ready eSIM connectivity for organizations that move — across borders, sectors, and time zones. Our platform is engineered for global workforces, traveling executives, field teams, and remote-first operations that demand security, visibility, and compliance — at scale.
+
+
               </p>
 
               <p className="mt-4 text-[15px] md:text-[17px] leading-relaxed text-gray-300">
-                Whether you manage 10 consultants or 10,000 mobile users,
-                Zoiko Orbit ensures your teams stay connected,
-                protected, and compliant worldwide.
+              Whether you manage 10 consultants or 10,000 mobile users, Zoiko Orbit ensures your teams stay connected, protected, and in-policy — without the delays, logistics, or costs of traditional SIM provisioning.
+
               </p>
 
-              <button className="mt-8 bg-[#0d6e7a] hover:bg-[#095762] transition-all duration-300 text-white px-8 py-3 rounded-full text-sm font-semibold">
+             {/* <button className="mt-8 bg-[#0d6e7a] hover:bg-[#095762] transition-all duration-300 text-white px-8 py-3 rounded-full text-sm font-semibold">
                 Explore Solutions
-              </button>
+              </button>*/}
 
             </div>
           </div>
@@ -241,25 +240,22 @@ export default function page() {
 
           <div className="absolute inset-0 flex items-center">
 
-            <div className="px-6 md:px-16 max-w-3xl text-white">
+            <div className="px-6 md:px-11 max-w-xl text-white">
 
-              <h2 className="text-[30px] md:text-[44px] font-bold leading-tight">
+             {/* <h2 className="text-[30px] md:text-[44px] font-bold leading-tight">
                 Enterprise eSIM
                 <br />
                 infrastructure built
                 <br />
                 for scale.
-              </h2>
+              </h2>*/}
 
               <p className="mt-6 text-[15px] md:text-[17px] leading-relaxed text-gray-200">
-                Our enterprise eSIM architecture enables central control
-                with local flexibility so you can deploy, manage,
-                and scale travel connectivity securely.
+              Our enterprise eSIM architecture enables central control with local flexibility — so you can deploy, manage, and scale travel connectivity as a secure extension of your corporate infrastructure.
               </p>
 
-              <p className="mt-5 text-[15px] md:text-[17px] font-medium text-white">
-                Zoiko Orbit for Corporate Travel — because business
-                shouldn't stop at the border.
+              <p className="mt-5 text-[15px] md:text-[17px] font-medium font-bold text-white">
+               Zoiko Orbit for Corporate Travel — because business shouldn’t stop at the border.
               </p>
 
             </div>

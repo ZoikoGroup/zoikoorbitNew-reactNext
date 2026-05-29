@@ -16,6 +16,14 @@ export default function PrivacyPolicy() {
             priority
             className="object-cover object-center"  
           />
+            <Image
+                    src="/image/Group 1597883429.png"
+                    alt="Privacy Shield"
+                    fill
+                    priority
+                    className="block md:hidden object-cover object-center"
+                  />
+          
           {/* Dark Overlay */}
           <div className="absolute inset-0 bg-[#0f1b2d]/60" />
         </div>

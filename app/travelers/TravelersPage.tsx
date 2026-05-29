@@ -91,6 +91,78 @@ const plans = [
     popular: false,
   },
 ];
+const destinations = [
+  {
+    icon: "/image/destinations/Group 1597883214.png",
+    alt: "Europe & UK",
+    label: "Europe & UK",
+  },
+  {
+    icon: "/image/destinations/Group.png",
+    alt: "Rest of Europe",
+    label: "Rest of Europe",
+  },
+  {
+    icon: "/image/destinations/Camada 1.png",
+    alt: "North America",
+    label: "North America",
+  },
+  {
+    icon: "/image/destinations/Vector.png",
+    alt: "Central America & Caribbean",
+    label: "Central America & Caribbean",
+  },
+  {
+    icon: "/image/destinations/Vector (1).png",
+    alt: "South America",
+    label: "South America",
+  },
+  {
+    icon: "/image/destinations/Group 1597883188.png",
+    alt: "Africa",
+    label: "Africa",
+  },
+  {
+    icon: "/image/destinations/Rectangle 902.png",
+    alt: "Rest of Africa",
+    label: "Rest of Africa",
+  },
+  {
+    icon: "/image/destinations/Group (1).png",
+    alt: "Asia",
+    label: "Asia",
+  },
+  {
+    icon: "/image/destinations/Vector (2).png",
+    alt: "Rest of Asia",
+    label: "Rest of Asia",
+  },
+  {
+    icon: "/image/destinations/Group 1597883212.png",
+    alt: "Middle East & CIS",
+    label: "Middle East & CIS",
+  },
+  {
+    icon: "/image/destinations/Group (2).png",
+    alt: "Rest of Middle East",
+    label: "Rest of Middle East",
+  },
+  {
+    icon: "/image/destinations/Group 1597883188 (1).png",
+    alt: "Australia & New Zealand",
+    label: "Australia & New Zealand",
+  },
+  {
+    icon: "/image/destinations/Group 1597883215.png",
+    alt: "Pacific Islands",
+    label: "Pacific Islands",
+  },
+  {
+    icon: "/image/destinations/Group (4).png",
+    alt: "Global Premium & Ultra",
+    label: "Global Premium & Ultra",
+  },
+];
 
 const testimonials = [
   {
@@ -276,8 +348,52 @@ export default function TravelersPage() {
           </div>
         </div>
       </section>
-
-   
+      <section className="py-16 px-6 md:px-16 lg:px-28 bg-white dark:bg-gray-900">
+              <div className="max-w-5xl mx-auto">
+                <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 dark:text-white mb-2">
+                  Only pay for what you need. Stay in control.
+                </h2>
+                <p className="text-center text-sm text-gray-500 dark:text-gray-400 mb-8">
+                  Stay connected in over 220+ destinations worldwide, wherever you travel, at affordable rates
+                </p>
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                  <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                    Select your destination Where you&apos;re traveling to
+                  </span>
+                  <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 px-12">
+                  {destinations.map((d) => (
+                    <button
+                      key={d.label}
+                      className="flex items-center gap-3 px-2 py-3 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-teal-500 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-all text-left group"
+                    >
+                      <img
+                        src={d.icon}
+                        alt={d.label}
+                        className="w-7 h-5 object-cover rounded-sm shrink-0"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src =
+                            "https://cdn-icons-png.flaticon.com/512/616/616408.png";
+                        }}
+                      />
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-teal-700 dark:group-hover:text-teal-400 flex-1">
+                        {d.label}
+                      </span>
+                      <svg
+                        className="w- h-2 object-cover text-gray-400 group-hover:text-teal-500 shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </section>
 
       {/* ─── WHAT TRAVELERS ARE SAYING ──────────────── */}
       <section className="relative py-20 px-6 md:px-12 bg-[#eef2f7] dark:bg-gray-800 overflow-hidden">
@@ -353,6 +469,7 @@ export default function TravelersPage() {
           </div>
         </div>
       </section>
+
 
       {/* ─── FAQ ────────────────────────────────────── */}
       <section className="py-20 px-6 md:px-12 bg-white dark:bg-gray-900">

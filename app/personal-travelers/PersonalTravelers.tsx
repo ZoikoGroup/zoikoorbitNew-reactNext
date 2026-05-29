@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Heart, MessageSquare, Share2 } from "lucide-react";
 
 /* ─── DATA ─────────────────────────────────────────── */
 
@@ -49,20 +50,76 @@ const whyChoose = [
 ];
 
 const destinations = [
-  { flag: "https://flagcdn.com/w40/eu.png", label: "Europe & UK" },
-  { flag: "https://flagcdn.com/w40/gb.png", label: "Rest of Europe" },
-  { flag: "https://flagcdn.com/w40/us.png", label: "North America" },
-  { flag: "https://flagcdn.com/w40/tt.png", label: "Central America & Caribbean" },
-  { flag: "https://flagcdn.com/w40/br.png", label: "South America" },
-  { flag: "https://flagcdn.com/w40/za.png", label: "Africa" },
-  { flag: "https://flagcdn.com/w40/ke.png", label: "Rest of Africa" },
-  { flag: "https://flagcdn.com/w40/in.png", label: "Asia" },
-  { flag: "https://flagcdn.com/w40/cn.png", label: "Rest of Asia" },
-  { flag: "https://flagcdn.com/w40/ae.png", label: "Middle East & CIS" },
-  { flag: "https://flagcdn.com/w40/sa.png", label: "Rest of Middle East" },
-  { flag: "https://flagcdn.com/w40/au.png", label: "Australia & New Zealand" },
-  { flag: "https://flagcdn.com/w40/fj.png", label: "Pacific Islands" },
-  { flag: "https://flagcdn.com/w40/un.png", label: "Global Premium & Ultra" },
+  {
+    icon: "/image/destinations/Group 1597883214.png",
+    alt: "Europe & UK",
+    label: "Europe & UK",
+  },
+  {
+    icon: "/image/destinations/Group.png",
+    alt: "Rest of Europe",
+    label: "Rest of Europe",
+  },
+  {
+    icon: "/image/destinations/Camada 1.png",
+    alt: "North America",
+    label: "North America",
+  },
+  {
+    icon: "/image/destinations/Vector.png",
+    alt: "Central America & Caribbean",
+    label: "Central America & Caribbean",
+  },
+  {
+    icon: "/image/destinations/Vector (1).png",
+    alt: "South America",
+    label: "South America",
+  },
+  {
+    icon: "/image/destinations/Group 1597883188.png",
+    alt: "Africa",
+    label: "Africa",
+  },
+  {
+    icon: "/image/destinations/Rectangle 902.png",
+    alt: "Rest of Africa",
+    label: "Rest of Africa",
+  },
+  {
+    icon: "/image/destinations/Group (1).png",
+    alt: "Asia",
+    label: "Asia",
+  },
+  {
+    icon: "/image/destinations/Vector (2).png",
+    alt: "Rest of Asia",
+    label: "Rest of Asia",
+  },
+  {
+    icon: "/image/destinations/Group 1597883212.png",
+    alt: "Middle East & CIS",
+    label: "Middle East & CIS",
+  },
+  {
+    icon: "/image/destinations/Group (2).png",
+    alt: "Rest of Middle East",
+    label: "Rest of Middle East",
+  },
+  {
+    icon: "/image/destinations/Group 1597883188 (1).png",
+    alt: "Australia & New Zealand",
+    label: "Australia & New Zealand",
+  },
+  {
+    icon: "/image/destinations/Group 1597883215.png",
+    alt: "Pacific Islands",
+    label: "Pacific Islands",
+  },
+  {
+    icon: "/image/destinations/Group (4).png",
+    alt: "Global Premium & Ultra",
+    label: "Global Premium & Ultra",
+  },
 ];
 
 const faqs = [
@@ -162,10 +219,10 @@ export default function PersonalTravelers() {
                   src={w.icon}
                   alt={w.title}
                   className="w-20 h-20 object-contain"
-                  style={{
-                    filter:
-                      "invert(40%) sepia(80%) saturate(500%) hue-rotate(145deg)",
-                  }}
+                  //style={{
+                 //   filter:
+                  //    "invert(40%) sepia(80%) saturate(500%) hue-rotate(145deg)",
+                 // }}
                 />
                 <h3 className="font-bold text-sm text-gray-900 dark:text-white">{w.title}</h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400">{w.desc}</p>
@@ -191,14 +248,14 @@ export default function PersonalTravelers() {
             </span>
             <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 px-12">
             {destinations.map((d) => (
               <button
                 key={d.label}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-teal-500 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-all text-left group"
+                className="flex items-center gap-3 px-2 py-3 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-teal-500 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-all text-left group"
               >
                 <img
-                  src={d.flag}
+                  src={d.icon}
                   alt={d.label}
                   className="w-7 h-5 object-cover rounded-sm shrink-0"
                   onError={(e) => {
@@ -210,7 +267,7 @@ export default function PersonalTravelers() {
                   {d.label}
                 </span>
                 <svg
-                  className="w-4 h-4 text-gray-400 group-hover:text-teal-500 shrink-0"
+                  className="w- h-2 object-cover text-gray-400 group-hover:text-teal-500 shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -224,61 +281,132 @@ export default function PersonalTravelers() {
       </section>
 
       {/* ── Loved by Travelers ── */}
-      <section className="py-16 px-6 md:px-16 lg:px-28 bg-gray-50 dark:bg-gray-800">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-          {/* Left */}
-          <div>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white leading-tight mb-4">
-              Loved by<br />Travelers Everywhere.
+          <section className="bg-[#FAFAFA] py-16 px-6 md:px-16 lg:px-28 overflow-hidden">
+      <div className="max-w-[1200px] mx-auto">
+
+        {/* Mobile: Card First, Desktop: 2 Columns */}
+        <div className="flex flex-col-reverse md:grid md:grid-cols-2 gap-12 md:gap-20 items-center">
+
+          {/* LEFT CONTENT */}
+          <div className="text-center md:text-left">
+            <h2
+              className="
+                text-[40px]
+                md:text-[44px]
+                font-extrabold
+                leading-[110%]
+                text-[#333333]
+              "
+            >
+              Loved by
+              <br />
+              Travelers Everywhere.
             </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-              Zoiko Orbit™ has earned the trust of global travelers who value simplicity, speed, and reliability. Real
-              experiences, real journeys—here&apos;s a glimpse of what they love most.
+
+            <p
+              className="
+                mt-4
+                text-[16px]
+                text-[#555555]
+                leading-relaxed
+                max-w-[440px]
+                mx-auto
+                md:mx-0
+              "
+            >
+              Zoiko Orbit™ has earned the trust of global travelers who value
+              simplicity, speed, and reliability. Real experiences, real
+              journeys—here&apos;s a glimpse of what they love most.
             </p>
           </div>
 
-          {/* Right: review card */}
-          <div className="relative pb-10">
-            <img
-              src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600&q=80"
-              alt="Happy travelers"
-              className="rounded-2xl w-full h-52 object-cover shadow-lg"
-            />
-            <div className="absolute -bottom-2 left-4 right-4 bg-white dark:bg-gray-900 rounded-xl shadow-xl p-4 border border-gray-100 dark:border-gray-700">
-              <p className="text-xs font-semibold text-gray-800 dark:text-white mb-1">
-                &ldquo;Loved how simple activation was... no SIM swaps!&rdquo;
+          {/* REVIEW CARD */}
+          <div className="relative flex justify-center w-full">
+            <div
+              className="
+                relative
+                bg-white
+                rounded-[20px]
+                shadow-xl
+                w-full
+                max-w-[397px]
+                p-4
+              "
+            >
+              {/* Top Image */}
+              <img
+                src="/image/review-card-image.png"
+                alt="Happy Travelers" 
+                className="
+                  w-full
+                  h-auto
+                  rounded-[13px]
+                  object-cover
+                "
+              />
+
+              {/* Review Text */}
+              <h3
+                className="
+                  mt-4
+                  text-[22px]
+                  font-extrabold
+                  leading-tight
+                  text-black
+                "
+              >
+                Loved how simple activation was.
+                <br />
+                No SIM swaps!
+              </h3>
+
+              {/* Date */}
+              <p className="mt-2 text-[14px] text-[#8B8AA7]">
+                20 July 2025 | Erick Peters
               </p>
-              <p className="text-xs text-gray-400 mb-2">20 July 2025 | Erick Peters</p>
-              <div className="flex items-center justify-between">
-                <div className="flex gap-0.5">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <img
-                      key={i}
-                      src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png"
-                      alt="star"
-                      className="w-3 h-3"
-                      style={{
-                        filter:
-                          "invert(60%) sepia(100%) saturate(500%) hue-rotate(5deg)",
-                      }}
-                    />
-                  ))}
-                </div>
-                <div className="flex items-center gap-1 bg-green-600 px-2 py-0.5 rounded text-white text-xs font-bold">
-                  <img
-                    src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png"
-                    alt="trustpilot"
-                    className="w-3 h-3"
-                    style={{ filter: "invert(1)" }}
-                  />
-                  Trustpilot
-                </div>
+
+              {/* Icons */}
+              <div className="flex gap-4 mt-5">
+                <button className="w-11 h-11 rounded-full bg-[#F5F5F5] flex items-center justify-center">
+                  <Heart className="w-5 h-5 text-[#FF4B55] fill-[#FF4B55]" />
+                </button>
+
+                <button className="w-11 h-11 rounded-full bg-[#F5F5F5] flex items-center justify-center">
+                  <MessageSquare className="w-5 h-5 text-[#8B8AA7]" />
+                </button>
+
+                <button className="w-11 h-11 rounded-full bg-[#F5F5F5] flex items-center justify-center">
+                  <Share2 className="w-5 h-5 text-[#8B8AA7]" />
+                </button>
               </div>
-              <p className="text-xs text-gray-400 mt-1">122 people viewed</p>
+
+              {/* Viewed Count */}
+              <p className="mt-6 text-[14px] text-[#8B8AA7]">
+                122 people viewed
+              </p>
+
+              {/* Trustpilot Badge */}
+              <img
+                src="/image/trustpilot-badge.png"
+                alt="Trustpilot"
+                className="
+                  absolute
+                  w-[150px]
+                  md:w-[220px]
+                  right-[-20px]
+                  md:right-[-70px]
+                  top-[210px]
+                  md:top-[300px]
+                  rotate-[-1deg]
+                "
+              />
             </div>
           </div>
+
         </div>
-      </section>
+      </div>
+    </section>
+
 
       {/* ── FAQ ── */}
       <section className="py-20 px-6 md:px-16 lg:px-28 bg-white dark:bg-gray-900">
@@ -316,27 +444,55 @@ export default function PersonalTravelers() {
       </section>
 
       {/* ── Bottom CTA Banner ── */}
-      <section className="relative w-full overflow-hidden min-h-[320px] md:min-h-[380px]">
-        <img
-          src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=1400&q=80"
-          alt="Traveler on hilltop"
-          className="absolute inset-0 w-full h-full object-cover object-center"
-        />
-        <div className="absolute inset-0 bg-black/50" />
-        <div className="relative z-10 flex flex-col md:flex-row items-stretch min-h-[320px] md:min-h-[380px]">
-          <div className="hidden md:block md:w-1/2" />
-          <div className="w-full md:w-1/2 bg-teal-700/90 p-10 md:p-14 flex flex-col justify-center">
-            <h3 className="text-white text-lg md:text-xl font-bold leading-snug mb-4">
-              Experience the future of travel connectivity—one eSIM for every destination.
-            </h3>
-            <p className="text-teal-100 text-sm leading-relaxed">
-              Stay connected effortlessly across 220+ countries with a single Zoiko Orbit™ eSIM—no contracts, no SIM
-              swaps, no hidden fees. Enjoy seamless, secure, high-speed data wherever your journey takes you.
-            </p>
-          </div>
-        </div>
-      </section>
+      <section className="relative w-full h-[606px] md:h-[500px] overflow-hidden">
+  {/* Desktop Image */}
+  <img
+    src="/image/personal-traveller.png"
+    alt="Traveler"
+    className="hidden md:block absolute inset-0 w-full h-full object-cover"
+  />
 
+  {/* Mobile Image */}
+  <img
+    src="/image/personal-travellermobile.png"
+    alt="Traveler"
+    className="block md:hidden absolute inset-0 w-full h-full object-cover"
+  />
+
+  {/* Desktop Content */}
+  <div className="hidden md:flex absolute inset-0 z-20 items-center justify-end pr-22">
+    <div className="w-[564px] h-[359px] bg-[#00718A]/80 rounded-[10px] p-10 flex flex-col justify-center mt-32">
+      <h3 className="text-white text-[20px] font-bold mb-4">
+        Experience the future of travel connectivity—one eSIM for every
+        destination.
+      </h3>
+
+      <p className="text-white text-[14px] leading-relaxed">
+        Stay connected effortlessly across 220+ countries with a single
+        Zoiko Orbit™ eSIM—no contracts, no SIM swaps, no hidden fees.
+        Enjoy seamless, secure, high-speed data wherever your journey
+        takes you.
+      </p>
+    </div>
+  </div>
+
+  {/* Mobile Content */}
+  <div className="md:hidden absolute bottom-5 left-5 right-5 z-20">
+    <div className="bg-[#00718A]/80 rounded-[5px] p-4">
+      <h3 className="text-white text-[18px] font-bold mb-2 leading-tight">
+        Experience the future of travel connectivity—one eSIM for every
+        destination.
+      </h3>
+
+      <p className="text-white text-[12px] leading-relaxed">
+        Stay connected effortlessly across 220+ countries with a single
+        Zoiko Orbit™ eSIM—no contracts, no SIM swaps, no hidden fees.
+        Enjoy seamless, secure, high-speed data wherever your journey
+        takes you.
+      </p>
+    </div>
+  </div>
+</section>
     </main>
   );
 }
