@@ -6,23 +6,30 @@ export default function PressMedia() {
   return (
     <div className="w-full bg-white">
       {/* HERO SECTION */}
-      <div className="relative w-full h-[420px]">
+      <div className="relative w-full h-[600px] md:h-[420px]">
         <Image
           src="/image/Rectangle 41582.png"
           alt="press"
           fill
           className="object-cover"
         />
+        <Image
+              src="/image/press-mobile.png"
+              alt="press"
+              fill
+              priority
+              className="block md:hidden object-cover"
+            />
 
         {/* overlay */}
         <div className="absolute inset-0 bg-linear-to-r from-black/70 to-black/20" />
 
         {/* text */}
-        <div className="absolute right-0 md:right-20 top-1/2 -translate-y-1/2 text-white max-w-md">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+        <div className="absolute top-10 left-6 md:right-25 md:left-auto md:top-1/2 md:-translate-y-1/2 text-white max-w-md">          
+        <h1 className="text-[42px] md:text-4xl lg:text-5xl font-bold mb-4 leading-tight">
             Press & Media
           </h1>
-          <p className="text-sm md:text-base leading-relaxed text-gray-200">
+          <p className="text-base md:text-lg leading-8 text-gray-200 max-w-[320px]">
             Stay informed with the latest developments from Zoiko Orbit —
             including product innovations, global rollouts, strategic alliances,
             sustainability initiatives, and thought leadership from our executive team.
@@ -41,6 +48,7 @@ export default function PressMedia() {
             height={400}
             className="rounded-md object-cover w-full"
           />
+          
         </div>
 
         {/* Right Content */}

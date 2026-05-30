@@ -72,7 +72,7 @@ export default function InvestorRelations() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-center">
             {/* Left Content */}
             <div className="flex justify-center lg:justify-start order-2 lg:order-1">
-              <div className="max-w-2xl text-center lg:text-left">
+              <div className="max-w-2xl text-center lg:text-right">
                 <p
                   className="
                   text-[#2b2b2b]
@@ -217,8 +217,8 @@ export default function InvestorRelations() {
               className="
                 relative
                 lg:absolute
-                lg:right-[8%]
-                lg:bottom-[8%]
+                lg:right-[3%]
+                lg:bottom-[0%]
                 w-full
                 lg:w-[45%]
                 bg-[#007b95]/70

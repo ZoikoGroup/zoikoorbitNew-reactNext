@@ -64,6 +64,16 @@ export default function TermsOfService() {
       className="object-cover object-center"
     />
 
+    <div className="block sm:hidden w-full h-full">
+    <Image
+      src="/image/mobile-banner.png"
+      alt="Mobile Banner"
+      fill
+      priority
+      className="object-cover object-center"
+    />
+  </div>
+
     {/* Optional Dark Overlay */}
     <div className="absolute inset-0 bg-[#0f1b2d]/60" />
   </div>

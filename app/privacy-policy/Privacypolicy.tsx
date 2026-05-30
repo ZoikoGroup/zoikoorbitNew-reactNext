@@ -16,6 +16,14 @@ export default function PrivacyPolicy() {
             priority
             className="object-cover object-center"  
           />
+            <Image
+                    src="/image/Group 1597883429.png"
+                    alt="Privacy Shield"
+                    fill
+                    priority
+                    className="block md:hidden object-cover object-center"
+                  />
+          
           {/* Dark Overlay */}
           <div className="absolute inset-0 bg-[#0f1b2d]/60" />
         </div>
@@ -42,7 +50,7 @@ export default function PrivacyPolicy() {
 
       {/* ================= POLICY CONTENT ================= */}
       <section className="bg-white py-14 dark:bg-gray-900 dark:text-white">
-        <div className="mx-auto max-w-4xl px-6 md:px-12 space-y-8 text-sm text-gray-800 dark:text-gray-200 leading-relaxed">
+        <div className="mx-auto max-w-5xl px-6 md:px-2 space-y-5 text-l text-gray-800 dark:text-gray-200 leading-relaxed">
 
           {/* Intro line */}
           <p className="font-bold text-zinc-900 dark:text-white">

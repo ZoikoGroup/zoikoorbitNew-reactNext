@@ -31,9 +31,16 @@ export default function CorporateResponsibility() {
             className="
         object-cover
         object-[30%_center]
-        md:object-center
+        
       "
           />
+          <Image
+                              src="/image/corporate-responsibilitymobile.png"
+                              alt="Privacy Shield"
+                              fill
+                              priority
+                              className="block md:hidden object-cover object-center"
+                            />
 
           {/* Overlay */}
           <div className="absolute inset-0 bg-black/40 md:bg-white/55" />
@@ -64,44 +71,49 @@ export default function CorporateResponsibility() {
           "
               >
                 <h2
-                  className="
-              text-white
-              md:text-[#2b2b2b]
-              font-bold
-              leading-tight
-              text-4xl
-              sm:text-5xl
-              md:text-5xl
-              mb-6
-            "
-                >
-                  Corporate Responsibility
-                </h2>
+  className="
+    text-white
+    md:text-[#2b2b2b]
+    font-bold
+    text-[25px]
+    md:text-5xl
+    leading-[117%]
+     whitespace-nowrap
+    mb-3
+    md:mb-6
+  "
+>
+  Corporate Responsibility
+</h2>
 
-                <div
-                  className="
-              space-y-6
-              text-white
-              md:text-[#2b2b2b]
-              text-lg
-              leading-relaxed
-            "
-                >
-                  <p>
-                    Zoiko Orbit is deeply committed to responsible business
-                    practices that prioritize people, planet, and transparency.
-                    As part of Zoiko Group Inc., we align with global ESG
-                    frameworks and sustainability goals, embedding ethical
-                    governance, carbon awareness, and community engagement into
-                    every layer of our operations.
-                  </p>
+<div
+  className="
+    text-white
+    md:text-[#2b2b2b]
+    text-[15px]
+    md:text-lg
+    leading-[120%]
+    space-y-3
+    md:space-y-6
+    max-w-[320px]
+    md:max-w-none
+  "
+>
+  <p>
+    Zoiko Orbit is deeply committed to responsible business
+    practices that prioritize people, planet, and transparency.
+    As part of Zoiko Group Inc., we align with global ESG
+    frameworks and sustainability goals, embedding ethical
+    governance, carbon awareness, and community engagement into
+    every layer of our operations.
+  </p>
 
-                  <p>
-                    Our infrastructure runs on energy-efficient provisioning
-                    nodes, and our platform is designed to reduce SIM card waste
-                    by promoting 100% digital connectivity.
-                  </p>
-                </div>
+  <p>
+    Our infrastructure runs on energy-efficient provisioning
+    nodes, and our platform is designed to reduce SIM card waste
+    by promoting 100% digital connectivity.
+  </p>
+</div>
               </div>
             </div>
           </div>

@@ -21,6 +21,7 @@ export default function Aboutus() {
         priority
         sizes="100vw"
         className="object-cover object-center"
+        style={{ objectPosition: '80% 50%' }}
       />
       <div
         className="
@@ -321,16 +322,16 @@ on Nature & Safaris
   </div>
 
   {/* Content */}
-  <div className="relative max-w-7xl mx-auto px-6 flex justify-end">
+  <div className="relative max-w-7xl mx-auto px-6 md:px-8 flex justify-end">
     
     {/* Glass Card */}
-    <div className="bg-teal-700/80 backdrop-blur-md text-white p-8 md:p-10 rounded-xl max-w-xl shadow-xl">
+    <div className="bg-teal-600/80 backdrop-blur-md text-white p-8 md:p-10 rounded-xl max-w-xl shadow-xl">
       
-      <h3 className="text-2xl md:text-3xl font-semibold mb-4">
+      <h3 className="text-2xl md:text-3xl font-semibold mb-4 md:mb-6">
         Join Us in Redefining Travel
       </h3>
 
-      <p className="text-sm md:text-base leading-relaxed mb-4">
+      <p className="text-sm md:text-base leading-relaxed mb-4 md:mb-6">
       Whether you’re planning your next international adventure, 
 managing a retail chain seeking premium travel products, 
 or operating a travel agency or insurance platform eager to 
@@ -339,7 +340,7 @@ help you succeed.
 
       </p>
 
-      <p className="text-sm md:text-base leading-relaxed">
+      <p className="text-sm md:text-base leading-relaxed dark:text-gray-300">
         Together, we can build a world where you’re always connected, 
 and where every trip leaves a legacy of care, compassion, and a 
 better tomorrow.
