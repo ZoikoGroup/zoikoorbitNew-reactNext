@@ -610,28 +610,62 @@ function GlobalCoverage() {
 /** 6. EXPERIENCE BANNER */
 function ExperienceBanner() {
   return (
-    <section className="relative overflow-hidden">
-      <div className="w-full h-80 md:h-96 relative">
-        <img
-          src="/image/Rectangle 19 (2).png"
-          alt="Travel banner"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black/30" />
-      </div>
-
-      {/* Overlay card — bottom right */}
-      <div className="absolute right-8 bottom-8 md:right-16 md:bottom-10 bg-teal-700/95 backdrop-blur-sm text-white rounded-xl p-5 max-w-xs md:max-w-sm shadow-2xl">
-        <h3 className="font-extrabold text-base md:text-lg mb-2 leading-snug">
-          Experience the future of travel connectivity—use eSIM for every destination.
-        </h3>
-        <p className="text-teal-100 text-xs leading-relaxed mb-3">
-          Stay connected effortlessly across 190+ countries. Use eSIM with a single tap—eliminate
-          roaming costs, no SIM swaps, enjoy high-speed WiFi wherever your journey takes you.
-        </p>
-        <p className="text-teal-200 text-xs leading-relaxed">
-          Enjoy seamless top-ups, high-speed WiFi wherever your journey takes you.
-        </p>
+     <section className="bg-white dark:bg-gray-900 py-8 md:py-12">
+      <div className=" w-full">
+        {/*
+          MOBILE (default): stacked column — card on top, image below.
+          DESKTOP (md+):    single relative box — image fills, card overlays on right.
+        */}
+        <div className="relative flex flex-col md:block rounded-2xl overflow-hidden md:overflow-visible">
+          {/* Card — appears first on mobile (top), absolutely positioned on desktop */}
+          <div
+            className="
+              order-1 md:order-none
+              md:absolute md:right-6 lg:right-12 md:top-1/2 md:-translate-y-1/2
+              z-10
+              bg-teal-700/95 dark:bg-teal-800/95 backdrop-blur-sm
+              text-white
+              rounded-t-2xl md:rounded-2xl
+              p-6 md:p-7 lg:p-8
+              w-full md:max-w-md lg:max-w-lg
+              shadow-xl md:shadow-2xl
+            "
+          >
+            <h3 className="font-bold text-lg md:text-xl lg:text-2xl leading-snug mb-3 md:mb-4">
+              Experience the future of travel connectivity—one eSIM for every destination.
+            </h3>
+            <p className="text-teal-50/95 text-sm md:text-[15px] leading-relaxed">
+              Stay connected effortlessly across 190+ countries with a single
+              Zoiko Orbit™ eSIM—no contracts, no SIM swaps, no hidden fees.
+              Enjoy seamless, secure, high-speed data wherever your journey
+              takes you.
+            </p>
+          </div>
+ 
+          {/* Image — appears second on mobile (below card), full bleed on desktop */}
+          <div
+            className="
+              order-2 md:order-none
+              relative w-full
+              h-64 sm:h-80
+              md:h-[360px] lg:h-[420px]
+              overflow-hidden
+            "
+          >
+            <Image
+              src="/image/Rectangle 19 (2).png"
+              alt="Traveler on a mountainside using a phone"
+              fill
+              sizes="(max-width: 768px) 100vw, 100vw"
+              className="object-cover object-[20%_30%] md:object-center"
+            />
+            {/* Subtle dark overlay only on desktop, so the card has better contrast against the image */}
+            <div
+              className="hidden md:block absolute inset-0 bg-black/10"
+              aria-hidden="true"
+            />
+          </div>
+        </div>
       </div>
     </section>
   );

@@ -338,7 +338,7 @@ export default function MyAccountPage() {
           {/* Subscriber not found */}
           {!loading && subscriberNotFound && (
             <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
-              <img src="/img/cuate.png" alt="Welcome" className="max-w-xs mb-6" />
+              {/* <img src="/img/cuate.png" alt="Welcome" className="max-w-xs mb-6" /> */}
               <h3 className="text-2xl font-bold mb-2">👋 Welcome to the Zoiko Network, {userName}!</h3>
               <p className="text-gray-500 mb-6">
                 Your account is ready. To unlock high-speed 5G data, nationwide talk, and global messaging, let&apos;s choose your perfect plan.
@@ -573,7 +573,7 @@ export default function MyAccountPage() {
                     </Link>
                   </div>
                   <div className="flex gap-2 mt-3">
-                    <Link href="/24-7-driver-support">
+                    <Link href="/support">
                       <button className="px-3 py-1.5 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition-colors">
                         Contact Support
                       </button>
