@@ -29,7 +29,7 @@ export default function PrivacyPolicy() {
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 mx-auto flex min-h-[320px] max-w-7xl items-center px-6 py-16 md:min-h-[420px] md:px-12">
+        <div className="relative z-10 mx-auto flex min-h-[320px] max-w-7xl items-center px-6 py-4 md:min-h-[420px] md:px-12">
           <div className="max-w-2xl">
             <h1 className="mb-6 text-3xl font-extrabold leading-tight text-white md:text-5xl">
               Privacy by Design

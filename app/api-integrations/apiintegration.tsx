@@ -104,7 +104,7 @@ export default function ApiIntegrations() {
       </section>
 
       {/* BUILD WITH US */}
-      <section className="bg-white dark:bg-gray-900 py-10 md:py-16 px-5 md:px-14 lg:px-20 transition-colors duration-300">
+      <section className="bg-white dark:bg-gray-900 py-10 md:py-4 px-5 md:px-14 lg:px-20 transition-colors duration-300">
 
         <h2 className="text-center text-[26px] md:text-[42px] font-bold text-black dark:text-white mb-12 md:mb-16">
           Build With Us:
@@ -148,7 +148,7 @@ export default function ApiIntegrations() {
       </section>
 
       {/* ARCHITECTURE */}
-      <section className="bg-sky-50 dark:bg-gray-800 py-16 md:py-24 px-5 md:px-16 lg:px-20 transition-colors duration-300">
+      <section className="bg-sky-50 dark:bg-gray-800 py-4 md:py-24 px-5 md:px-16 lg:px-20 transition-colors duration-300">
 
         <div className="flex flex-col-reverse md:flex-row items-center gap-11 md:gap-20 max-w-[112rem] mx-auto">
 
@@ -210,7 +210,7 @@ export default function ApiIntegrations() {
 
           <div className="absolute inset-0 bg-black/10 dark:bg-black/40" />
 
-          <div className="absolute bottom-0 right-10 lg:right-20 bg-cyan-500/25 dark:bg-cyan-900/60 backdrop-blur-md py-20 px-12 lg:py-19 lg:px-12 w-[510px] lg:w-[550px] shadow-xl rounded-xl">
+          <div className="absolute bottom-0 right-10 lg:right-20 bg-cyan-500/25 dark:bg-cyan-900/60 backdrop-blur-md py-8 px-12 lg:py-19 lg:px-12 w-[510px] lg:w-[550px] shadow-xl rounded-xl">
 
             <p className="text-white text-[15px] lg:text-[20px] leading-[1.7] font-medium">
               Whether you&apos;re a digital-first travel agency, neobank, IoT

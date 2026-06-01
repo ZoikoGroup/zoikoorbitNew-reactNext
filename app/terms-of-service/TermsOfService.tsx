@@ -79,7 +79,7 @@ export default function TermsOfService() {
   </div>
 
         {/* Hero text — left side */}
-        <div className="relative z-10 mx-auto max-w-7xl px-6 py-14 md:px-12 md:py-16">
+        <div className="relative z-10 mx-auto max-w-7xl px-6 py-14 md:px-12 md:py-4">
           <div className="max-w-[520px]">
             <h1 className="mb-5 text-2xl font-extrabold leading-tight text-white md:text-4xl">
               Service Clarity. Global

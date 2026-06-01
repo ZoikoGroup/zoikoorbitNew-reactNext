@@ -273,7 +273,7 @@ export default function IntegrationInterestForm() {
         }
       `}</style>
 
-      <section className="max-w-5xl mx-auto px-6 lg:px-12 py-16 md:py-20">
+      <section className="max-w-5xl mx-auto px-6 lg:px-12 py-4 md:py-8">
         {/* Heading */}
         <div className="text-center mb-12 max-w-3xl mx-auto">
           <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4 leading-tight">

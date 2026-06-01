@@ -127,7 +127,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElemen
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent"></div>
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 w-full">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 py-8 w-full">
           <div className="max-w-xl">
             <h1 className="text-4xl md:text-5xl font-extrabold text-white leading-tight mb-4">
               Grow Your Business with<br />
@@ -145,7 +145,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElemen
       </section>
 
       {/* ============ WHY PARTNER WITH ZOIKO ORBIT ============ */}
-      <section className="py-16 bg-white dark:bg-gray-900">
+      <section className="py-4 bg-white dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             Why Partner with Zoiko Orbit™
@@ -198,7 +198,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElemen
       </section>
 
       {/* ============ INTEGRATE AND SELL EFFORTLESSLY ============ */}
-      <section className="py-16 bg-[#eaf3fb] dark:bg-gray-900">
+      <section className="py-4 bg-[#eaf3fb] dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
 
@@ -240,7 +240,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElemen
       </section>
 
       {/* ============ HOW TO INSTALL AND ACTIVATE ============ */}
-      <section className="py-16 bg-white dark:bg-gray-900">
+      <section className="py-4 bg-white dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             How to Install and Activate / Start eSIM

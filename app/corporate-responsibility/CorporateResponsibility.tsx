@@ -120,7 +120,7 @@ export default function CorporateResponsibility() {
         </div>
       </section>
 
-      <section className="relative w-full bg-[#f7f7f7] py-14 md:py-20 overflow-hidden">
+      <section className="relative w-full bg-[#f7f7f7] py-14 md:py-8 overflow-hidden">
         {/* Background Grid */}
         <div className="absolute inset-0 opacity-40 pointer-events-none">
           <div

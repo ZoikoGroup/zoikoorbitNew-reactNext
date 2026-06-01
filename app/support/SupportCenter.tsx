@@ -69,7 +69,7 @@ export default function SupportCenter() {
       </section>
 
       {/* ================= WHAT YOU CAN DO ================= */}
-      <section className="bg-white py-16 dark:bg-gray-900 dark:text-white">
+      <section className="bg-white py-4 dark:bg-gray-900 dark:text-white">
         <div className="mx-auto max-w-5xl px-6 md:px-12">
 
           {/* Heading */}

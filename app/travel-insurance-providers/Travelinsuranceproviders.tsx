@@ -108,7 +108,7 @@ export default function TravelInsuranceProviders() {
       </section>
 
       {/* Why Leading Insurers Partner Section */}
-      <section className="bg-slate-50 dark:bg-gray-900 py-20 md:py-28 transition-colors duration-300">
+      <section className="bg-slate-50 dark:bg-gray-900 py-8 md:py-28 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center mb-14">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3">
@@ -145,7 +145,7 @@ export default function TravelInsuranceProviders() {
       </section>
 
       {/* From Just Coverage to Total Traveler Enablement */}
-      <section className="bg-white dark:bg-gray-900 py-20 md:py-28 transition-colors duration-300 relative overflow-hidden">
+      <section className="bg-white dark:bg-gray-900 py-8 md:py-28 transition-colors duration-300 relative overflow-hidden">
         {/* Decorative grid background */}
         <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" style={{
           backgroundImage: "linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)",
@@ -188,7 +188,7 @@ export default function TravelInsuranceProviders() {
       </section>
 
       {/* Enterprise-Ready APIs Section */}
-      <section className="bg-slate-50 dark:bg-gray-900 py-20 md:py-28 transition-colors duration-300">
+      <section className="bg-slate-50 dark:bg-gray-900 py-8 md:py-28 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Image side */}
@@ -232,7 +232,7 @@ export default function TravelInsuranceProviders() {
       </section>
 
       {/* Proven Impact Section */}
-      <section className="bg-gradient-to-b from-blue-50 to-slate-50 dark:from-gray-900 dark:to-gray-900 py-20 md:py-28 transition-colors duration-300">
+      <section className="bg-gradient-to-b from-blue-50 to-slate-50 dark:from-gray-900 dark:to-gray-900 py-8 md:py-28 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center mb-14">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3">
@@ -273,7 +273,7 @@ export default function TravelInsuranceProviders() {
       </section>
 
       {/* Co-Create CTA Section */}
-      <section className="bg-white dark:bg-gray-900 py-20 md:py-28 transition-colors duration-300">
+      <section className="bg-white dark:bg-gray-900 py-8 md:py-28 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="relative rounded-3xl bg-gradient-to-br from-slate-50 via-white to-teal-50 dark:from-gray-800 dark:via-gray-800 dark:to-teal-950/30 border border-gray-100 dark:border-gray-700 overflow-hidden shadow-xl">
             <div className="grid md:grid-cols-2 items-center">

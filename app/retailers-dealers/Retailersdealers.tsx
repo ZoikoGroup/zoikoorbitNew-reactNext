@@ -105,7 +105,7 @@ export default function RetailersDealers() {
       </section>
 
       {/* ── Why Leading Retailers Partner Section ── */}
-      <section className="bg-slate-50 dark:bg-gray-900 py-20 md:py-28 transition-colors duration-300 relative overflow-hidden">
+      <section className="bg-slate-50 dark:bg-gray-900 py-8 md:py-28 transition-colors duration-300 relative overflow-hidden">
         {/* Decorative grid */}
         <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" style={{
           backgroundImage: "linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)",
@@ -142,7 +142,7 @@ export default function RetailersDealers() {
       </section>
 
       {/* ── Your Turnkey Retail Kit Section ── */}
-      <section className="bg-white dark:bg-gray-900 py-20 md:py-28 transition-colors duration-300">
+      <section className="bg-white dark:bg-gray-900 py-8 md:py-28 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Image side — collage */}
@@ -183,7 +183,7 @@ export default function RetailersDealers() {
       </section>
 
       {/* ── Join 1,000+ Retailers Banner ── */}
-      <section className="relative w-full overflow-hidden bg-gradient-to-r from-teal-600 via-teal-700 to-teal-800 dark:from-teal-800 dark:via-teal-900 dark:to-gray-900 py-20 md:py-24">
+      <section className="relative w-full overflow-hidden bg-gradient-to-r from-teal-600 via-teal-700 to-teal-800 dark:from-teal-800 dark:via-teal-900 dark:to-gray-900 py-8 md:py-24">
         {/* World map background pattern */}
         <div className="absolute inset-0 opacity-10">
           <svg viewBox="0 0 1200 600" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
@@ -233,7 +233,7 @@ export default function RetailersDealers() {
       </section>
 
       {/* ── We've Got Your Back Section ── */}
-      <section className="bg-slate-50 dark:bg-gray-900 py-20 md:py-28 transition-colors duration-300 relative overflow-hidden">
+      <section className="bg-slate-50 dark:bg-gray-900 py-8 md:py-28 transition-colors duration-300 relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" style={{
           backgroundImage: "linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)",
           backgroundSize: "60px 60px"
@@ -279,7 +279,7 @@ export default function RetailersDealers() {
       </section>
 
       {/* ── What Our Retail Partners Are Saying ── */}
-      <section className="bg-white dark:bg-gray-900 py-20 md:py-28 transition-colors duration-300">
+      <section className="bg-white dark:bg-gray-900 py-8 md:py-28 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Left content */}
@@ -318,7 +318,7 @@ export default function RetailersDealers() {
       </section>
 
       {/* ── Trusted by Global Leaders ── */}
-      <section className="bg-slate-50 dark:bg-gray-900 py-16 md:py-20 transition-colors duration-300">
+      <section className="bg-slate-50 dark:bg-gray-900 py-4 md:py-8 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <h2 className="text-center text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-10">
             Trusted by global leaders in travel & telecoms
@@ -344,7 +344,7 @@ export default function RetailersDealers() {
       </section>
 
       {/* ── Limited-Time Dealer Onboarding Bonus CTA ── */}
-      <section className="bg-white dark:bg-gray-900 py-20 md:py-28 transition-colors duration-300">
+      <section className="bg-white dark:bg-gray-900 py-8 md:py-28 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="relative rounded-3xl bg-gradient-to-br from-slate-50 via-white to-teal-50 dark:from-gray-800 dark:via-gray-800 dark:to-teal-950/30 border border-gray-100 dark:border-gray-700 overflow-hidden shadow-xl">
             <div className="grid md:grid-cols-2 items-stretch">

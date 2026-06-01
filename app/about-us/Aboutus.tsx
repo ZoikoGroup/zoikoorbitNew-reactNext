@@ -27,7 +27,7 @@ export default function Aboutus() {
       </section>
 
       {/* ================= WHO WE ARE ================= */}
-      <section className="py-20 bg-white  dark:text-white dark:bg-gray-900">
+      <section className="py-8 bg-white  dark:text-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 px-6 items-center">
           
           <div className="grid grid-cols-2 gap-2">
@@ -54,7 +54,7 @@ export default function Aboutus() {
       </section>
 
   {/* ================= WHY WE EXIST ================= */}
-<section className="py-20 bg-gray-100  dark:text-white dark:bg-gray-900">
+<section className="py-3 bg-gray-100  dark:text-white dark:bg-gray-900">
   <div className="max-w-7xl mx-auto px-6">
 
     {/* Top Heading */}
@@ -101,7 +101,7 @@ export default function Aboutus() {
 </section>
 
       {/* ================= UNIQUE FOCUS ================= */}
-      <section className="py-20 bg-white  dark:text-white dark:bg-gray-900">
+      <section className="py-8 bg-white  dark:text-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 px-6 items-center">
           
           <div>
@@ -125,7 +125,7 @@ on Nature & Safaris
 
    
  {/* ================= ECOSYSTEM ================= */}
-<section className="py-20 bg-gray-100  dark:text-white dark:bg-gray-900" >
+<section className="py-8 bg-gray-100  dark:text-white dark:bg-gray-900" >
   <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
 
     {/* LEFT IMAGE */}
@@ -184,7 +184,7 @@ on Nature & Safaris
 
 
 {/* ================= WHAT SETS US APART ================= */}
-<section className="py-20 bg-white text-center  dark:text-white dark:bg-gray-900">
+<section className="py-8 bg-white text-center  dark:text-white dark:bg-gray-900">
   <div className="max-w-7xl mx-auto px-6">
     <h2 className="text-3xl font-bold mb-12  dark:text-white dark:bg-gray-900 text-gray-900">
       What Sets Us Apart
@@ -235,7 +235,7 @@ on Nature & Safaris
   </div>
 </section>
 
-<section className="relative py-20">
+<section className="relative py-8">
   
   {/* Background Image */}
   <div className="absolute inset-0">

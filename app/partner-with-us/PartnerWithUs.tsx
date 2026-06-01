@@ -213,7 +213,7 @@ export default function PartnerWithUs() {
       </div>
 
       {/* ── PARTNERSHIP PATHWAYS ── */}
-      <section className="py-16 px-6 dark:bg-gray-900 dark:text-white bg-white">
+      <section className="py-4 px-6 dark:bg-gray-900 dark:text-white bg-white">
         <h2 className="text-2xl md:text-3xl font-bold text-center dark:bg-gray-900 dark:text-white text-gray-800 mb-12">
           Partnership Pathways
         </h2>
@@ -234,7 +234,7 @@ export default function PartnerWithUs() {
       </section>
 
       {/* ── PARTNER ADVANTAGES ── */}
-      <section className="py-16 px-6 dark:bg-gray-900 dark:text-white bg-[#f0f7f8]">
+      <section className="py-4 px-6 dark:bg-gray-900 dark:text-white bg-[#f0f7f8]">
         <h2 className="text-2xl md:text-3xl font-bold text-center dark:bg-gray-900 dark:text-white text-gray-800 mb-12">
           Partner Advantages
         </h2> 

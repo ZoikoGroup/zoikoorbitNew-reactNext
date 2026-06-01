@@ -38,7 +38,7 @@ export default function PressMedia() {
       </div>
 
       {/* CONTENT SECTION */}
-      <div className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-10 items-center dark:text-white dark:bg-gray-900">
+      <div className="max-w-6xl mx-auto px-6 py-4 grid md:grid-cols-2 gap-10 items-center dark:text-white dark:bg-gray-900">
         {/* Left Image */}
         <div className="w-full">
           <Image

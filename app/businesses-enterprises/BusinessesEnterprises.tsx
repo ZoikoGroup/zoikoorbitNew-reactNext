@@ -182,7 +182,7 @@ const handleChange = (
             </section>
 
             {/* Why Enterprises Choose Zoiko Orbit™ */}
-            <section className="bg-[#EAF4FA] dark:bg-[#0F172A] py-16 sm:py-20 lg:py-24">
+            <section className="bg-[#EAF4FA] dark:bg-[#0F172A] py-4 sm:py-8 lg:py-24">
 
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
@@ -306,7 +306,7 @@ const handleChange = (
             </section>
 
           {/* Solutions Built for Your Business. */}
-          <section className="relative overflow-hidden bg-white dark:bg-[#0F172A] py-16 sm:py-20 lg:py-24">
+          <section className="relative overflow-hidden bg-white dark:bg-[#0F172A] py-4 sm:py-8 lg:py-24">
 
   {/* BACKGROUND GRID */}
   <div
@@ -472,7 +472,7 @@ const handleChange = (
             </section>
 
             {/* Seamless Integration with Your Existing Systems */}
-             <section className="bg-[#e3eff8] py-20  dark:bg-gray-900 dark:text-white">
+             <section className="bg-[#e3eff8] py-8  dark:bg-gray-900 dark:text-white">
                 <div className="mx-auto max-w-7xl px-6 md:px-12">
                   {/* <div className="mb-14 text-center">
                     <h2 className="mb-3 text-3xl font-bold  dark:bg-gray-900 dark:text-white text-zinc-900 md:text-4xl">
