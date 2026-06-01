@@ -229,34 +229,45 @@ export default function TravelersPage() {
 
       {/* ─── HERO ───────────────────────────────────── */}
       <section className="relative w-full overflow-hidden">
-        <div className="relative h-[500px] md:h-[560px] w-full">
-          <img
-            src="/image/traveler.png"
-            alt="Travelers planning their trip with eSIM"
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
+  <div className="relative h-[500px] md:h-[560px] w-full">
+    {/* for desktop view */}
+    <img
+      src="/image/traveler.png"
+      alt="Travelers planning their trip with eSIM"
+      className="hidden md:block absolute inset-0 w-full h-full object-cover object-center" 
+      // style={{ objectPosition: "60% 40%" }}
+    />
+    {/* for mobile view */}
+    <img
+      src="/image/Rectangle 893(1).jpg"
+      alt="Travelers planning their trip with eSIM"
+      className="block md:hidden absolute inset-0 w-full h-full object-cover object-center" 
+      // style={{ objectPosition: "60% 40%" }}
+    />
+    <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
 
-          <div className="relative z-10 max-w-7xl mx-auto h-full px-6 md:px-12 flex items-center">
-            <div className="max-w-2xl text-white">
-              <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6">
-                Stay Connected <br />
-                Across 220+ Countries
-              </h1>
-              <p className="text-lg md:text-xl text-white/90 mb-8 max-w-md">
-                Instant eSIM activation. No roaming shocks. Every plan supports
-                animal welfare.
-              </p>
-              <a
-                href="/plans"
-                className="inline-block bg-[#2B4A9B] hover:bg-[#1f3a7d] text-white font-semibold px-8 py-3 rounded-md transition-colors"
-              >
-                Get Your eSIM
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+    {/* ← was relative, must be absolute */}
+    <div className="absolute inset-0 z-10 max-w-7xl mx-auto px-6 md:px-12 flex items-center">
+      <div className="max-w-xs md:max-w-2xl text-white">  {/* ← max-w-xs on mobile */}
+        <h1 className="text-3xl md:text-6xl font-bold leading-tight mb-4">
+          Travel Freely. Stay <br />
+          Connected Across <br />
+          220+ Countries
+        </h1>
+        <p className="text-sm md:text-xl text-white/90 mb-6 max-w-xs md:max-w-md">
+          Instant eSIM activation. No roaming shocks. Every plan supports
+          animal welfare.
+        </p>
+        <a
+          href="/plans"
+          className="inline-block bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-2.5 rounded-md transition-colors"
+        >
+          Get Your eSIM
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
 
       {/* ─── 3 SIMPLE STEPS ─────────────────────────── */}
       <section className="relative py-20 px-6 md:px-12 bg-white dark:bg-gray-900 overflow-hidden">
@@ -269,7 +280,7 @@ export default function TravelersPage() {
           }}
         />
 
-        <div className="relative max-w-7xl mx-auto">
+        <div className="relative max-w-6xl mx-auto">
           <div className="text-center mb-14">
             <h2 className="text-3xl md:text-4xl font-bold text-[#1F2937] dark:text-white mb-3">
               Get Online in 3 Simple Steps.
@@ -317,7 +328,7 @@ export default function TravelersPage() {
           }}
         />
 
-        <div className="relative max-w-7xl mx-auto">
+        <div className="relative max-w-6xl mx-auto">
           <div className="text-center mb-14">
             <h2 className="text-3xl md:text-4xl font-bold text-[#1F2937] dark:text-white mb-3">
               Why Choose Zoiko Orbit
@@ -358,7 +369,7 @@ export default function TravelersPage() {
                 </p>
                 <div className="flex items-center gap-3 mb-5">
                   <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
-                  <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                  <span className="text-sm md:text-base font-semibold text-gray-700 dark:text-gray-400 underline underline-offset-6 decoration-[#0B7285] decoration-4">
                     Select your destination Where you&apos;re traveling to
                   </span>
                   <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />

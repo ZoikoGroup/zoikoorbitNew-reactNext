@@ -34,8 +34,8 @@ export default function EditProfilePage() {
 
   // ── Load token & user from localStorage ──
   useEffect(() => {
-    const storedToken = localStorage.getItem("driverx_token") || "";
-    const storedUser = localStorage.getItem("driverx_user");
+    const storedToken = localStorage.getItem("token") || "";
+    const storedUser = localStorage.getItem("user");
 
     setToken(storedToken);
 

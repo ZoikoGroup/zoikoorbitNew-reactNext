@@ -10,19 +10,19 @@ const howItWorks = [
     step: "1",
     img: "/image/Rectangle 908 (1).png",
     title: "Pick Your Destination & Plan",
-    desc: "Select a sub-region and then your specific country to view coverage and pricing.",
+    desc: "Choose from Global, Regional, or Sub-Regional plans tailored for your travel zone.",
   },
   {
     step: "2",
     img: "/image/Rectangle 909 (1).png",
     title: "Activate Instantly",
-    desc: "After purchase, receive a QR code and simple instructions. Scan and connect in minutes.",
+    desc: "Secure checkout → receive QR code → scan or enter details to install",
   },
   {
     step: "3",
     img: "/image/Rectangle 910 (1).png",
     title: "Roam Worldwide",
-    desc: "Enjoy fast, reliable data across all countries in your chosen sub-region with automatic Tier-1 carrier switching.",
+    desc: "Connect to Tier-1 networks in 220+ countries instantly.",
   },
 ];
 
@@ -123,10 +123,26 @@ const destinations = [
 ];
 
 const faqs = [
-  "How do I install an eSIM?",
-  "Does Zoiko Orbit work on my phone?",
-  "Can I top up my plan?",
-  "What if I face connectivity issues?",
+  {
+    id: 1,
+    question:"How do I install an eSIM?",
+    answer:"After purchase, you will receive a QR code and simple instructions. Just scan the code or enter the details to install your eSIM and connect in minutes."
+  },
+  {
+    id: 2,
+    question:"Does Zoiko Orbit work on my phone?",
+    answer:"Yes, Zoiko Orbit is compatible with most smartphones and tablets."
+  },
+  {
+    id: 3,
+    question:"Can I top up my plan?",
+    answer:"Yes, you can top up your plan at any time through our mobile app or website."
+  },
+  {
+    id: 4,
+    question:"What if I face connectivity issues?",
+    answer:"Our 24/7 support team is available to assist you with any connectivity issues you may encounter."
+  },
 ];
 
 /* ─── COMPONENT ─────────────────────────────────────── */
@@ -143,7 +159,12 @@ export default function PersonalTravelers() {
         <img
           src="/image/Rectangle 4 (5).png"
           alt="Traveler at airport"
-          className="absolute inset-0 w-full h-full object-cover object-center"
+          className="hidden md:block absolute inset-0 w-full h-full object-cover object-center"
+        />
+        <img
+          src="/image/Rectangle893.jpg"
+          alt="Traveler at airport"
+          className="block md:hidden absolute inset-0 w-full h-full object-cover object-center"
         />
         <div className="absolute inset-0 bg-linear-to-r from-black/75 via-black/50 to-transparent" />
         <div className="relative z-10 flex flex-col justify-center h-full px-8 md:px-20 max-w-2xl">
@@ -155,7 +176,7 @@ export default function PersonalTravelers() {
           </p>
           <a
             href="/plans"
-            className="inline-flex items-center gap-2 w-fit bg-teal-500 hover:bg-teal-600 text-white font-semibold text-sm px-6 py-3 rounded-full transition-colors"
+            className="inline-flex items-center gap-2 w-fit bg-[#0B7285] hover:bg-teal-600 text-white font-semibold text-sm px-6 py-3 rounded-xl transition-colors"
           >
             {/*<img
               src="https://cdn-icons-png.flaticon.com/512/1611/1611179.png"
@@ -243,7 +264,7 @@ export default function PersonalTravelers() {
           </p>
           <div className="flex items-center gap-3 mb-5">
             <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
-            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 whitespace-nowrap">
+            <span className="text-sm md:text-base font-semibold text-gray-700 dark:text-gray-400 whitespace-nowrap  underline underline-offset-6 decoration-[#0B7285] decoration-4">
               Select your destination Where you&apos;re traveling to
             </span>
             <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
@@ -415,16 +436,16 @@ export default function PersonalTravelers() {
             Got Questions? We&apos;ve Got Answers
           </h2>
           <div className="border-t border-gray-200 dark:border-gray-700">
-            {faqs.map((q, i) => (
+            {faqs.map((faq, i) => (
               <div
-                key={q}
+                key={faq.id}
                 className="border-b border-gray-200 dark:border-gray-700"
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
                   className="w-full flex items-center justify-between py-4 text-left text-sm font-medium text-gray-800 dark:text-gray-200 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
                 >
-                  <span>{q}</span>
+                  <span>{faq.question}</span>
                   <img
                     src="https://cdn-icons-png.flaticon.com/512/271/271228.png"
                     alt="chevron"
@@ -434,7 +455,7 @@ export default function PersonalTravelers() {
                 </button>
                 {openFaq === i && (
                   <p className="text-sm text-gray-500 dark:text-gray-400 pb-4 leading-relaxed">
-                    Please visit our Support Center or contact us at info@zoikoorbit.com for detailed guidance.
+                    {faq.answer}
                   </p>
                 )}
               </div>

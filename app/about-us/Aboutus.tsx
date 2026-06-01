@@ -5,53 +5,126 @@ export default function Aboutus() {
     <div className="w-full dark:text-white dark:bg-gray-900">
 
       {/* ================= HERO ================= */}
-      <section className="relative h-[85vh] ">
-        <Image
-          src="/image/Rectangle 4 (1).png"
-          alt="hero"
-          fill
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-black/50 flex items-center">
-          <div className="max-w-4xl mx-auto px-6 text-white">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight">
-              Your World. Always Connected. <br />
+       <section
+      className="
+        relative w-full overflow-hidden
+        min-h-[600px] md:min-h-[85vh]
+        bg-neutral-900 dark:bg-black
+      "
+      aria-label="Hero - Your World. Always Connected. Always Compassionate."
+    >
+      {/* Background image */}
+      <Image
+        src="/image/Rectangle 4 (1).png"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover object-center"
+        style={{ objectPosition: '80% 50%' }}
+      />
+      <div
+        className="
+          absolute inset-0
+          bg-gradient-to-b from-black/80 via-black/55 to-black/20
+          md:bg-gradient-to-r md:from-black/80 md:via-black/55 md:to-black/10
+        "
+        aria-hidden="true"
+      />
+ 
+      {/* Subtle dark-mode tint for extra contrast in dark mode */}
+      <div
+        className="absolute inset-0 hidden dark:block bg-black/20"
+        aria-hidden="true"
+      />
+ 
+      {/* Content */}
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-6 sm:px-8 lg:px-12">
+        <div
+          className="
+            flex min-h-[600px] md:min-h-[85vh]
+            items-start md:items-center
+            pt-16 md:pt-0
+          "
+        >
+          <div className=" text-white">
+            <h1
+              className="
+                font-bold tracking-tight leading-[1.1]
+                text-2xl sm:text-3xl md:text-5xl lg:text-6xl
+                mb-5 md:mb-6 max-w-[18ch] md:max-w-none
+              "
+            >
+              Your World.
+              Always Connected. <br />
               Always Compassionate.
             </h1>
-            <p className="max-w-xl text-lg text-gray-200">
-              Travel is more than moving — it’s about connection,
-              culture, and meaningful experiences across the world.
-            </p>
+ 
+            <div className="space-y-4 max-w-xl text-sm sm:text-base md:text-lg leading-relaxed text-gray-100/90">
+              <p>
+                At Zoiko Orbit, we believe travel is more than moving from one
+                place to another — it&apos;s about deep connections. Connections
+                to people. To cultures. And to the breathtaking natural world
+                that makes every journey unforgettable.
+              </p>
+              <p>
+                We exist to keep you connected everywhere you go, while
+                championing a richer, more compassionate planet for all who
+                call it home.
+              </p>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
       {/* ================= WHO WE ARE ================= */}
-      <section className="py-20 bg-white  dark:text-white dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 px-6 items-center">
-          
-          <div className="grid grid-cols-2 gap-2">
-            <Image src="/image/Group 1597883160.png" width={500} height={300} className="rounded-xl" alt="" />
-
+       <section className="bg-white dark:bg-gray-900 py-8 md:py-16 lg:py-18">
+      <div className="mx-auto w-full max-w-7xl px-6 sm:px-8 lg:px-12">
+        <div className="grid md:grid-cols-2 gap-10 lg:gap-16 items-center">
+          {/* Image column — single composite image */}
+          <div className="relative w-full">
+            <div className="relative w-full aspect-[4/3] md:aspect-[5/4] rounded-2xl overflow-hidden">
+              <Image
+                src="/image/Group 1597883160.png"
+                alt="Zoiko Orbit — global travel connectivity illustration"
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-contain"
+                priority={false}
+              />
+            </div>
           </div>
-
-          <div>
-            <h2 className="text-3xl font-bold mb-4 text-zinc-900  dark:text-white dark:bg-gray-900">Who We Are</h2>
-            <p className="text-gray-800 leading-relaxed  dark:text-white dark:bg-gray-900">
-              Zoiko Orbit™ is the premier global travel connectivity platform under Zoiko Communications Group Inc., part of the dynamic Zoiko Group — a diversified multinational enterprise spanning telecommunications, fintech, healthcare, technology, and consumer brands.
-            </p >
-
-
-            <br />
-
-            <p className="text-gray-800 leading-relaxed  dark:text-white dark:bg-gray-900">
-                Born from the robust telecom foundation of Zoiko Mobile, we draw on decades of engineering world-class networks. Yet as a proud brand in the Zoiko family, we also carry forward something deeper: a shared promise to uplift lives and protect the remarkable diversity of our world.
-
-
-            </p>
+ 
+          {/* Text column */}
+          <div className="max-w-xl">
+            {/* Desktop heading — hidden on mobile since it's rendered above the image */}
+            <h2 className=" text-3xl lg:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-5">
+              Who We Are
+            </h2>
+ 
+            <div className="space-y-5 text-base md:text-[15px] lg:text-base leading-relaxed text-gray-700 dark:text-gray-300">
+              <p>
+                <span className="font-medium text-zinc-900 dark:text-white">
+                  Zoiko Orbit™
+                </span>{" "}
+                is the premier global travel connectivity platform under Zoiko
+                Communications Group Inc., part of the dynamic Zoiko Group — a
+                diversified multinational enterprise spanning telecommunications,
+                fintech, healthcare, technology, and consumer brands.
+              </p>
+              <p>
+                Born from the robust telecom foundation of Zoiko Mobile, we draw
+                on decades of engineering world-class networks. Yet as a proud
+                brand in the Zoiko family, we also carry forward something
+                deeper: a shared promise to uplift lives and protect the
+                remarkable diversity of our world.
+              </p>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
   {/* ================= WHY WE EXIST ================= */}
 <section className="py-20 bg-gray-100  dark:text-white dark:bg-gray-900">
@@ -195,39 +268,39 @@ on Nature & Safaris
       {/* CARD 1 */}
       <div className="flex flex-col items-center">
         <div className="w-16 h-16 mb-4">
-          <Image src="/image/icon1.png" width={64} height={64} alt="icon" />
+          <Image src="/image/icon1.png" width={94} height={94} alt="icon" />
         </div>
         <h3 className="font-semibold text-lg mb-2 dark:text-teal-400 text-teal-700">
           Engineered for Global Trust
         </h3>
-        <p className="text-gray-600 text-sm max-w-xs  dark:text-white dark:bg-gray-900">
-          Secure connectivity across 200+ countries with high reliability.
+        <p className="text-gray-600 text-sm md:text-base max-w-xs  dark:text-white dark:bg-gray-900">
+          Our advanced eSIM platform runs on Tier-1 carrier partnerships across 220+ countries, safeguarded by PCI DSS, GDPR, and rigorous data privacy standards. You get local-quality speeds and secure transactions wherever your journey takes you.
         </p>
       </div>
 
       {/* CARD 2 */}
       <div className="flex flex-col items-center">
         <div className="w-16 h-16 mb-4">
-          <Image src="/image/icon2.png" width={64} height={64} alt="icon" />
+          <Image src="/image/icon2.png" width={94} height={94} alt="icon" className="w-16 h-16" />
         </div>
         <h3 className="font-semibold text-lg mb-2 dark:text-teal-400 text-teal-700">
           Built to Give Back
         </h3>
-        <p className="text-gray-600 text-sm max-w-xs  dark:text-white dark:bg-gray-900">
-          Every purchase supports environmental and wildlife protection.
+        <p className="text-gray-600 text-sm md:text-base max-w-xs  dark:text-white dark:bg-gray-900">
+         Unlike typical travel SIM providers, we embed impact at the core of every connection. Each Zoiko Orbit purchase actively supports animal rescue centers, wildlife rehabilitation programs, and community conservation efforts — so your travels help sustain the beauty you’ve come to explore.
         </p>
       </div>
 
       {/* CARD 3 */}
       <div className="flex flex-col items-center">
         <div className="w-16 h-16 mb-4">
-          <Image src="/image/icon3.png" width={64} height={64} alt="icon" />
+          <Image src="/image/icon3.png" width={94} height={94} alt="icon" />
         </div>
         <h3 className="font-semibold text-lg mb-2 dark:text-teal-400 text-teal-700">
           Part of the Zoiko Promise
         </h3>
-        <p className="text-gray-600 text-sm max-w-xs  dark:text-white dark:bg-gray-900">
-          Innovation-driven solutions for smarter global travel.
+        <p className="text-gray-600 text-sm md:text-base max-w-xs  dark:text-white dark:bg-gray-900">
+          As a member of Zoiko Group, we uphold a legacy of operational excellence, cultural intelligence, and meaningful innovation — dedicated to improving lives and safeguarding the world we all share.
         </p>
       </div>
 
@@ -249,16 +322,16 @@ on Nature & Safaris
   </div>
 
   {/* Content */}
-  <div className="relative max-w-7xl mx-auto px-6 flex justify-end">
+  <div className="relative max-w-7xl mx-auto px-6 md:px-8 flex justify-end">
     
     {/* Glass Card */}
-    <div className="bg-teal-700/80 backdrop-blur-md text-white p-8 md:p-10 rounded-xl max-w-xl shadow-xl">
+    <div className="bg-teal-600/80 backdrop-blur-md text-white p-8 md:p-10 rounded-xl max-w-xl shadow-xl">
       
-      <h3 className="text-2xl md:text-3xl font-semibold mb-4">
+      <h3 className="text-2xl md:text-3xl font-semibold mb-4 md:mb-6">
         Join Us in Redefining Travel
       </h3>
 
-      <p className="text-sm md:text-base leading-relaxed mb-4">
+      <p className="text-sm md:text-base leading-relaxed mb-4 md:mb-6">
       Whether you’re planning your next international adventure, 
 managing a retail chain seeking premium travel products, 
 or operating a travel agency or insurance platform eager to 
@@ -267,7 +340,7 @@ help you succeed.
 
       </p>
 
-      <p className="text-sm md:text-base leading-relaxed">
+      <p className="text-sm md:text-base leading-relaxed dark:text-gray-300">
         Together, we can build a world where you’re always connected, 
 and where every trip leaves a legacy of care, compassion, and a 
 better tomorrow.
