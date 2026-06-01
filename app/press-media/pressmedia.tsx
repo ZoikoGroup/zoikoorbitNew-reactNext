@@ -29,14 +29,14 @@ export default function PressMedia() {
               alt="press"
               fill
               priority
-              className="block md:hidden object-cover"
+              className="block md:hidden object-cover object-center"
             />
 
         {/* overlay */}
         <div className="absolute inset-0 bg-linear-to-r from-black/70 to-black/20" />
 
         {/* text */}
-        <div className="absolute top-10 left-6 md:right-25 md:left-auto md:top-1/2 md:-translate-y-1/2 text-white max-w-md">          
+        <div className="absolute top-10 left-6 md:right-55 md:left-auto md:top-1/2 md:-translate-y-1/2 text-white max-w-md">          
         <h1 className="text-[42px] md:text-4xl lg:text-5xl font-bold mb-4 leading-tight">
             Press & Media
           </h1>

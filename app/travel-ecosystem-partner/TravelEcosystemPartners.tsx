@@ -95,7 +95,14 @@ export default function TravelEcosystemPartners() {
           src="/image/Rectangle 4d.png"
           alt="Partners hero"
           fill
-          className="object-cover object-center"
+          className="hidden md:block object-cover object-center"
+          priority
+        />
+        <Image
+          src="/image/Rectangle 4d(mv-piv).jpg"
+          alt="Partners hero"
+          fill
+          className="block md:hidden object-cover object-center"
           priority
         />
 
@@ -103,10 +110,10 @@ export default function TravelEcosystemPartners() {
         <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/50 to-transparent" />
 
         {/* Hero Content */}
-        <div className="absolute inset-0 flex items-center">
+        <div className="absolute inset-0 flex items-start justify-center md:items-center">
           <div className="mx-auto w-full max-w-7xl px-6 md:px-12">
             <div className="max-w-lg">
-              <h1 className="mb-4 text-3xl font-extrabold leading-tight text-white md:text-5xl">
+              <h1 className="mb-4 text-2xl sm:text-3xl font-extrabold leading-tight text-white md:text-4xl lg:text-5xl">
                 Grow Your Business with{" "}
                 <br className="hidden md:block" />
                 Global eSIM Connectivity
@@ -119,7 +126,7 @@ export default function TravelEcosystemPartners() {
 
               <a
                 href="/partner-with-us"
-                className="inline-block rounded-md bg-blue-500 px-7 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+                className="inline-block rounded-md bg-[#4260A5] px-7 md:px-12 py-3 text-sm md:text-base font-semibold text-white transition-colors hover:bg-blue-700"
               >
                 Become a Partner
               </a>
