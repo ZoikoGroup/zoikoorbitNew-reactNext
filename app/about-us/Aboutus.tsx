@@ -308,30 +308,36 @@ on Nature & Safaris
   </div>
 </section>
 
-<section className="relative py-20">
+<section className="relative ">
   
   {/* Background Image */}
-  <div className="absolute inset-0">
+  <div className="relative inset-0 h-[480px] md:h-[550px] w-full h-full">
     <Image
       src="/image/Rectangle 19.png" // replace with your actual image
       alt="travel"
       fill
-      className="object-cover"
+      className="hidden md:block object-cover object-center"
+    />
+    <Image
+      src="/image/Rectangle19(mv-pic).png" // replace with your actual image
+      alt="travel"
+      fill
+      className="block md:hidden object-cover"
     />
     <div className="absolute inset-0 bg-black/20"></div>
   </div>
 
   {/* Content */}
-  <div className="relative max-w-7xl mx-auto px-6 md:px-8 flex justify-end">
+  <div className="absolute inset-0 max-w-7xl mx-auto px-6 md:px-8 flex justify-end">
     
     {/* Glass Card */}
-    <div className="bg-teal-600/80 backdrop-blur-md text-white p-8 md:p-10 rounded-xl max-w-xl shadow-xl">
+    <div className="absolute md:bottom-0 m-3 bg-[#00718ACC] text-white p-5 md:p-10 rounded-xl max-w-xl shadow-xl">
       
-      <h3 className="text-2xl md:text-3xl font-semibold mb-4 md:mb-6">
+      <h3 className="text-lg sm:text-2xl md:text-3xl font-semibold mb-3 md:mb-6">
         Join Us in Redefining Travel
       </h3>
 
-      <p className="text-sm md:text-base leading-relaxed mb-4 md:mb-6">
+      <p className="text-xs md:text-base leading-relaxed mb-3 md:mb-6">
       Whether you’re planning your next international adventure, 
 managing a retail chain seeking premium travel products, 
 or operating a travel agency or insurance platform eager to 
@@ -340,7 +346,7 @@ help you succeed.
 
       </p>
 
-      <p className="text-sm md:text-base leading-relaxed dark:text-gray-300">
+      <p className="text-xs md:text-base leading-relaxed dark:text-gray-300">
         Together, we can build a world where you’re always connected, 
 and where every trip leaves a legacy of care, compassion, and a 
 better tomorrow.
