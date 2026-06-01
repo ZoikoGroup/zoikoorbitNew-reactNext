@@ -1,7 +1,18 @@
 "use client";
 
 import Image from "next/image";
+import { Check } from "lucide-react";
 
+
+function Bullet({ text }: { text: string }) {
+  return (
+    <div className="flex items-start gap-3">
+      <span className="mt-0 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-green-500">
+        <Check className="h-3 w-3 text-white" strokeWidth={3} />
+      </span>
+    </div>
+  );
+}
 export default function PressMedia() {
   return (
     <div className="w-full bg-white">
@@ -42,7 +53,7 @@ export default function PressMedia() {
         {/* Left Image */}
         <div className="w-full">
           <Image
-            src="/image/vector.png"
+            src="/image/press-mediadesktop.png"
             alt="news"
             width={500}
             height={400}
@@ -72,7 +83,7 @@ export default function PressMedia() {
               "Feature articles and trend analysis",
             ].map((item, i) => (
               <li key={i} className="flex items-start gap-3">
-                <span className="text-green-500 mt-1">✔</span>
+                <span><Bullet key={i} text={item} /></span>
                 <span>{item}</span>
               </li>
             ))}

@@ -50,7 +50,7 @@ const testimonials = [
     image: "/image/Rectangle 729.png",
     rating: 5,
     message:
-      "Seamless connectivity everywhere I've Seamless connectivity everywhere I’ve traveled — plus I’m helping save animals. Best travel choice I’ve made all year.. Our executives stay connected without interruptions.",
+      "Seamless connectivity everywhere I’ve traveled — plus I’m helping save animals. Best travel choice I’ve made all year."
   },
   {
     name: "James Fielding",
@@ -58,7 +58,7 @@ const testimonials = [
     image: "/image/Rectangle 729 (1).png",
     rating: 5,
     message:
-      "Zoiko Orbit transformed the way Zoiko Orbit integrated effortlessly into our agency’s portfolio. Clients love that it combines tech with a mission. enterprise handles global mobility.",
+      "Zoiko Orbit integrated effortlessly into our agency’s portfolio. Clients love that it combines tech with a mission."
   },
   {
     name: "Nkechi Okafor",
@@ -66,7 +66,7 @@ const testimonials = [
     image: "/image/Rectangle 729 (2).png",
     rating: 4,
     message:
-      "Reliable enterprise-grade connectivity with From Lagos to Dubai, my eSIM worked instantly. Proud to support a brand that helps animal shelters support worldwide.",
+      "From Lagos to Dubai, my eSIM worked instantly. Proud to support a brand that helps animal shelters."
   },
 ];
 

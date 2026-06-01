@@ -8,13 +8,13 @@ export default function PrivacyPolicy() {
       <section className="relative w-full overflow-hidden bg-[#0f1b2d] min-h-[320px] md:min-h-[420px]">
 
         {/* Full Background Image */}
-        <div className="absolute inset-0">
+        <div className="absolute inset-2">
           <Image
             src="/image/c.png"
             alt="Privacy Shield"
             fill
             priority
-            className="object-cover object-center"  
+            className="hidden md:block object-cover object-center"  
           />
             <Image
                     src="/image/Group 1597883429.png"
@@ -29,15 +29,15 @@ export default function PrivacyPolicy() {
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 mx-auto flex min-h-[320px] max-w-7xl items-center px-6 py-16 md:min-h-[420px] md:px-12">
-          <div className="max-w-2xl">
-            <h1 className="mb-6 text-3xl font-extrabold leading-tight text-white md:text-5xl">
-              Privacy by Design
+<div className="relative z-10 mx-auto flex min-h-[620px] items-end px-5 pb-8 md:min-h-[420px] md:max-w-7xl md:items-center md:px-12 md:py-16">
+            <div className="max-w-2xl">
+<h1 className="mb-4 text-[24px] leading-[1.1] font-extrabold text-white md:text-5xl">
+                Privacy by Design
               <br />
               — Protection Without Compromise
             </h1>
-            <p className="max-w-xl text-sm leading-relaxed text-gray-200 md:text-base">
-              At Zoiko Orbit, protecting your privacy isn't just a regulatory obligation —
+<p className="max-w-xl text-[14px] leading-[1.4] text-gray-200 md:text-base">
+                At Zoiko Orbit, protecting your privacy isn't just a regulatory obligation —
               it's a core part of our infrastructure. As a global eSIM and connectivity
               platform serving users across more than 220 countries and territories,
               we are fully committed to data protection frameworks including the UK
@@ -50,9 +50,9 @@ export default function PrivacyPolicy() {
 
       {/* ================= POLICY CONTENT ================= */}
       <section className="bg-white py-14 dark:bg-gray-900 dark:text-white">
-        <div className="mx-auto max-w-5xl px-6 md:px-2 space-y-5 text-l text-gray-800 dark:text-gray-200 leading-relaxed">
+        <div className="mx-auto max-w-5xl px-5 md:px-2 space-y-5 text-l text-gray-800 dark:text-gray-200 leading-relaxed">
 
-          {/* Intro line */}
+          {/* Intro line */} 
           <p className="font-bold text-zinc-900 dark:text-white">
             Our Privacy Policy clearly explains how your data is:
           </p>
