@@ -11,7 +11,7 @@ const features = [
     label: "Data Protected Globally",
   },
   {
-    icon: "/image/icon-adaptive-roaming.png",
+    icon: "/image/Group 1597883774.png",
     label: "Adaptive Roaming Across Time Zones",
   },
   {

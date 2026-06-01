@@ -192,7 +192,7 @@ export default function PartnerWithUs() {
 
         {/* Hero text */}
         <div className="absolute inset-0 flex items-center">
-          <div className="px-10 md:px-16 max-w-xl text-white">
+          <div className="px-4 md:px-8 max-w-xl text-white">
             <h1 className="text-3xl md:text-4xl font-bold leading-tight mb-4">
               Co-create the future
               <br />
@@ -205,9 +205,9 @@ export default function PartnerWithUs() {
               we empower you to deliver world-class eSIM solutions — tailored to
               your business model and brand vision.
             </p>
-            <button className="bg-[#0d6e7a] hover:bg-[#0a5a65] text-white text-sm font-semibold px-7 py-3 rounded-full transition-colors">
+           <a href="/travel-insurance-providers-form"><button className="bg-[#0d6e7a] hover:bg-[#0a5a65] text-white text-sm font-semibold px-7 py-3 rounded-full transition-colors">
               Partner with Us
-            </button>
+            </button></a> 
           </div>
         </div>
       </div>
