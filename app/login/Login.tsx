@@ -66,7 +66,9 @@ if (!emailRegex.test(email)) {
       localStorage.setItem("zoikoorbit_token", data.token);
       localStorage.setItem("zoikoorbit_user", JSON.stringify(data.user));
 
-      router.replace(redirect || "/dashboard/orders");
+      window.dispatchEvent(new Event("authChanged"));
+
+      router.replace(redirect || "/dashboard");
     } catch (err: any) {
       setError(err.message || "Login failed");
     } finally {
