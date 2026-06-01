@@ -167,7 +167,7 @@ export default function PersonalTravelers() {
           className="block md:hidden absolute inset-0 w-full h-full object-cover object-center"
         />
         <div className="absolute inset-0 bg-linear-to-r from-black/75 via-black/50 to-transparent" />
-        <div className="relative z-10 flex flex-col justify-center h-full px-8 md:px-20 max-w-2xl">
+        <div className="relative z-10 flex flex-col items-start justify-start md:justify-center h-full px-8 md:px-20 max-w-2xl">
           <h1 className="text-3xl md:text-5xl font-extrabold text-white leading-tight mb-4">
             Travel Freely. Stay<br />Connected Across<br />220+ Countries
           </h1>
@@ -176,7 +176,7 @@ export default function PersonalTravelers() {
           </p>
           <a
             href="/plans"
-            className="inline-flex items-center gap-2 w-fit bg-[#0B7285] hover:bg-teal-600 text-white font-semibold text-sm px-6 py-3 rounded-xl transition-colors"
+            className="inline-flex items-center gap-2 w-fit bg-[#0B7285] hover:bg-teal-600 text-white font-semibold text-sm md:text-base px-8 md:px-12 py-3 rounded-lg transition-colors"
           >
             {/*<img
               src="https://cdn-icons-png.flaticon.com/512/1611/1611179.png"
@@ -264,7 +264,7 @@ export default function PersonalTravelers() {
           </p>
           <div className="flex items-center gap-3 mb-5">
             <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
-            <span className="text-sm md:text-base font-semibold text-gray-700 dark:text-gray-400 whitespace-nowrap  underline underline-offset-6 decoration-[#0B7285] decoration-4">
+            <span className="text-xs md:text-base font-semibold text-gray-700 dark:text-gray-400 whitespace-nowrap  underline underline-offset-6 decoration-[#0B7285] decoration-4">
               Select your destination Where you&apos;re traveling to
             </span>
             <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
