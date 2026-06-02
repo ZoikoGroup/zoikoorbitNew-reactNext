@@ -144,7 +144,7 @@ const ZoikoOrbitPage = () => {
             // style={{ objectPosition: '60% 50%' }}
           />
         </div>
-        <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
           <div>
             <h1 className="text-4xl md:text-5xl font-extrabold text-white dark:text-white leading-tight mb-4">
               Empower Your Teams<br />with Global Connectivity
@@ -210,7 +210,7 @@ const ZoikoOrbitPage = () => {
       </section>
 
       {/* CONNECTIVITY BUILT AROUND */}
-      <section className="py-16 bg-white dark:bg-gray-900">
+      <section className="py-4 dark:bg-gray-900 dark:text-white bg-white dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             Connectivity Built Around<br />How Your Organization Operates
@@ -474,7 +474,7 @@ const ZoikoOrbitPage = () => {
         </div>
       </section>
 
-    {/* ================= CONTACT / CONSULTATION SECTION ================= */}
+    {/*   CONTACT / CONSULTATION SECTION   */}
 <section className="relative bg-[#f5f5f5] dark:bg-gray-900 overflow-hidden pb-24">
 
   {/* Top Banner Image */}

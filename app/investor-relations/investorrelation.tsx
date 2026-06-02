@@ -7,7 +7,7 @@ export default function InvestorRelations() {
     <div className="w-full">
 
       {/* Hero Section */}
-      <section className="bg-[#0b7285] text-white py-16 px-6">
+      <section className="bg-[#0b7285] text-white py-4 px-6">
         <div className="max-w-6xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
             Investor Relations
@@ -23,7 +23,7 @@ export default function InvestorRelations() {
       </section>
 
       {/* Section 1 */}
-      <section className="py-16 px-6">
+      <section className="py-4 px-6">
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 items-center">
 
           {/* Text */}
@@ -52,7 +52,7 @@ export default function InvestorRelations() {
       </section>
 
       {/* Section 2 */}
-      <section className="py-16 px-6 bg-gray-50">
+      <section className="py-4 px-6 bg-gray-50">
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 items-center">
 
           {/* Image */}
@@ -79,7 +79,7 @@ export default function InvestorRelations() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-[#0b7285] text-white py-16 px-6">
+      <section className="bg-[#0b7285] text-white py-4 px-6">
         <div className="max-w-5xl mx-auto text-center space-y-6">
 
           <h2 className="text-xl md:text-2xl font-semibold leading-relaxed">

@@ -192,7 +192,7 @@ export default function Faqs() {
       </section>
 
       {/* Faq's */}
-      <section className="w-full bg-[#f5f5f5] dark:bg-[#0F172A] py-16">
+      <section className="w-full bg-[#f5f5f5] dark:bg-[#0F172A] py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Heading */}
           <div className="text-center mb-14">
@@ -284,7 +284,7 @@ export default function Faqs() {
       </section>
 
       {/* Need more help */}
-      <section className="w-full bg-[#f5f5f5] dark:bg-[#0F172A] py-12 md:py-20 overflow-hidden">
+      <section className="w-full bg-[#f5f5f5] dark:bg-[#0F172A] py-12 md:py-8 overflow-hidden">
         <div className=" ">
           {/* Main Wrapper */}
           <div className="relative flex flex-col lg:flex-row items-center lg:items-stretch">

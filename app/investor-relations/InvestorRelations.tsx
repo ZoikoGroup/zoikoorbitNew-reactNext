@@ -42,7 +42,7 @@ export default function InvestorRelations() {
       </section>
 
       {/* Content Section 1*/}
-      <section className="relative w-full bg-[#f7f7f7] dark:bg-[#0F172A] py-16 md:py-24 overflow-hidden">
+      <section className="relative w-full bg-[#f7f7f7] dark:bg-[#0F172A] py-4 md:py-24 overflow-hidden">
         {/* Background Grid */}
         <div className="absolute inset-0 opacity-40 dark:opacity-30 pointer-events-none">
           <div
@@ -126,7 +126,7 @@ export default function InvestorRelations() {
       </section>
 
       {/* Content Section 2*/}
-      <section className="relative w-full bg-[#f7f7f7] dark:bg-[#0F172A] py-16 md:py-24 overflow-hidden">
+      <section className="relative w-full bg-[#f7f7f7] dark:bg-[#0F172A] py-4 md:py-24 overflow-hidden">
         {/* Background Grid */}
         <div className="absolute inset-0 opacity-40 dark:opacity-30 pointer-events-none">
           <div

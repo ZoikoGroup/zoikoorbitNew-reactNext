@@ -148,7 +148,7 @@ export function AIPlanFinderSection() {
   };
 
   return (
-    <section className="bg-slate-50 dark:bg-slate-950 py-12 sm:py-16">
+    <section className="bg-slate-50 dark:bg-slate-950 py-12 sm:py-4">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         {/* AI Finder card */}
         <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm p-5 sm:p-6">

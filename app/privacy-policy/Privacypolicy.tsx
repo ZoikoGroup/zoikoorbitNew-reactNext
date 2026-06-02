@@ -4,7 +4,7 @@ export default function PrivacyPolicy() {
   return (
     <div className="w-full font-sans bg-white dark:bg-gray-900 dark:text-white">
 
-      {/* ================= HERO ================= */}
+      {/*   HERO   */}
       <section className="relative w-full overflow-hidden bg-[#0f1b2d] min-h-[320px] md:min-h-[420px]">
 
         {/* Full Background Image */}
@@ -29,7 +29,7 @@ export default function PrivacyPolicy() {
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 mx-auto flex min-h-[320px] max-w-7xl items-center px-6 py-16 md:min-h-[420px] md:px-12">
+        <div className="relative z-10 mx-auto flex min-h-[320px] max-w-7xl items-center px-6 py-4 md:min-h-[420px] md:px-12">
           <div className="max-w-2xl">
             <h1 className="mb-6 text-3xl font-extrabold leading-tight text-white md:text-5xl">
               Privacy by Design
@@ -48,7 +48,7 @@ export default function PrivacyPolicy() {
         </div>
       </section>
 
-      {/* ================= POLICY CONTENT ================= */}
+      {/*   POLICY CONTENT   */}
       <section className="bg-white py-14 dark:bg-gray-900 dark:text-white">
         <div className="mx-auto max-w-5xl px-6 md:px-2 space-y-5 text-l text-gray-800 dark:text-gray-200 leading-relaxed">
 

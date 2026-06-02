@@ -136,7 +136,7 @@ export default function TravelEcosystemPartners() {
       </section>
 
       {/* ═══════════════════════ WHY PARTNER WITH US ═══════════════════════ */}
-      <section className="relative overflow-hidden bg-white py-20 dark:bg-gray-900 dark:text-white">
+      <section className="relative overflow-hidden bg-white py-8 dark:bg-gray-900 dark:text-white">
         <div className="relative mx-auto max-w-7xl px-6 md:px-12">
           <div className="mb-14 text-center">
             <h2 className="mb-3 text-3xl font-bold tracking-tight text-zinc-900 dark:text-white md:text-4xl">
@@ -206,7 +206,7 @@ export default function TravelEcosystemPartners() {
       </section>
 
       {/* ═══════════════════════ BUILT TO FIT YOUR WORKFLOW ═══════════════════════ */}
-      <section className="bg-gray-50 py-20 dark:bg-gray-900 dark:text-white">
+      <section className="bg-gray-50 py-8 dark:bg-gray-900 dark:text-white">
         <div className="mx-auto max-w-7xl px-6 md:px-12">
           <div className="mb-14 text-center">
             <h2 className="mb-3 text-3xl font-bold text-zinc-900 dark:text-white md:text-4xl">
@@ -282,7 +282,7 @@ export default function TravelEcosystemPartners() {
       </section>
 
       {/* ═══════════════════════ TRUSTED BY LEADING BRANDS ═══════════════════════ */}
-      <section className="bg-white py-20 dark:bg-gray-900 dark:text-white">
+      <section className="bg-white py-8 dark:bg-gray-900 dark:text-white">
         <div className="mx-auto max-w-7xl px-6 md:px-12">
           <div className="mb-16 text-center">
             <h2 className="mb-3 text-3xl font-bold tracking-tight text-zinc-900 dark:text-white md:text-4xl">
@@ -344,7 +344,7 @@ export default function TravelEcosystemPartners() {
       </section>
 
       {/* ═══════════════════════ WHAT SETS US APART ═══════════════════════ */}
-      <section className="bg-white py-20 text-center dark:bg-gray-900 dark:text-white">
+      <section className="bg-white py-8 text-center dark:bg-gray-900 dark:text-white">
         <div className="mx-auto max-w-7xl px-6">
           <h2 className="mb-12 text-3xl font-bold text-gray-900 dark:text-white">
             What Sets Us Apart

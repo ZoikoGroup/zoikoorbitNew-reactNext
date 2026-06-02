@@ -190,7 +190,7 @@ export default function PersonalTravelers() {
       </section>
 
       {/* ── How It Works ── */}
-      <section className="py-16 px-6 md:px-16 lg:px-28 bg-white dark:bg-gray-900">
+      <section className="py-4 px-6 md:px-16 lg:px-28 bg-white dark:bg-gray-900">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 dark:text-white mb-2">
             How It Works
@@ -222,7 +222,7 @@ export default function PersonalTravelers() {
       </section>
 
       {/* ── Why Choose Zoiko Orbit ── */}
-      <section className="py-16 px-6 md:px-16 lg:px-28 bg-gray-50 dark:bg-gray-800">
+      <section className="py-4 px-6 md:px-16 lg:px-28 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 dark:text-white mb-2">
             Why Choose Zoiko Orbit
@@ -254,7 +254,7 @@ export default function PersonalTravelers() {
       </section>
 
       {/* ── Destination Selector ── */}
-      <section className="py-16 px-6 md:px-16 lg:px-28 bg-white dark:bg-gray-900">
+      <section className="py-4 px-6 md:px-16 lg:px-28 bg-white dark:bg-gray-900">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 dark:text-white mb-2">
             Only pay for what you need. Stay in control.
@@ -302,7 +302,7 @@ export default function PersonalTravelers() {
       </section>
 
       {/* ── Loved by Travelers ── */}
-          <section className="bg-[#FAFAFA] py-16 px-6 md:px-16 lg:px-28 overflow-hidden">
+          <section className="bg-[#FAFAFA] py-8 dark:bg-gray-900 dark:text-white px-6 md:px-16 lg:px-28 overflow-hidden">
       <div className="max-w-[1200px] mx-auto">
 
         {/* Mobile: Card First, Desktop: 2 Columns */}
@@ -312,6 +312,7 @@ export default function PersonalTravelers() {
           <div className="text-center md:text-left">
             <h2
               className="
+              dark:bg-gray-900 dark:text-white
                 text-[40px]
                 md:text-[44px]
                 font-extrabold
@@ -327,6 +328,7 @@ export default function PersonalTravelers() {
             <p
               className="
                 mt-4
+                dark:bg-gray-900 dark:text-white
                 text-[16px]
                 text-[#555555]
                 leading-relaxed
@@ -430,7 +432,7 @@ export default function PersonalTravelers() {
 
 
       {/* ── FAQ ── */}
-      <section className="py-20 px-6 md:px-16 lg:px-28 bg-white dark:bg-gray-900">
+      <section className="py-8 px-6 md:px-16 lg:px-28 bg-white dark:bg-gray-900">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 dark:text-white mb-10">
             Got Questions? We&apos;ve Got Answers

@@ -4,7 +4,7 @@ export default function CookiePreferences() {
   return (
     <div className="w-full font-sans bg-white dark:bg-gray-900 dark:text-white">
 
-      {/* ================= HERO ================= */}
+      {/*   HERO   */}
  <section className="relative w-full bg-[#0f1b2d] overflow-hidden min-h-[260px] md:min-h-[300px]">
 
         {/* Full background image */}
@@ -28,7 +28,7 @@ export default function CookiePreferences() {
         </div>
 
         {/* Hero text — left side */}
-        <div className="relative z-10 mx-auto max-w-7xl px-6 py-14 md:px-12 md:py-16">
+        <div className="relative z-10 mx-auto max-w-7xl px-6 py-14 md:px-12 md:py-4">
           <div className="max-w-[500px]">
             <h1 className="mb-5 text-2xl font-extrabold leading-tight text-white md:text-4xl">
               Engineered for Transparency.
@@ -46,7 +46,7 @@ export default function CookiePreferences() {
 
       </section>
 
-      {/* ================= CONTENT SECTION ================= */}
+      {/*   CONTENT SECTION   */}
       <section className="bg-white py-12 dark:bg-gray-900 dark:text-white">
         <div className="mx-auto max-w-6xl px-6 md:px-12 space-y-8 text-l leading-relaxed text-gray-700 dark:text-gray-300">
 
