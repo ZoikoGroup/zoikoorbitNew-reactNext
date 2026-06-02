@@ -1,5 +1,5 @@
 "use client";
-
+import SearchResults from "./Searchresults";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
@@ -73,6 +73,7 @@ export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [headerHeight, setHeaderHeight] = useState(64);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const router = useRouter();
   const langRef = useRef<HTMLDivElement>(null);
@@ -453,29 +454,37 @@ export default function Header() {
         </div>
 
         {/* Desktop Search Bar */}
-        {searchOpen && (
-          <div className="hidden lg:block border-t border-white/20 bg-[#0b7285]">
-            <div className="max-w-7xl mx-auto px-4 md:px-6 py-3">
-              <div className="flex items-center gap-3 bg-white/10 rounded-xl px-4 py-2.5">
-                <Search size={18} className="text-white/70 flex-shrink-0" />
-                <input
-                  autoFocus
-                  type="text"
-                  placeholder="Search plans, destinations..."
-                  className="bg-transparent text-white placeholder-white/60 outline-none flex-1 text-sm"
-                  onKeyDown={(e) => e.key === "Escape" && setSearchOpen(false)}
-                />
-                <button
-                  type="button"
-                  onClick={() => setSearchOpen(false)}
-                  className="text-white/70 hover:text-white transition-colors"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+       {searchOpen && (
+  <div className="hidden lg:block border-t border-white/20 bg-[#0b7285]">
+    <div className="max-w-7xl mx-auto px-4 md:px-6 py-3">
+      <div className="flex items-center gap-3 bg-white/10 rounded-xl px-4 py-2.5">
+        <Search size={18} className="text-white/70 flex-shrink-0" />
+        <input
+          autoFocus
+          type="text"
+          placeholder="Search plans, destinations..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="bg-transparent text-white placeholder-white/60 outline-none flex-1 text-sm"
+          onKeyDown={(e) => e.key === "Escape" && setSearchOpen(false)}
+        />
+        <button type="button" onClick={() => setSearchOpen(false)} className="text-white/70 hover:text-white transition-colors">
+          <X size={18} />
+        </button>
+      </div>
+
+      {/* ← add this block */}
+      <SearchResults
+        query={searchQuery}
+        onSelect={(slug) => {
+          router.push(slug);
+          setSearchOpen(false);
+          setSearchQuery("");
+        }}
+      />
+    </div>
+  </div>
+)}
       </header>
 
       {/* Mobile Menu */}
@@ -484,27 +493,34 @@ export default function Header() {
           className="fixed left-0 right-0 bg-white text-gray-800 z-[999] shadow-lg lg:hidden"
           style={{ top: headerHeight }}
         >
-          <div className="px-4 py-3 border-b border-gray-100 bg-white">
-            <div className="flex items-center gap-3 bg-gray-100 rounded-xl px-4 py-2.5">
-              <Search size={18} className="text-gray-400 flex-shrink-0" />
-              <input
-                ref={mobileSearchRef}
-                type="text"
-                placeholder="Search plans, destinations..."
-                className="bg-transparent text-gray-800 placeholder-gray-400 outline-none flex-1 text-sm"
-                autoFocus={mobileSearchFocus}
-                onFocus={() => setMobileSearchFocus(false)}
-              />
-              <button
-                type="button"
-                onClick={() => { setMobileMenuOpen(false); setMobileSearchFocus(false); }}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <X size={18} />
-              </button>
-            </div>
-          </div>
+      <div className="px-4 py-3 border-b border-gray-100 bg-white">
+  <div className="flex items-center gap-3 bg-gray-100 rounded-xl px-4 py-2.5">
+    <Search size={18} className="text-gray-400 flex-shrink-0" />
+    <input
+      ref={mobileSearchRef}
+      type="text"
+      placeholder="Search plans, destinations..."
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      className="bg-transparent text-gray-800 placeholder-gray-400 outline-none flex-1 text-sm"
+      autoFocus={mobileSearchFocus}
+      onFocus={() => setMobileSearchFocus(false)}
+    />
+    <button type="button" onClick={() => { setMobileMenuOpen(false); setMobileSearchFocus(false); }} className="text-gray-400 hover:text-gray-600 transition-colors">
+      <X size={18} />
+    </button>
+  </div>
 
+  {/* ← add this block */}
+  <SearchResults
+    query={searchQuery}
+    onSelect={(slug) => {
+      router.push(slug);
+      setMobileMenuOpen(false);
+      setSearchQuery("");
+    }}
+  />
+</div>
           <nav className="border-b border-gray-100">
             {navLinks.map((item) => (
               <div key={item.label}>
