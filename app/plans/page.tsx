@@ -12,8 +12,16 @@ import { DATA_BUCKETS, type Filters, type VariationsFile } from "../lib/types";
 import { Pagination } from "../components/pagination";
 import { BuyPlanModal, type Plan } from "../components/BuyPlanModal";
 import { variationToPlan } from "../lib/variation-to-plan";
+import { useSearchParams } from "next/navigation";
 
 export default function PlansPage() {
+  const searchParams = useSearchParams();
+
+  const selectedCountry =
+    searchParams.get("country");
+
+  const selectedDuration =
+    searchParams.get("duration");
     const [data, setData] = useState<VariationsFile | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState(1);
@@ -58,10 +66,33 @@ export default function PlansPage() {
   // Compute matching variations + group + sort
 const cards = useMemo(() => {
   if (!data) return [];
-  const matching = applyFilters(data.variations, filters);
+  {/*const matching = applyFilters(data.variations, filters);
   return sortVariations(matching, sortKey);
-}, [data, filters, sortKey]);
+}, [data, filters, sortKey]);*/}
+const updatedFilters = {
+    ...filters,
+    region: filters.region || selectedCountry,
+    duration: filters.duration || selectedDuration,
+  };
 
+  // Apply filters
+  let matching = applyFilters(
+    data.variations,
+    updatedFilters
+  );
+
+  // Sort plans
+  return sortVariations(
+    matching,
+    sortKey
+  );
+}, [
+  data,
+  filters,
+  sortKey,
+  selectedCountry,
+  selectedDuration,
+]);
 // Reset to page 1 whenever filters or sort change
 useEffect(() => {
   setPage(1);

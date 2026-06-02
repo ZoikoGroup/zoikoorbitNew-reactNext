@@ -4,7 +4,7 @@ export default function CookiePreferences() {
   return (
     <div className="w-full font-sans bg-white dark:bg-gray-900 dark:text-white">
 
-      {/* ================= HERO ================= */}
+      {/*   HERO   */}
  <section className="relative w-full bg-[#0f1b2d] overflow-hidden min-h-[260px] md:min-h-[300px]">
 
         {/* Full background image */}
@@ -46,7 +46,7 @@ export default function CookiePreferences() {
 
       </section>
 
-      {/* ================= CONTENT SECTION ================= */}
+      {/*   CONTENT SECTION   */}
       <section className="bg-white py-12 dark:bg-gray-900 dark:text-white">
         <div className="mx-auto max-w-6xl px-6 md:px-12 space-y-8 text-l leading-relaxed text-gray-700 dark:text-gray-300">
 

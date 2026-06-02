@@ -114,7 +114,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElemen
   return (
     <div className="font-sans text-gray-800 bg-white dark:bg-gray-900 dark:text-white">
 
-      {/* ============ HERO SECTION ============ */}
+      {/*   ===== HERO SECTION   ===== */}
       <section className="relative min-h-[420px] flex items-center overflow-hidden">
         <div className="absolute inset-0">
           <Image
@@ -144,7 +144,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElemen
         </div>
       </section>
 
-      {/* ============ WHY PARTNER WITH ZOIKO ORBIT ============ */}
+      {/*   ===== WHY PARTNER WITH ZOIKO ORBIT   ===== */}
       <section className="py-4 bg-white dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -197,7 +197,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElemen
         </div>
       </section>
 
-      {/* ============ INTEGRATE AND SELL EFFORTLESSLY ============ */}
+      {/*   ===== INTEGRATE AND SELL EFFORTLESSLY   ===== */}
       <section className="py-4 bg-[#eaf3fb] dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
@@ -239,7 +239,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElemen
         </div>
       </section>
 
-      {/* ============ HOW TO INSTALL AND ACTIVATE ============ */}
+      {/*   ===== HOW TO INSTALL AND ACTIVATE   ===== */}
       <section className="py-4 bg-white dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -286,7 +286,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElemen
         </div>
       </section>
 
-      {/* ============ START YOUR PARTNERSHIP JOURNEY ============ */}
+      {/*   ===== START YOUR PARTNERSHIP JOURNEY   ===== */}
       <section className="relative bg-[#f5f5f5] dark:bg-gray-900 overflow-hidden">
 
         {/* Background Banner Image */}

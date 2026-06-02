@@ -156,10 +156,25 @@ export default function Header() {
   }, []);
 
   // Auth check
+  // useEffect(() => {
+  //   const token = localStorage.getItem("zoikoorbit_token");
+  //   setIsLoggedIn(!!token);
+  // }, []);
+
   useEffect(() => {
+  const checkAuth = () => {
     const token = localStorage.getItem("zoikoorbit_token");
     setIsLoggedIn(!!token);
-  }, []);
+  };
+
+  checkAuth();
+
+  window.addEventListener("authChanged", checkAuth);
+
+  return () => {
+    window.removeEventListener("authChanged", checkAuth);
+  };
+}, []);
 
   // Close My Orbit / Language dropdowns on outside click
   useEffect(() => {
@@ -196,13 +211,24 @@ export default function Header() {
     }, 150);
   };
 
+  // const handleLogout = () => {
+  //   localStorage.removeItem("zoikoorbit_token");
+  //   localStorage.removeItem("zoikoorbit_user");
+  //   setIsLoggedIn(false);
+  //   setOrbitOpen(false);
+  //   router.push("/login");
+  // };
+
+
   const handleLogout = () => {
-    localStorage.removeItem("zoikoorbit_token");
-    localStorage.removeItem("zoikoorbit_user");
-    setIsLoggedIn(false);
-    setOrbitOpen(false);
-    router.push("/login");
-  };
+  localStorage.removeItem("zoikoorbit_token");
+  localStorage.removeItem("zoikoorbit_user");
+
+  window.dispatchEvent(new Event("authChanged"));
+
+  setOrbitOpen(false);
+  router.push("/login");
+};
 
   return (
     <>

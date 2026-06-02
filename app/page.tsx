@@ -3,7 +3,8 @@ import Link from "next/link";
 
 import { useState } from "react";
 import Image from "next/image";
-
+import { useRouter } from "next/navigation";
+import variations from "../public/data/variations.json";
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
 const stats = [
@@ -238,6 +239,71 @@ function HeroSection() {
 function TravelPlanChooser() {
   const [destination, setDestination] = useState("");
   const [duration, setDuration] = useState("");
+ const router = useRouter();
+
+const handleSearch = () => {
+  if (!destination || !duration) {
+    alert("Please enter destination and duration");
+    return;
+  }
+
+  const matchedCountry =
+    variations.filter_options.countries.find(
+      (country) =>
+        country.label
+          .toLowerCase()
+          .includes(destination.toLowerCase())
+    );
+
+  if (!matchedCountry) {
+    alert("Country not found");
+    return;
+  }
+
+  const matchedDuration =
+    variations.filter_options.duration.find(
+      (d) =>
+        d.label.toLowerCase() ===
+        duration.toLowerCase()
+    );
+
+  if (!matchedDuration) {
+    alert("Duration not found");
+    return;
+  }
+const countryToRegionMap: Record<string, string> = {
+  "asia-main": "asia",
+  "premium-asia": "rest-of-asia",
+
+  "africa-main": "africa",
+  "premium-africa": "rest-of-africa",
+
+  "middle-east-cis-main": "middle-east-cis",
+  "premium-middle-east": "rest-of-middle-east",
+
+  "north-america-usa-canada-mexico": "north-america",
+
+  "south-america-main": "south-america",
+  "south-america-rest": "south-america",
+
+  "central-america-caribbean-main": "central-america-caribbean",
+  "central-america-caribbean-premium-rest": "central-america-caribbean",
+
+  "europe-uk": "europe-uk",
+  "rest-of-europe-switzerland-andorra": "rest-of-europe",
+
+  "australia-new-zealand": "australia-new-zealand",
+  "pacific-islands": "pacific-islands",
+};
+const regionSlug =
+  countryToRegionMap[matchedCountry.slug] ??
+  matchedCountry.slug;
+
+router.push(
+  `/plans?country=${regionSlug}&duration=${matchedDuration.slug}`
+);
+ 
+};
 
   return (
     <section className="bg-gray-50   dark:bg-gray-900 dark:text-white   pt-16 pb-10 px-4 md:px-16">
@@ -267,29 +333,66 @@ function TravelPlanChooser() {
               <label className="block text-xs font-semibold  dark:bg-gray-900 dark:text-white  text-gray-600 mb-1">
                 Where are you traveling?
               </label>
-              <input
+             {/* <input
                 type="text"
                 placeholder="Enter destination or country"
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-              />
+              />*/}
+              <select
+  value={destination}
+  onChange={(e) => setDestination(e.target.value)}
+                className=" dark:text-black w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+>
+  <option value="">Select Country</option>
+
+  {variations.filter_options.countries.map((country) => (
+    <option
+      key={country.slug}
+      value={country.label}
+      className="text-black"
+    >
+      {country.label}
+    </option>
+  ))}
+</select>
             </div>
             <div>
               <label className="block text-xs font-semibold  dark:bg-gray-900 dark:text-white  text-gray-600 mb-1">
                 How long is Your Trip?
               </label>
-              <input
+              {/*<input
                 type="text"
                 placeholder="Select Duration"
                 value={duration}
-                onChange={(e) => setDuration(e.target.value)}
+                onChange={(e) => setDuration(e.target.value)}*/}
+                 <select
+  value={duration}
+  onChange={(e) => setDuration(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-              />
+              >
+                <option value="">Select Duration</option>
+
+  {variations.filter_options.duration.map((d) => (
+    <option
+      key={d.slug}
+      value={d.label}
+      className="text-black"
+    >
+      {d.label}
+    </option>
+  ))}
+</select>
             </div>
-            <button className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition-all">
+           {/* <button className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition-all">
               Find My Perfect Plan
-            </button>
+            </button>*/}
+            <button
+  onClick={handleSearch}
+  className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition-all"
+>              Find My Perfect Plan
+</button>
           </div>
         </div>
       </div>
@@ -507,6 +610,7 @@ function GlobalCoverage() {
 /** 6. EXPERIENCE BANNER */
 function ExperienceBanner() {
   return (
+<<<<<<< HEAD
     <section className="relative overflow-hidden">
       <div className="w-full h-80 md:h-96 relative">
         <img
@@ -532,6 +636,64 @@ function ExperienceBanner() {
         <p className="text-teal-200 text-xs leading-relaxed">
           Enjoy seamless top-ups, high-speed WiFi wherever your journey takes you.
         </p>
+=======
+     <section className="bg-white dark:bg-gray-900 py-8 md:py-12">
+      <div className=" w-full">
+        {/*
+          MOBILE (default): stacked column — card on top, image below.
+          DESKTOP (md+):    single relative box — image fills, card overlays on right.
+        */}
+        <div className="relative flex flex-col md:block rounded-2xl overflow-hidden md:overflow-visible">
+          {/* Card — appears first on mobile (top), absolutely positioned on desktop */}
+          <div
+            className="
+              order-1 md:order-none
+              md:absolute md:right-6 lg:right-12 md:top-1/2 md:-translate-y-1/2
+              z-10
+              bg-teal-700/95 dark:bg-teal-800/95 backdrop-blur-sm
+              text-white
+              rounded-t-2xl md:rounded-2xl
+              p-6 md:p-7 lg:p-8
+              w-full md:max-w-md lg:max-w-lg
+              shadow-xl md:shadow-2xl
+            "
+          >
+            <h3 className="font-bold text-lg md:text-xl lg:text-2xl leading-snug mb-3 md:mb-4">
+              Experience the future of travel connectivity—one eSIM for every destination.
+            </h3>
+            <p className="text-teal-50/95 text-sm md:text-[15px] leading-relaxed">
+              Stay connected effortlessly across 190+ countries with a single
+              Zoiko Orbit™ eSIM—no contracts, no SIM swaps, no hidden fees.
+              Enjoy seamless, secure, high-speed data wherever your journey
+              takes you.
+            </p>
+          </div>
+ 
+          {/* Image — appears second on mobile (below card), full bleed on desktop */}
+          <div
+            className="
+              order-2 md:order-none
+              relative w-full
+              h-64 sm:h-80
+              md:h-[360px] lg:h-[420px]
+              overflow-hidden
+            "
+          >
+            <Image
+              src="/image/Rectangle 19 (2).png"
+              alt="Traveler on a mountainside using a phone"
+              fill
+              sizes="(max-width: 768px) 100vw, 100vw"
+              className="object-cover object-[20%_30%] md:object-center"
+            />
+            {/* Subtle dark overlay only on desktop, so the card has better contrast against the image */}
+            <div
+              className="hidden md:block absolute inset-0 bg-black/10"
+              aria-hidden="true"
+            />
+          </div>
+        </div>
+>>>>>>> 899027f1c2f29ae38939c032f3cf9fe423a48c74
       </div>
     </section>
   );

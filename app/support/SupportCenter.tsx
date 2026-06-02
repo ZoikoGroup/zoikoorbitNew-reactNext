@@ -35,7 +35,7 @@ export default function SupportCenter() {
   return (
     <div className="w-full font-sans bg-white dark:bg-gray-900 dark:text-white">
 
-      {/* ================= HERO ================= */}
+      {/*   HERO   */}
       <section className="relative h-[320px] md:h-[380px] w-full overflow-hidden">
         <Image
           src="/image/Rectangle 4 (1)3.png"
@@ -68,7 +68,7 @@ export default function SupportCenter() {
         </div>
       </section>
 
-      {/* ================= WHAT YOU CAN DO ================= */}
+      {/*   WHAT YOU CAN DO   */}
       <section className="bg-white py-4 dark:bg-gray-900 dark:text-white">
         <div className="mx-auto max-w-5xl px-6 md:px-12">
 
@@ -101,7 +101,7 @@ export default function SupportCenter() {
         </div>
       </section>
 
-      {/* ================= CTA BANNER ================= */}
+      {/*   CTA BANNER   */}
       <section className="relative w-full overflow-hidden">
         <div className="relative h-[300px] md:h-[360px] w-full">
           <Image

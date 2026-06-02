@@ -95,7 +95,14 @@ export default function TravelEcosystemPartners() {
           src="/image/Rectangle 4d.png"
           alt="Partners hero"
           fill
-          className="object-cover object-center"
+          className="hidden md:block object-cover object-center"
+          priority
+        />
+        <Image
+          src="/image/Rectangle 4d(mv-piv).jpg"
+          alt="Partners hero"
+          fill
+          className="block md:hidden object-cover object-center"
           priority
         />
 
@@ -103,10 +110,10 @@ export default function TravelEcosystemPartners() {
         <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/50 to-transparent" />
 
         {/* Hero Content */}
-        <div className="absolute inset-0 flex items-center">
+        <div className="absolute inset-0 flex items-start justify-center md:items-center">
           <div className="mx-auto w-full max-w-7xl px-6 md:px-12">
             <div className="max-w-lg">
-              <h1 className="mb-4 text-3xl font-extrabold leading-tight text-white md:text-5xl">
+              <h1 className="mb-4 text-2xl sm:text-3xl font-extrabold leading-tight text-white md:text-4xl lg:text-5xl">
                 Grow Your Business with{" "}
                 <br className="hidden md:block" />
                 Global eSIM Connectivity
@@ -119,7 +126,7 @@ export default function TravelEcosystemPartners() {
 
               <a
                 href="/partner-with-us"
-                className="inline-block rounded-md bg-teal-600 px-7 py-3 text-sm font-semibold text-white transition-colors hover:bg-teal-700"
+                className="inline-block rounded-md bg-[#4260A5] px-7 md:px-12 py-3 text-sm md:text-base font-semibold text-white transition-colors hover:bg-blue-700"
               >
                 Become a Partner
               </a>
@@ -291,22 +298,19 @@ export default function TravelEcosystemPartners() {
           <div className="mb-24 grid items-center gap-14 md:grid-cols-2">
             <div className="flex justify-center md:justify-start">
               <div className="relative h-[340px] w-full max-w-[520px] overflow-hidden">
-                <Image src="/image/image-11.png" alt="Airline Case Study" fill className="object-contain" />
+                <Image src="/image/TES-pic1.png" alt="Airline Case Study" fill className="object-contain" />
               </div>
             </div>
             <div>
               <h3 className="mb-4 text-lg font-bold leading-snug text-zinc-900 dark:text-white md:text-xl">
                 Boosting Ancillary Revenue for a Major Airline
               </h3>
-              <p className="text-base leading-relaxed text-gray-600 dark:text-gray-300 md:text-lg">
+              <p className="text-sm md:text-base leading-relaxed text-gray-600 dark:text-gray-300 md:text-lg">
                 A prominent global airline was seeking innovative ways to enhance its passenger
                 experience while simultaneously driving new ancillary revenue streams. By integrating
                 Zoiko Orbit's eSIM solutions directly into their booking and check-in flows, they
                 provided travelers with instant, seamless mobile connectivity from the moment they
-                booked their flight.
-              </p>
-              <p className="mt-4 text-base leading-relaxed text-gray-600 dark:text-gray-300 md:text-lg">
-                This not only improved customer satisfaction by eliminating the hassle of sourcing
+                booked their flight.This not only improved customer satisfaction by eliminating the hassle of sourcing
                 local SIMs but also created a significant new revenue channel for the airline,
                 showcasing the power of integrated travel solutions.
               </p>
@@ -319,22 +323,20 @@ export default function TravelEcosystemPartners() {
               <h3 className="mb-4 text-lg font-bold leading-snug text-zinc-900 dark:text-white md:text-xl">
                 Elevating Customer Loyalty for a Global Hotel Group
               </h3>
-              <p className="text-base leading-relaxed text-gray-600 dark:text-gray-300 md:text-lg">
+              <p className="text-sm md:text-base leading-relaxed text-gray-600 dark:text-gray-300 md:text-lg">
                 A leading international hotel group aimed to deepen its relationship with guests and
                 boost loyalty program engagement. By partnering with Zoiko Orbit, they offered
                 exclusive, discounted eSIM plans to their loyalty members, providing unparalleled
-                global connectivity as a premium perk.
-              </p>
-              <p className="mt-4 text-base leading-relaxed text-gray-600 dark:text-gray-300 md:text-lg">
-                This initiative differentiated their loyalty program, added tangible value for their
+                global connectivity as a premium perk.This initiative differentiated their loyalty program, added tangible value for their
                 most frequent travelers, and reinforced the hotel group's commitment to a truly
                 connected and compassionate travel experience, leading to increased member
                 satisfaction and repeat bookings.
+
               </p>
             </div>
             <div className="order-1 flex justify-center md:order-2 md:justify-end">
               <div className="relative h-[340px] w-full max-w-[520px] overflow-hidden">
-                <Image src="/image/image-12.png" alt="Hotel Case Study" fill className="object-contain" />
+                <Image src="/image/TES-pic2.png" alt="Hotel Case Study" fill className="object-contain" />
               </div>
             </div>
           </div>

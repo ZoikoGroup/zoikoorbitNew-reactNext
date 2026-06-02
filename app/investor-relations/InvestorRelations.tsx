@@ -251,7 +251,9 @@ export default function InvestorRelations() {
                   briefings. <br/>
                   <br/>
                   For investment-related queries, please contact:
-                  ir@zoikoorbit.com
+                  <a href="mailto:ir@zoikoorbit.com" className="text-white underline">
+                    ir@zoikoorbit.com
+                  </a>
                 </p>
               </div>
             </div>

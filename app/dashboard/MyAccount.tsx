@@ -337,7 +337,7 @@ export default function MyAccountPage() {
 
           {/* Subscriber not found */}
           {!loading && subscriberNotFound && (
-            <div className="flex flex-col items-center justify-center py-4 bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
+            <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
               <img src="/img/cuate.png" alt="Welcome" className="max-w-xs mb-6" />
               <h3 className="text-2xl font-bold mb-2">👋 Welcome to the Zoiko Network, {userName}!</h3>
               <p className="text-gray-500 mb-6">
@@ -566,7 +566,7 @@ export default function MyAccountPage() {
                         Call Support
                       </button>
                     </Link> */}
-                    <Link href="/faqs">
+                    <Link href="/faqs-self-service">
                       <button className="w-full px-3 py-1.5 border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-50 transition-colors">
                         FAQ
                       </button>

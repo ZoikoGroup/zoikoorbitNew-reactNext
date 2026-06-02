@@ -133,7 +133,15 @@ const ZoikoOrbitPage = () => {
           <img
             src="/image/Rectangle 4 (7).png"
             alt="Travel background"
-            className="w-full h-full object-cover opacity-90"
+            className="hidden md:block w-full h-full object-cover object-center opacity-90"
+            // style={{ objectPosition: '60% 50%' }}
+          />
+
+          <img
+            src="/image/Rectangle893(2).jpg"
+            alt="Travel background"
+            className="block md:hidden w-full h-full object-cover object-center opacity-90"
+            // style={{ objectPosition: '60% 50%' }}
           />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
@@ -145,7 +153,7 @@ const ZoikoOrbitPage = () => {
               Enterprise eSIM solutions for corporate travel, remote teams, and global device deployments
             </p>
             <a href="/plans">
-            <button className="bg-cyan-400 hover:bg-cyan-300 text-gray-900 font-bold px-8 py-3 rounded-full text-base transition-all shadow-lg">
+            <button className="bg-[#0B7285] text-white hover:bg-[#0B7285] text-gray-900 font-bold px-8 md:px-10 py-2.5 md:py-3 rounded-lg text-base transition-all shadow-lg">
               Get Your eSIM
             </button>
             </a>
@@ -289,8 +297,8 @@ const ZoikoOrbitPage = () => {
 
           {/* Case Study 1 - Image left, text right */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center mb-16">
-            <div className="relative w-full h-80 rounded-2xl overflow-hidden">
-              <Image src="/image/Vector (7).png" alt="Legal case study" fill className="object-cover" />
+            <div className="relative w-full max-w-[520px] h-80">
+              <Image src="/image/image-11.png" alt="Legal case study" fill className="object-contain" />
             </div>
             <div>
               <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">
@@ -459,14 +467,14 @@ const ZoikoOrbitPage = () => {
     {showMore2 ? "Read Less →" : "Read More →"}
   </button>
 </div>
-            <div className="relative w-full h-80 rounded-2xl overflow-hidden">
-              <Image src="/image/x.png" alt="Hospitality case study" fill className="object-cover" />
+            <div className="relative w-full max-w-[520px] h-80">
+              <Image src="/image/image-12.png" alt="Hospitality case study" fill className="object-contain" />
             </div>
           </div>
         </div>
       </section>
 
-    {/* ================= CONTACT / CONSULTATION SECTION ================= */}
+    {/*   CONTACT / CONSULTATION SECTION   */}
 <section className="relative bg-[#f5f5f5] dark:bg-gray-900 overflow-hidden pb-24">
 
   {/* Top Banner Image */}
@@ -700,22 +708,38 @@ const ZoikoOrbitPage = () => {
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-10 text-center">Got Questions? We've Got Answers</h2>
           <div className="divide-y divide-gray-200 dark:divide-gray-700 border-t border-b border-gray-200 dark:border-gray-700">
             {[
-              "Can we centrally manage data for all our travelers?",
-              "Do you integrate with our travel booking tool?",
-              "How secure is traveler data?",
-              "How quickly can we roll out globally?",
+              {
+                id: 1,
+                question: "Can we centrally manage data for all our travelers?",
+                answer: "Contact our enterprise team to learn more about this feature and how Zoiko Orbit can be tailored to your organization's needs.",
+              },
+              {
+                id: 2,
+                question: "Do you integrate with our travel booking tool?",
+                answer: "Yes, Zoiko Orbit is designed to seamlessly integrate with popular travel booking platforms.",
+              },
+              {
+                id: 3,
+                question: "How secure is traveler data?",
+                answer: "We prioritize the security and privacy of traveler data, implementing industry-standard measures to protect it.",
+              },
+              {
+                id: 4,
+                question: "How quickly can we roll out globally?",
+                answer: "Our global infrastructure allows for rapid deployment across multiple markets.",
+              },
             ].map((q, i) => (
               <div key={i}>
                 <button
                   className="w-full flex justify-between items-center py-5 text-left text-gray-800 dark:text-white font-medium hover:text-blue-700 transition-colors"
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
                 >
-                  <span>{q}</span>
+                  <span>{q.question}</span>
                   <span className="text-xl text-gray-400 dark:text-white">{openFaq === i ? "−" : "›"}</span>
                 </button>
                 {openFaq === i && (
                   <div className="pb-5 text-gray-500 dark:text-white text-sm">
-                    Contact our enterprise team to learn more about this feature and how Zoiko Orbit can be tailored to your organization's needs.
+                    {q.answer}
                   </div>
                 )}
               </div>

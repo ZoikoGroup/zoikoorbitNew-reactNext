@@ -45,7 +45,7 @@ export default function Travelagency() {
   return (
     <main className="w-full bg-white dark:bg-black overflow-hidden transition-colors duration-300">
 
-      {/* ================= HERO SECTION ================= */}
+      {/*   HERO SECTION   */}
       <section className="relative bg-white dark:bg-black overflow-hidden py-10 md:py-24 transition-colors duration-300">
 
         <div className="max-w-[1400px] mx-auto px-5 md:px-6 lg:px-20 grid grid-cols-1 lg:grid-cols-2 items-center gap-10">
@@ -103,7 +103,7 @@ export default function Travelagency() {
 
       </section>
 
-      {/* ================= WHAT WE OFFER ================= */}
+      {/*   WHAT WE OFFER   */}
       <section className="relative bg-[#F7FBFE] dark:bg-[#0b0d12]  pt-16 pb-24 md:pt-2 pb-16 overflow-hidden transition-colors duration-300">
 
         <div className="relative max-w-[1200px] mx-auto px-6 lg:px-16">
@@ -157,7 +157,7 @@ export default function Travelagency() {
         </div>
       </section>
 
-      {/* ================= CTA SECTION ================= */}
+      {/*   CTA SECTION   */}
 <section className="w-full bg-white dark:bg-black pt-8 py-0 md:py-4 transition-colors duration-300">
         <div className="max-w-[1600px] mx-auto">
 
