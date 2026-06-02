@@ -403,7 +403,7 @@ router.push(
 /** 3. EMPOWERING GLOBAL CONNECTIVITY */
 function EmpoweringSection() {
   return (
-    <section className="py-4 px-4 md:px-16  dark:bg-gray-900 dark:text-white  bg-white">
+    <section className="py-16 px-4 md:px-16  dark:bg-gray-900 dark:text-white  bg-white">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-10">
           <h2 className="text-2xl md:text-3xl font-extrabold  dark:bg-gray-900 dark:text-white  text-gray-900 mb-2">
@@ -477,7 +477,7 @@ function EmpoweringSection() {
 /** 4. ECOSYSTEM PARTNERS */
 function EcosystemPartners() {
   return (
-    <section className="py-4 px-4 md:px-16  dark:bg-gray-900 dark:text-white  bg-gray-50">
+    <section className="py-16 px-4 md:px-16  dark:bg-gray-900 dark:text-white  bg-gray-50">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-extrabold  dark:bg-gray-900 dark:text-white  text-gray-900">Ecosystem Partners</h2>
@@ -571,7 +571,7 @@ function EcosystemPartners() {
 /** 5. GLOBAL COVERAGE */
 function GlobalCoverage() {
   return (
-    <section className="py-4 px-4 md:px-16  dark:bg-gray-900 dark:text-white  bg-white">
+    <section className="py-16 px-4 md:px-16  dark:bg-gray-900 dark:text-white  bg-white">
       <div className="max-w-5xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
           {/* Left text */}
@@ -610,33 +610,6 @@ function GlobalCoverage() {
 /** 6. EXPERIENCE BANNER */
 function ExperienceBanner() {
   return (
-<<<<<<< HEAD
-    <section className="relative overflow-hidden">
-      <div className="w-full h-80 md:h-96 relative">
-        <img
-          src="/image/Rectangle 19 (2).png"
-          alt="Travel banner"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black/30" />
-      </div>
-
-      {/* Overlay card — bottom right */}
-     {/* container */}
-<div className="static md:absolute md:right-8 md:bottom-8 lg:right-16 lg:bottom-10
-                bg-teal-700/95 backdrop-blur-sm text-white
-                rounded-none md:rounded-xl p-5 w-full md:max-w-sm shadow-2xl">
-        <h3 className="font-extrabold text-base md:text-lg mb-2 leading-snug">
-          Experience the future of travel connectivity—use eSIM for every destination.
-        </h3>
-        <p className="text-teal-100 text-xs leading-relaxed mb-3">
-          Stay connected effortlessly across 190+ countries. Use eSIM with a single tap—eliminate
-          roaming costs, no SIM swaps, enjoy high-speed WiFi wherever your journey takes you.
-        </p>
-        <p className="text-teal-200 text-xs leading-relaxed">
-          Enjoy seamless top-ups, high-speed WiFi wherever your journey takes you.
-        </p>
-=======
      <section className="bg-white dark:bg-gray-900 py-8 md:py-12">
       <div className=" w-full">
         {/*
@@ -693,7 +666,6 @@ function ExperienceBanner() {
             />
           </div>
         </div>
->>>>>>> 899027f1c2f29ae38939c032f3cf9fe423a48c74
       </div>
     </section>
   );
@@ -726,7 +698,7 @@ function CustomerFeedback() {
     currentIndex + itemsPerPage
   );
   return (
-    <section className="py-4 px-4 md:px-16  dark:bg-gray-900 dark:text-white  bg-white">
+    <section className="py-16 px-4 md:px-16  dark:bg-gray-900 dark:text-white  bg-white">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-start justify-between mb-8">
           <div>
@@ -818,7 +790,7 @@ function TrustedBy() {
 function CtaBanner() {
   return (
     <section
-      className="py-4 px-4 md:px-16 text-center dark:bg-gray-900 dark:text-white  text-white"
+      className="py-16 px-4 md:px-16 text-center dark:bg-gray-900 dark:text-white  text-white"
       style={{
         background: "linear-gradient(135deg, #0d2f4f 0%, #0f766e 100%)",
       }}
