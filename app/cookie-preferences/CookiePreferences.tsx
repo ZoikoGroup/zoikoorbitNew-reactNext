@@ -28,11 +28,7 @@ export default function CookiePreferences() {
         </div>
 
         {/* Hero text — left side */}
-<<<<<<< HEAD
         <div className="relative z-10 mx-auto max-w-7xl px-6 py-24 md:px-12 md:py-16 pt-[220px]  pb-[25px]">
-=======
-        <div className="relative z-10 mx-auto max-w-7xl px-6 py-14 md:px-12 md:py-4">
->>>>>>> 910cf0a22f18249dd6de318e2ff1ae3c32629d8f
           <div className="max-w-[500px]">
             <h1 className="mb-2 md:mb-5 text-xl font-extrabold leading-tight text-white md:text-4xl">
               Engineered for Transparency.
