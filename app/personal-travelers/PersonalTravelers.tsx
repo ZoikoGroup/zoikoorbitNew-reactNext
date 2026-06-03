@@ -56,62 +56,62 @@ const destinations = [
     label: "Europe & UK",
   },
   {
-    icon: "/image/destinations/Group (1).png",
+    icon: "/image/destinations/Group.png",
     alt: "Rest of Europe",
     label: "Rest of Europe",
   },
   {
-    icon: "/image/destinations/Group.png",
+    icon: "/image/destinations/Camada 1.png",
     alt: "North America",
     label: "North America",
   },
   {
-    icon: "/image/destinations/Vector (2).png",
+    icon: "/image/destinations/Vector.png",
     alt: "Central America & Caribbean",
     label: "Central America & Caribbean",
   },
   {
-    icon: "/image/destinations/Camada 1.png",
+    icon: "/image/destinations/Vector (1).png",
     alt: "South America",
     label: "South America",
   },
   {
-    icon: "/image/destinations/Group 1597883212.png",
+    icon: "/image/destinations/Group 1597883188.png",
     alt: "Africa",
     label: "Africa",
   },
   {
-    icon: "/image/destinations/Vector.png",
+    icon: "/image/destinations/Rectangle 902.png",
     alt: "Rest of Africa",
     label: "Rest of Africa",
   },
   {
-    icon: "/image/destinations/Group (2).png",
+    icon: "/image/destinations/Group (1).png",
     alt: "Asia",
     label: "Asia",
   },
   {
-    icon: "/image/destinations/Vector (1).png",
+    icon: "/image/destinations/Vector (2).png",
     alt: "Rest of Asia",
     label: "Rest of Asia",
   },
   {
-    icon: "/image/destinations/Group 1597883188.png",
+    icon: "/image/destinations/Group 1597883212.png",
     alt: "Middle East & CIS",
     label: "Middle East & CIS",
   },
   {
-    icon: "/image/destinations/Group 1597883188.png",
+    icon: "/image/destinations/Group (2).png",
     alt: "Rest of Middle East",
     label: "Rest of Middle East",
   },
   {
-    icon: "/image/destinations/Group 1597883215.png",
+    icon: "/image/destinations/Group 1597883188 (1).png",
     alt: "Australia & New Zealand",
     label: "Australia & New Zealand",
   },
   {
-    icon: "/image/destinations/Rectangle 902.png",
+    icon: "/image/destinations/Group 1597883215.png",
     alt: "Pacific Islands",
     label: "Pacific Islands",
   },
@@ -278,7 +278,7 @@ export default function PersonalTravelers() {
                 <img
                   src={d.icon}
                   alt={d.label}
-                  className="w-5 h-5 object-contain shrink-0"
+                  className="w-7 h-5 object-cover rounded-sm shrink-0"
                   onError={(e) => {
                     (e.currentTarget as HTMLImageElement).src =
                       "https://cdn-icons-png.flaticon.com/512/616/616408.png";

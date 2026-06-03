@@ -64,51 +64,29 @@ export default function TermsOfService() {
       className="object-cover object-center"
     />
 
-    <div className="block sm:hidden w-[392px] h-[354px] absolute inset-0">
+    <div className="block sm:hidden w-full h-full">
     <Image
       src="/image/mobile-banner.png"
       alt="Mobile Banner"
       fill
       priority
-      className="object-cover  object-center"
+      className="object-cover object-center"
     />
   </div>
 
     {/* Optional Dark Overlay */}
-    <div className="absolute inset-0 " />
+    <div className="absolute inset-0 bg-[#0f1b2d]/60" />
   </div>
 
         {/* Hero text — left side */}
-        <div className="relative z-10 mx-auto max-w-7xl
-                px-[20px] pt-[320px] pb-[25px]
-                md:px-12 md:py-16">
-
-  <div className="max-w-[379px] md:max-w-[520px]">
-
-    <h1 className="
-      mb-2
-      text-[20px]
-      leading-[121%]
-      font-bold
-      text-white
-      md:text-4xl
-      md:leading-tight
-      md:font-extrabold
-    ">
+        <div className="relative z-10 mx-auto max-w-7xl px-6 py-14 md:px-12 md:py-4">
+          <div className="max-w-[520px]">
+            <h1 className="mb-5 text-2xl font-extrabold leading-tight text-white md:text-4xl">
               Service Clarity. Global
               <br />
               Protection. Mutual Trust.
             </h1>
-         <p
-  className="
-    text-[14px]
-    leading-[1.25]
-    text-white
-    md:text-sm
-    md:leading-relaxed
-    md:text-gray-300
-  "
->
+            <p className="text-xs leading-relaxed text-gray-300 md:text-sm">
               The Terms of Service define the legally binding agreement between you
               and Zoiko Orbit, a global connectivity brand under Zoiko Communications
               Group. These terms apply to your use of our eSIM services, mobile
