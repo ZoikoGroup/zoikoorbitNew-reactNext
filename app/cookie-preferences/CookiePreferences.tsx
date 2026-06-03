@@ -4,8 +4,8 @@ export default function CookiePreferences() {
   return (
     <div className="w-full font-sans bg-white dark:bg-gray-900 dark:text-white">
 
-      {/*   HERO   */}
- <section className="relative w-full bg-[#0f1b2d] overflow-hidden min-h-[260px] md:min-h-[300px]">
+      {/* ================= HERO ================= */}
+ <section className="relative w-full  overflow-hidden min-h-[260px] md:min-h-[300px]">
 
         {/* Full background image */}
         <div className="absolute inset-0">
@@ -24,18 +24,27 @@ export default function CookiePreferences() {
                 className="block md:hidden object-cover object-center"
               />
           {/* Dark overlay */}
-          <div className="absolute inset-0 bg-[#0f1b2d]/60" />
+          <div className="absolute inset-0 " />
         </div>
 
         {/* Hero text — left side */}
+<<<<<<< HEAD
+        <div className="relative z-10 mx-auto max-w-7xl px-6 py-24 md:px-12 md:py-16 pt-[220px]  pb-[25px]">
+=======
         <div className="relative z-10 mx-auto max-w-7xl px-6 py-14 md:px-12 md:py-4">
+>>>>>>> 910cf0a22f18249dd6de318e2ff1ae3c32629d8f
           <div className="max-w-[500px]">
-            <h1 className="mb-5 text-2xl font-extrabold leading-tight text-white md:text-4xl">
+            <h1 className="mb-2 md:mb-5 text-xl font-extrabold leading-tight text-white md:text-4xl">
               Engineered for Transparency.
               <br />
               Powered by Consent
             </h1>
-            <p className="text-l leading-relaxed text-gray-300 md:text-sm">
+            <p className="text-[14px]
+                leading-[1.25]
+                text-white
+                md:text-sm
+                md:leading-relaxed
+                md:text-gray-300">
               At Zoiko Orbit, we treat your data with the same precision as we deliver your
               connectivity. Our use of cookies and similar technologies is guided by
               global privacy law, ethical design, and your absolute right to control how
