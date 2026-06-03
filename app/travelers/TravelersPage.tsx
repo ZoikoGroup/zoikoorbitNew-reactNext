@@ -270,7 +270,7 @@ export default function TravelersPage() {
 </section>
 
       {/* ─── 3 SIMPLE STEPS ─────────────────────────── */}
-      <section className="relative py-20 px-6 md:px-12 bg-white dark:bg-gray-900 overflow-hidden">
+      <section className="relative py-8 px-6 md:px-12 bg-white dark:bg-gray-900 overflow-hidden">
         <div
           className="absolute inset-0 opacity-[0.04] pointer-events-none"
           style={{
@@ -318,7 +318,7 @@ export default function TravelersPage() {
       </section>
 
       {/* ─── WHY CHOOSE ZOIKO ORBIT ─────────────────── */}
-      <section className="relative py-20 px-6 md:px-12 bg-white dark:bg-gray-900 overflow-hidden">
+      <section className="relative py-8 px-6 md:px-12 bg-white dark:bg-gray-900 overflow-hidden">
         <div
           className="absolute inset-0 opacity-[0.04] pointer-events-none"
           style={{
@@ -359,7 +359,7 @@ export default function TravelersPage() {
           </div>
         </div>
       </section>
-      <section className="py-16 px-6 md:px-16 lg:px-28 bg-white dark:bg-gray-900">
+      <section className="py-4 px-6 md:px-16 lg:px-28 bg-white dark:bg-gray-900">
               <div className="max-w-5xl mx-auto">
                 <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 dark:text-white mb-2">
                   Only pay for what you need. Stay in control.
@@ -407,7 +407,7 @@ export default function TravelersPage() {
             </section>
 
       {/* ─── WHAT TRAVELERS ARE SAYING ──────────────── */}
-      <section className="relative py-20 px-6 md:px-12 bg-[#eef2f7] dark:bg-gray-800 overflow-hidden">
+      <section className="relative py-8 px-6 md:px-12 bg-[#eef2f7] dark:bg-gray-800 overflow-hidden">
         <div className="hidden lg:block absolute right-12 top-24 z-0">
           <div
             className="w-56 h-56"
@@ -483,7 +483,7 @@ export default function TravelersPage() {
 
 
       {/* ─── FAQ ────────────────────────────────────── */}
-      <section className="py-20 px-6 md:px-12 bg-white dark:bg-gray-900">
+      <section className="py-8 px-6 md:px-12 bg-white dark:bg-gray-900">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-[#1F2937] dark:text-white text-center mb-12">
             Got Questions? We&apos;ve Got Answers

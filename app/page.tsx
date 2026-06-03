@@ -403,7 +403,7 @@ router.push(
 /** 3. EMPOWERING GLOBAL CONNECTIVITY */
 function EmpoweringSection() {
   return (
-    <section className="py-16 px-4 md:px-16  dark:bg-gray-900 dark:text-white  bg-white">
+    <section className="py-4 px-4 md:px-16  dark:bg-gray-900 dark:text-white  bg-white">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-10">
           <h2 className="text-2xl md:text-3xl font-extrabold  dark:bg-gray-900 dark:text-white  text-gray-900 mb-2">
@@ -477,7 +477,7 @@ function EmpoweringSection() {
 /** 4. ECOSYSTEM PARTNERS */
 function EcosystemPartners() {
   return (
-    <section className="py-16 px-4 md:px-16  dark:bg-gray-900 dark:text-white  bg-gray-50">
+    <section className="py-4 px-4 md:px-16  dark:bg-gray-900 dark:text-white  bg-gray-50">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-extrabold  dark:bg-gray-900 dark:text-white  text-gray-900">Ecosystem Partners</h2>
@@ -571,7 +571,7 @@ function EcosystemPartners() {
 /** 5. GLOBAL COVERAGE */
 function GlobalCoverage() {
   return (
-    <section className="py-16 px-4 md:px-16  dark:bg-gray-900 dark:text-white  bg-white">
+    <section className="py-4 px-4 md:px-16  dark:bg-gray-900 dark:text-white  bg-white">
       <div className="max-w-5xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
           {/* Left text */}
@@ -698,7 +698,7 @@ function CustomerFeedback() {
     currentIndex + itemsPerPage
   );
   return (
-    <section className="py-16 px-4 md:px-16  dark:bg-gray-900 dark:text-white  bg-white">
+    <section className="py-4 px-4 md:px-16  dark:bg-gray-900 dark:text-white  bg-white">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-start justify-between mb-8">
           <div>
@@ -790,7 +790,7 @@ function TrustedBy() {
 function CtaBanner() {
   return (
     <section
-      className="py-16 px-4 md:px-16 text-center dark:bg-gray-900 dark:text-white  text-white"
+      className="py-4 px-4 md:px-16 text-center dark:bg-gray-900 dark:text-white  text-white"
       style={{
         background: "linear-gradient(135deg, #0d2f4f 0%, #0f766e 100%)",
       }}

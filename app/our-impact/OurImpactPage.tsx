@@ -129,7 +129,7 @@ export default function OurImpactPage() {
       </section>
 
       {/* ─── HOW WE GIVE BACK ───────────────────────── */}
-      <section className="relative py-20 px-6 md:px-12 bg-white dark:bg-gray-900 overflow-hidden">
+      <section className="relative py-8 px-6 md:px-12 bg-white dark:bg-gray-900 overflow-hidden">
         {/* Faint grid background — same atmospheric feel as other Orbit pages */}
         <div
           className="absolute inset-0 opacity-[0.04] pointer-events-none"
@@ -175,7 +175,7 @@ export default function OurImpactPage() {
       </section>
 
       {/* ─── REAL STORIES. REAL CHANGE. ─────────────── */}
-      <section className="py-20 px-6 md:px-12 bg-[#eaf3fb] dark:bg-gray-800">
+      <section className="py-8 px-6 md:px-12 bg-[#eaf3fb] dark:bg-gray-800">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-[#1F2937] dark:text-white">
@@ -208,7 +208,7 @@ export default function OurImpactPage() {
       </section>
 
       {/* ─── IMPACT YOU'RE PART OF ──────────────────── */}
-      <section className="relative py-20 px-6 md:px-12 bg-white dark:bg-gray-900 overflow-hidden">
+      <section className="relative py-8 px-6 md:px-12 bg-white dark:bg-gray-900 overflow-hidden">
         {/* Atmospheric grid hint */}
         <div
           className="absolute inset-0 opacity-[0.04] pointer-events-none"
@@ -245,7 +245,7 @@ export default function OurImpactPage() {
       </section>
 
       {/* ─── WHAT OUR PARTNERS SAY ──────────────────── */}
-      <section className="relative py-20 px-6 md:px-12 bg-[#eef2f7] dark:bg-gray-800 overflow-hidden">
+      <section className="relative py-8 px-6 md:px-12 bg-[#eef2f7] dark:bg-gray-800 overflow-hidden">
         {/* Decorative dot grid */}
         <div className="hidden lg:block absolute right-12 top-24 z-0">
           <div

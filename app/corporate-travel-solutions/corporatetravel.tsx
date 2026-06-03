@@ -154,7 +154,7 @@ export default function page() {
         </section>
 
         {/* ───────── CORE CAPABILITIES ───────── */}
-        <section className="py-20 px-6 bg-[#f5f7f8] dark:bg-[#0f1115] transition-colors duration-300">
+        <section className="py-8 px-6 bg-[#f5f7f8] dark:bg-[#0f1115] transition-colors duration-300">
 
           <div className="max-w-7xl mx-auto">
 

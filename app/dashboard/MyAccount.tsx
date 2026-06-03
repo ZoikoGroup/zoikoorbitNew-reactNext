@@ -566,7 +566,7 @@ export default function MyAccountPage() {
                         Call Support
                       </button>
                     </Link> */}
-                    <Link href="/faqs">
+                    <Link href="/faqs-self-service">
                       <button className="w-full px-3 py-1.5 border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-50 transition-colors">
                         FAQ
                       </button>
