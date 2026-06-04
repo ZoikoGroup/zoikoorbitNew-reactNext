@@ -421,7 +421,8 @@ export async function POST(req: Request) {
         console.error(`❌ Malima create-order failed (cart #${cartIndex}):`, msg);
         return {
           cartIndex,
-          planId: item.planId ?? item.bqPlanID ?? null,
+          planId: item.planId ??  null,
+          planName: item.planName ?? null,
           simType: item.simType ?? null,
           status: 0,
           ok: false,
