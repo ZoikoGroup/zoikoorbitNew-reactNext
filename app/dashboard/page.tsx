@@ -2,11 +2,10 @@ import { Metadata } from "next";
 import MyAccount from "./MyAccount";
 
 export const metadata: Metadata = {
-  title: "Zoiko Orbit | Login to Manage Your Services",
-  description:
-    "Log in to your Zoiko Orbit account now to manage your services, view and pay bills, track your usage & enjoy full control over your mobile plan & features.",
+  title: "Zoiko Orbit | Dashboard",
+  description: "Manage your Zoiko Orbit account — SIM data usage, orders, plans and support.",
 };
 
-export default function LoginPage() {
+export default function DashboardPage() {
   return <MyAccount />;
 }

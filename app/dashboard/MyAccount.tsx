@@ -1,737 +1,646 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-import beQuick from "../utils/dasdbeQuickApi";
+import DashboardHero from "./sections/DashboardHero";
 
-// ---------- Types ----------
-interface SubscriberInfo {
-  id?: string | number;
-  subscriber_id?: string | number;
-  primary_line_id?: string | number;
-  email?: string;
-  contact_number?: string;
-  two_fa?: boolean;
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+interface MalimaOrderLine {
+  cart_index: number;
+  unit_index: number;
+  plan_name: string;
+  plan_id: string;
+  sim_type: string;    // "eSIM" | "pSIM"
+  msisdn: string;
+  imsi: string;
+  iccid: string;
+  orange_order_id: string;
+  qr_payload: string;
 }
 
-interface PlanDetails {
-  current_plans?: { id: string | number; name: string }[];
-  service_period?: { end_at?: string };
-  usage_summary?: {
-    data?: UsageBlock;
-    international_data?: UsageBlock;
-  };
-  line?: { device_identifier_ids?: (string | number)[]; status?: string };
+interface MalimaOrder {
+  id: number;
+  status: "success" | "partial" | "failed" | "pending";
+  captured_at: string | null;
+  customer_name: string;
+  email: string;
+  total: string | null;
+  currency: string;
+  stripe_payment_intent_id: string;
+  lines: MalimaOrderLine[];
+  line_count: number;
+  has_esim: boolean;
+  has_psim: boolean;
 }
 
-interface UsageBlock {
-  total?: string | number;
-  used?: string | number;
-  remaining?: string | number;
+interface DataBalance {
+  remaining: string;
+  consumed: string;
+  total: string;
+  unit: string;   // always "MB" per Orange API 1.3
 }
 
-interface Device {
-  label: string;
-  note: string;
-  status: string;
+// One row from Orange Traffic Tracking REST API per bearer × origin pair
+interface TrafficAmount {
+  bearer_type: "DATA" | "VOICE" | "SMS";
+  call_origin_type: "LOCAL" | "ROAMING";
+  value: number;
+  volume_type: string;
+  sessions_number: number;
+  subscription_id?: string;
+  first_session_date_time?: string;
+  last_session_date_time?: string;
 }
 
-interface Card {
-  id: string | number;
-  card_holder_name?: string;
-  card_holder?: string;
-  last4?: string;
-  card_number?: string;
-  exp_month?: string | number;
-  exp_year?: string | number;
-  expiry_month?: string | number;
-  expiry_year?: string | number;
+interface TrafficPeriod {
+  start_date: string;
+  end_date: string;
 }
 
-interface Order {
-  id?: string | number;
-  order_id?: string | number;
-  date?: string;
-  created_at?: string;
-  description?: string;
-  amount?: string | number;
-  total?: string | number;
-}
-interface NewCard {
-  card_number: string;
-  card_holder_name: string;
-  exp_month: string;
-  exp_year: string;
-  cvv: string;
-}
-
-// ---------- Helpers ----------
-function formatDateAndRemaining(endAt?: string): { formatted: string; remainingDays: number | "N/A" } {
-  if (!endAt) return { formatted: "N/A", remainingDays: "N/A" };
-  const endDate = new Date(endAt);
-  const today = new Date();
-  const diffTime = endDate.getTime() - today.getTime();
-  const remainingDays = diffTime > 0 ? Math.ceil(diffTime / (1000 * 60 * 60 * 24)) : 0;
-  const formatted = endDate.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
-  return { formatted, remainingDays };
+interface SimInfo {
+  msisdn: string;
+  iccid: string;
+  imsi: string;
+  plan_name: string;
+  sim_type: string;
+  order_id: number;
+  order_status: MalimaOrder["status"];
+  // filled after parallel fetch
+  balance: DataBalance | null;
+  balanceLoading: boolean;
+  balanceError: string | null;
+  traffic: TrafficAmount[] | null;
+  trafficPeriod: TrafficPeriod | null;
+  trafficLoading: boolean;
+  trafficError: string | null;
 }
 
-function kbToGb(kb: number): number {
-  return kb / 1024 / 1024;
+// ── Auth helpers ──────────────────────────────────────────────────────────────
+
+function readUser(): { email?: string; username?: string; created_at?: string } | null {
+  try { return JSON.parse(localStorage.getItem("zoikoorbit_user") || "null"); }
+  catch { return null; }
 }
 
-async function fetchDevices(planDetailsInfo: PlanDetails | null): Promise<Device[]> {
+function isLoggedIn(): boolean {
+  return !!(localStorage.getItem("zoikoorbit_token") || localStorage.getItem("driverx_token"));
+}
+
+// ── Formatting helpers ────────────────────────────────────────────────────────
+
+function fmtDate(iso: string | null): string {
+  if (!iso) return "—";
   try {
-    const deviceIds = planDetailsInfo?.line?.device_identifier_ids || [];
-    if (deviceIds.length > 0) {
-      return deviceIds.map((id, index) => ({
-        label: `Device ${id}`,
-        note: index === 0 ? "pSIM • Primary Line (Selected)" : "pSIM • Secondary Line",
-        status: planDetailsInfo?.line?.status === "active" ? "Active" : "Pending",
-      }));
-    }
-    return [
-      { label: "Device 3132", note: "pSIM • Primary Line (Selected)", status: "Active" },
-      { label: "Device #77", note: "pSIM • Secondary Line", status: "Pending" },
-    ];
-  } catch {
-    return [
-      { label: "Device 3132", note: "pSIM • Primary Line (Selected)", status: "Active" },
-      { label: "Device #77", note: "pSIM • Secondary Line", status: "Pending" },
-    ];
-  }
+    return new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+  } catch { return iso; }
 }
 
-// ---------- Component ----------
+function fmtMoney(total: string | null, currency: string): string {
+  if (!total) return "—";
+  const n = Number(total);
+  if (!Number.isFinite(n)) return total;
+  try { return new Intl.NumberFormat(undefined, { style: "currency", currency: currency || "USD" }).format(n); }
+  catch { return `${n.toFixed(2)} ${currency}`; }
+}
+
+function mbDisplay(mb: number): string {
+  return mb >= 1024 ? `${(mb / 1024).toFixed(1)} GB` : `${Math.round(mb)} MB`;
+}
+
+function pct(consumed: string, total: string): number {
+  const c = Number(consumed), t = Number(total);
+  return t > 0 ? Math.min(100, Math.round((c / t) * 100)) : 0;
+}
+
+// Aggregate traffic amounts for one SIM into a simple summary
+function trafficSummary(amounts: TrafficAmount[]): {
+  localDataMB: number; roamingDataMB: number; period?: string
+} {
+  let local = 0, roaming = 0;
+  for (const a of amounts) {
+    if (a.bearer_type !== "DATA") continue;
+    // value is in KB per the spec (VolumeType)
+    const mb = a.value / 1024;
+    if (a.call_origin_type === "LOCAL") local += mb;
+    else roaming += mb;
+  }
+  return { localDataMB: local, roamingDataMB: roaming };
+}
+
+// ── Small UI components ───────────────────────────────────────────────────────
+
+function Spinner({ size = 8 }: { size?: number }) {
+  return (
+    <div className="flex justify-center py-10">
+      <div className={`w-${size} h-${size} border-4 border-green-500 border-t-transparent rounded-full animate-spin`} role="status">
+        <span className="sr-only">Loading…</span>
+      </div>
+    </div>
+  );
+}
+
+function Skel({ className = "" }: { className?: string }) {
+  return <div className={`animate-pulse bg-gray-200 dark:bg-gray-700 rounded ${className}`} />;
+}
+
+const STATUS_RING: Record<string, string> = {
+  success: "bg-green-50 text-green-700 ring-green-600/20",
+  partial: "bg-amber-50 text-amber-700 ring-amber-600/20",
+  failed:  "bg-red-50 text-red-700 ring-red-600/20",
+  pending: "bg-gray-50 text-gray-600 ring-gray-500/20",
+};
+const STATUS_LABEL: Record<string, string> = {
+  success: "Active", partial: "Partial", failed: "Failed", pending: "Pending",
+};
+
+function StatusBadge({ status }: { status: string }) {
+  return (
+    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset ${STATUS_RING[status] ?? STATUS_RING.pending}`}>
+      {STATUS_LABEL[status] ?? status}
+    </span>
+  );
+}
+
+function UsageBar({ value, color = "bg-green-500" }: { value: number; color?: string }) {
+  return (
+    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+      <div className={`${color} h-1.5 rounded-full transition-all`} style={{ width: `${value}%` }} />
+    </div>
+  );
+}
+
+// ── SimCard ───────────────────────────────────────────────────────────────────
+
+function SimCard({ sim }: { sim: SimInfo }) {
+  const p = sim.balance ? pct(sim.balance.consumed, sim.balance.total) : 0;
+  const barColor = p > 90 ? "bg-red-500" : p > 70 ? "bg-amber-400" : "bg-green-500";
+  const summary  = sim.traffic ? trafficSummary(sim.traffic) : null;
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 flex flex-col gap-4">
+      {/* Header */}
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{sim.plan_name || "SIM Plan"}</p>
+          <p className="text-xs font-mono text-gray-400 mt-0.5 truncate">{sim.msisdn}</p>
+        </div>
+        <span className={`shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full ${
+          sim.sim_type.toLowerCase() === "esim" ? "bg-blue-50 text-blue-700" : "bg-purple-50 text-purple-700"
+        }`}>
+          {sim.sim_type || "SIM"}
+        </span>
+      </div>
+
+      {/* Data balance (API 1.3) */}
+      {sim.balanceLoading ? (
+        <div className="space-y-2">
+          <Skel className="h-5 w-28" />
+          <Skel className="h-1.5 w-full" />
+        </div>
+      ) : sim.balance ? (
+        <div>
+          <div className="flex justify-between items-end mb-1">
+            <div>
+              <span className="text-xl font-bold text-gray-900 dark:text-white">{mbDisplay(Number(sim.balance.remaining))}</span>
+              <span className="text-xs text-gray-400 ml-1">remaining</span>
+            </div>
+            <span className="text-xs text-gray-400">of {mbDisplay(Number(sim.balance.total))}</span>
+          </div>
+          <UsageBar value={p} color={barColor} />
+          <div className="flex justify-between text-xs text-gray-400 mt-1">
+            <span>{p}% used</span>
+            <span>{mbDisplay(Number(sim.balance.consumed))} consumed</span>
+          </div>
+        </div>
+      ) : (
+        <p className="text-xs text-gray-400">{sim.balanceError || "Balance unavailable"}</p>
+      )}
+
+      {/* Traffic breakdown (Traffic Tracking REST API) */}
+      {sim.trafficLoading ? (
+        <Skel className="h-4 w-40" />
+      ) : summary ? (
+        <div className="grid grid-cols-2 gap-2 border-t border-gray-100 dark:border-gray-700 pt-3">
+          <div>
+            <p className="text-[10px] font-medium uppercase tracking-wide text-gray-400 mb-0.5">Local data</p>
+            <p className="text-sm font-semibold text-gray-800 dark:text-white">{mbDisplay(summary.localDataMB)}</p>
+          </div>
+          <div>
+            <p className="text-[10px] font-medium uppercase tracking-wide text-gray-400 mb-0.5">Roaming data</p>
+            <p className="text-sm font-semibold text-gray-800 dark:text-white">{mbDisplay(summary.roamingDataMB)}</p>
+          </div>
+          {sim.trafficPeriod && (
+            <p className="col-span-2 text-[10px] text-gray-400 mt-1">
+              Billing cycle: {sim.trafficPeriod.start_date} → {sim.trafficPeriod.end_date}
+            </p>
+          )}
+        </div>
+      ) : null}
+
+      {/* ICCID */}
+      <p className="text-[10px] font-mono text-gray-300 dark:text-gray-600 truncate">ICCID: {sim.iccid}</p>
+
+      {/* Actions */}
+      <div className="flex gap-2 mt-auto pt-1">
+        <Link href="/top-up-plans" className="flex-1 text-center px-2 py-1.5 bg-green-600 text-white text-xs rounded-md hover:bg-green-700 transition">Top-Up</Link>
+        <Link href={`/dashboard/orders/${sim.order_id}`} className="flex-1 text-center px-2 py-1.5 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-white text-xs rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition">View Order</Link>
+      </div>
+    </div>
+  );
+}
+
+// ── Main component ────────────────────────────────────────────────────────────
+
 export default function MyAccountPage() {
   const router = useRouter();
 
-  const [loading, setLoading] = useState(true);
-  const [subscriber, setSubscriber] = useState<SubscriberInfo | null>(null);
-  const [subscriberNotFound, setSubscriberNotFound] = useState(false);
-  const [plans, setPlans] = useState<unknown[]>([]);
-  const [planDetails, setPlanDetails] = useState<PlanDetails | null>(null);
-  const [lineUsage, setLineUsage] = useState<unknown>(null);
-  const [currentBill, setCurrentBill] = useState<{ total?: number; closed_at?: string } | null>(null);
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [primaryLineId, setPrimaryLineId] = useState<string | number | null>(null);
-  const [devices, setDevices] = useState<Device[]>([]);
-  const [userName, setUserName] = useState("Customer");
+  const [ready,     setReady]     = useState(false);
+  const [userName,  setUserName]  = useState("Customer");
+  const [userEmail, setUserEmail] = useState("");
+  const [memberSince, setMemberSince] = useState<string | undefined>();
+
+  // Malima orders
+  const [ordersLoading, setOrdersLoading] = useState(true);
+  const [orders,        setOrders]        = useState<MalimaOrder[]>([]);
+  const [ordersError,   setOrdersError]   = useState<string | null>(null);
+
+  // Per-SIM enriched data
+  const [sims, setSims] = useState<SimInfo[]>([]);
+
+  // Activate SIM modal
   const [showSimModal, setShowSimModal] = useState(false);
 
-  // Card states
-  const [cards, setCards] = useState<Card[]>([]);
-  const [savingCard, setSavingCard] = useState(false);
-  const [showCardModal, setShowCardModal] = useState(false);
-  const [newCard, setNewCard] = useState<NewCard>({
-    card_number: "",
-    card_holder_name: "",
-    exp_month: "",
-    exp_year: "",
-    cvv: "",
-  });
-
-  // ---------- Card API ----------
-  async function fetchCards(): Promise<void> {
-    try {
-      const token = localStorage.getItem("zoikoorbit_token");
-      if (!token) { setCards([]); return; }
-      const response = await fetch("#", {
-        headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
-      });
-      const data = await response.json();
-      setCards(data?.success ? data.cards || [] : []);
-    } catch {
-      setCards([]);
-    }
-  }
-
-  async function saveCard(e: React.FormEvent<HTMLFormElement>): Promise<void> {
-    e.preventDefault();
-    const { card_number, card_holder_name, exp_month, exp_year, cvv } = newCard;
-    if (!/^\d{16}$/.test(card_number)) { alert("Card number must be exactly 16 digits."); return; }
-    if (!card_holder_name.trim()) { alert("Card holder name is required."); return; }
-    if (!/^(0[1-9]|1[0-2])$/.test(exp_month)) { alert("Expiry month must be 01–12."); return; }
-    if (!/^\d{4}$/.test(exp_year) || parseInt(exp_year) < new Date().getFullYear()) {
-      alert("Expiry year must be a valid future year."); return;
-    }
-    if (!/^\d{3,4}$/.test(cvv)) { alert("CVV must be 3 or 4 digits."); return; }
-
-    setSavingCard(true);
-    try {
-      const token = localStorage.getItem("zoikoorbit_token");
-      if (!token) { alert("Please login again!"); return; }
-      const response = await fetch("#", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify(newCard),
-      });
-      const data = await response.json();
-      if (data.success) {
-        alert("Card added successfully!");
-        setShowCardModal(false);
-        setNewCard({ card_number: "", card_holder_name: "", exp_month: "", exp_year: "", cvv: "" });
-        await fetchCards();
-      } else {
-        alert(data.message || "Failed to save card. Please check details.");
-      }
-    } catch {
-      alert("Error saving card!");
-    } finally {
-      setSavingCard(false);
-    }
-  }
-
-  async function useCard(cardId: string | number): Promise<void> {
-    try {
-      const token = localStorage.getItem("zoikoorbit_token");
-      if (!token) { alert("Please login again!"); return; }
-      const response = await fetch("#", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ card_id: cardId }),
-      });
-      const data = await response.json();
-      if (data.success) { alert("Card selected successfully!"); await fetchCards(); }
-      else alert("Failed to set active card!");
-    } catch {
-      alert("Error selecting card!");
-    }
-  }
-
-  async function deleteCard(cardId: string | number): Promise<void> {
-    if (!confirm("Are you sure you want to delete this card?")) return;
-    try {
-      const token = localStorage.getItem("zoikoorbit_token");
-      if (!token) { alert("Please login again!"); return; }
-      const response = await fetch(`#`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
-      });
-      const data = await response.json();
-      if (data.success) {
-        setCards((prev) => prev.filter((c) => c.id !== cardId));
-        alert("Card deleted successfully!");
-      } else {
-        alert("Failed to delete card!");
-      }
-    } catch {
-      alert("Error deleting card!");
-    }
-  }
-
-  const handleNumericInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const { name, value } = e.target;
-    if (!/^\d*$/.test(value)) return;
-    setNewCard((prev) => ({ ...prev, [name]: value }));
-  };
-
-  // ---------- Load Dashboard ----------
+  // ── Auth gate ────────────────────────────────────────────────────
   useEffect(() => {
-    (async () => {
-      setLoading(true);
-      try {
-        const userData = JSON.parse(localStorage.getItem("zoikoorbit_user") || "{}");
+    if (!isLoggedIn()) { router.replace("/login?next=/dashboard"); return; }
+    const u = readUser();
+    setUserName(u?.username || u?.email?.split("@")[0] || "Customer");
+    setUserEmail(u?.email || "");
+    if (u?.created_at) setMemberSince(u.created_at);
+    setReady(true);
+  }, [router]);
 
-        const userEmail: string = userData?.email || "";
-
-        //const userEmail: string = "info@golitemobile.com";
-        setUserName(userData?.username || "Customer");
-
-        await fetchCards();
-
-        if (!userEmail) {
-          setSubscriberNotFound(true);
-          setLoading(false);
-          return;
-        }
-
-        const subscriberResult = await beQuick.getSubscriberByEmail(userEmail) as { subscriber_id: number };
-
-        if (!subscriberResult?.subscriber_id) {
-          setSubscriberNotFound(true);
-          setLoading(false);
-          return;
-        }
-
-        const SUBSCRIBER_ID = subscriberResult.subscriber_id;
-
-        const subDetails = await beQuick.getSubscriberDetails(SUBSCRIBER_ID) as { subscribers: SubscriberInfo[] };
-        const subscriberInfo: SubscriberInfo | undefined = subDetails?.subscribers?.[0];
-
-        if (!subscriberInfo) {
-          setSubscriberNotFound(true);
-          setLoading(false);
-          return;
-        }
-
-        setSubscriber(subscriberInfo);
-        setPrimaryLineId(subscriberInfo.primary_line_id ?? null);
-
-        const plansData = await beQuick.getAllPlans() as { products?: unknown[]; data?: unknown[] };
-        setPlans(plansData?.products || plansData?.data || []);
-
-        if (subscriberInfo.primary_line_id) {
-          const pDetails = await beQuick.getPlanDetails(subscriberInfo.primary_line_id, true) as PlanDetails;
-          setPlanDetails(pDetails);
-          const buckets = await beQuick.getLineBuckets(subscriberInfo.primary_line_id);
-          setLineUsage(buckets);
-          setDevices(await fetchDevices(pDetails));
-        }
-
-        const bill = await beQuick.getCurrentBill(SUBSCRIBER_ID) as { total?: number; closed_at?: string } | null;
-        setCurrentBill(bill || null);
-
-        const ord = await beQuick.getOrders(SUBSCRIBER_ID) as { orders?: Order[]; data?: Order[] };
-        setOrders(ord?.orders || ord?.data || []);
-
-      } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : "Failed to load dashboard data.");
-      } finally {
-        setLoading(false);
+  // ── Fetch Malima orders ──────────────────────────────────────────
+  const loadOrders = useCallback(async (email: string) => {
+    setOrdersLoading(true);
+    setOrdersError(null);
+    try {
+      const res  = await fetch(`/api/malima/my-orders?email=${encodeURIComponent(email)}`, { cache: "no-store" });
+      const data = await res.json();
+      if (data.success && data.orders) {
+        setOrders(data.orders);
+      } else {
+        setOrdersError(data.message || "Could not load orders.");
       }
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    } catch (e) {
+      setOrdersError(e instanceof Error ? e.message : "Network error");
+    } finally {
+      setOrdersLoading(false);
+    }
   }, []);
 
-  // ---------- Derived values ----------
-  const currentBilli = currentBill?.total || 0;
-  const nextPayment = currentBill?.closed_at
-    ? new Date(currentBill.closed_at).toLocaleString("en-US", { year: "numeric", month: "short", day: "numeric" })
-    : "-";
+  useEffect(() => {
+    if (ready && userEmail) loadOrders(userEmail);
+  }, [ready, userEmail, loadOrders]);
 
-  const servicePeriod = planDetails?.service_period || {};
-  const domesticData = planDetails?.usage_summary?.data || {};
-  const domesticTotalGB = domesticData.total ? kbToGb(Number(domesticData.total)) : 0;
-  const domesticUsedGB = domesticData.used ? kbToGb(Number(domesticData.used)) : 0;
-  const domesticRemainingGB = domesticData.remaining !== undefined
-    ? kbToGb(Number(domesticData.remaining)) : domesticTotalGB - domesticUsedGB;
-  const domesticPercentUsed = domesticTotalGB > 0 ? Math.round((domesticUsedGB / domesticTotalGB) * 100) : 0;
+  // ── Build SIM list + fetch balance & traffic in parallel ─────────
+  useEffect(() => {
+    if (ordersLoading || orders.length === 0) return;
 
-  const intlData = planDetails?.usage_summary?.international_data || {};
-  const intlTotalGB = intlData.total ? kbToGb(Number(intlData.total)) : 0;
-  const intlUsedGB = intlData.used ? kbToGb(Number(intlData.used)) : 0;
-  const intlRemainingGB = intlData.remaining !== undefined
-    ? kbToGb(Number(intlData.remaining)) : intlTotalGB - intlUsedGB;
-  const intlPercentUsed = intlTotalGB > 0 ? Math.round((intlUsedGB / intlTotalGB) * 100) : 0;
+    const seen = new Set<string>();
+    const initial: SimInfo[] = [];
 
-  const { formatted: activeUntil, remainingDays } = formatDateAndRemaining(servicePeriod?.end_at);
-
-  const openChat = (): void => {
-    const tawk = window as Window & { Tawk_API?: { maximize: () => void } };
-    if (tawk.Tawk_API) {
-      tawk.Tawk_API.maximize();
-    } else {
-      alert("Chat is loading... please try again in a moment!");
+    for (const order of orders) {
+      if (order.status === "failed") continue;
+      for (const line of order.lines) {
+        if (!line.msisdn || seen.has(line.msisdn)) continue;
+        seen.add(line.msisdn);
+        initial.push({
+          msisdn: line.msisdn, iccid: line.iccid, imsi: line.imsi,
+          plan_name: line.plan_name, sim_type: line.sim_type,
+          order_id: order.id, order_status: order.status,
+          balance: null, balanceLoading: true, balanceError: null,
+          traffic: null, trafficPeriod: null, trafficLoading: true, trafficError: null,
+        });
+      }
     }
-  };
 
-  // ---------- Render ----------
+    if (initial.length === 0) return;
+    setSims(initial);
+
+    // Fire balance (API 1.3) + traffic (Traffic Tracking REST) in parallel per SIM
+    initial.forEach((sim, idx) => {
+      // ── API 1.3: data balance ──────────────────────────────────
+      fetch("/api/malima/usage-report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ msisdn: sim.msisdn }),
+        cache: "no-store",
+      })
+        .then(r => r.json())
+        .then((d: { success?: boolean; dataBalance?: DataBalance; message?: string }) => {
+          setSims(prev => prev.map((s, i) => i !== idx ? s : {
+            ...s,
+            balanceLoading: false,
+            balance: d.success && d.dataBalance ? d.dataBalance : null,
+            balanceError: d.success ? null : (d.message || "No data"),
+          }));
+        })
+        .catch(e => {
+          setSims(prev => prev.map((s, i) => i !== idx ? s : {
+            ...s, balanceLoading: false, balanceError: e instanceof Error ? e.message : "Error",
+          }));
+        });
+
+      // ── Traffic Tracking REST API: current billing period amounts ─
+      fetch(`/api/malima/traffic-amounts?subscriptionId=${encodeURIComponent(sim.msisdn)}&billingCycle=CURRENT`, {
+        cache: "no-store",
+      })
+        .then(r => r.json())
+        .then((d: { success?: boolean; amounts?: TrafficAmount[]; period?: TrafficPeriod; message?: string }) => {
+          setSims(prev => prev.map((s, i) => i !== idx ? s : {
+            ...s,
+            trafficLoading: false,
+            traffic: d.success && d.amounts ? d.amounts : null,
+            trafficPeriod: d.period ?? null,
+            trafficError: d.success ? null : (d.message || "No traffic data"),
+          }));
+        })
+        .catch(e => {
+          setSims(prev => prev.map((s, i) => i !== idx ? s : {
+            ...s, trafficLoading: false, trafficError: e instanceof Error ? e.message : "Error",
+          }));
+        });
+    });
+  }, [ordersLoading, orders]);
+
+  // ── Derived ───────────────────────────────────────────────────────
+  const recentOrders  = orders.slice(0, 4);
+  const successOrders = orders.filter(o => o.status === "success" || o.status === "partial");
+  const noData        = !ordersLoading && orders.length === 0 && sims.length === 0;
+
+  if (!ready) return <Spinner />;
+
   return (
     <div className="flex flex-col min-h-screen">
-      <main className="grow dark:bg-gray-900 dark:text-white bg-gray-100 py-8 px-4">
-        <div className="max-w-7xl mx-auto">
+      {/* Hero with dynamic stats */}
+      <DashboardHero
+        userName={userName}
+        memberSince={memberSince}
+        totalOrders={ordersLoading ? undefined : orders.length}
+        activeSims={ordersLoading ? undefined : sims.length}
+        loading={ordersLoading}
+      />
 
-          {/* Subscriber not found */}
-          {!loading && subscriberNotFound && (
-            <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
-              {/* <img src="/img/cuate.png" alt="Welcome" className="max-w-xs mb-6" /> */}
-              <h3 className="text-2xl font-bold mb-2">👋 Welcome to the Zoiko Network, {userName}!</h3>
-              <p className="text-gray-500 mb-6">
-                Your account is ready. To unlock high-speed 5G data, nationwide talk, and global messaging, let&apos;s choose your perfect plan.
+      <main className="grow dark:bg-gray-900 dark:text-white bg-gray-100 py-8 px-4">
+        <div className="max-w-7xl mx-auto space-y-8">
+
+          {/* ── Error banner ───────────────────────────────────────── */}
+          {ordersError && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              {ordersError}
+            </div>
+          )}
+
+          {/* ── New subscriber welcome ─────────────────────────────── */}
+          {noData && (
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-10 text-center">
+              <h3 className="text-xl font-bold mb-2">👋 Welcome to Zoiko Orbit, {userName}!</h3>
+              <p className="text-gray-500 text-sm max-w-md mx-auto mb-6">
+                Your account is ready. Choose a plan to unlock global eSIM/pSIM connectivity.
               </p>
-              <div className="flex justify-center gap-3">
+              <div className="flex justify-center gap-3 flex-wrap">
                 <button
-                  className="px-4 py-2 bg-gray-900 text-white rounded-md font-medium hover:bg-gray-700 transition-colors"
                   onClick={() => setShowSimModal(true)}
+                  className="px-5 py-2 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-700 transition"
                 >
                   Activate Your SIM
                 </button>
-                <button
-                  className="px-4 py-2 bg-red-600 text-white rounded-md font-medium hover:bg-red-700 transition-colors"
-                  onClick={() => router.push("/all-plans")}
-                >
-                  View Available Plans
-                </button>
+                <Link href="/plans" className="px-5 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition">
+                  View Plans
+                </Link>
               </div>
             </div>
           )}
 
-          {/* Loading */}
-          {loading && (
-            <div className="flex justify-center py-10">
-              <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin" role="status">
-                <span className="sr-only">Loading...</span>
-              </div>
-            </div>
-          )}
-
-          {/* Error */}
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-              {error}
-            </div>
-          )}
-
-          {/* Dashboard */}
-          {!loading && !subscriberNotFound && (
-            <>
-              {/* Welcome banner */}
-              <div className="bg-green-100 border border-green-400 text-green-800 text-center px-4 py-3 rounded mb-6 font-bold">
-                👋 Welcome, {userName}!
+          {/* ── SIM Data Usage ─────────────────────────────────────── */}
+          {(sims.length > 0 || ordersLoading) && (
+            <section>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="font-semibold text-gray-900 dark:text-white">SIM Data Usage</h2>
+                {sims.length > 0 && (
+                  <span className="text-xs text-gray-400">
+                    {sims.length} SIM{sims.length !== 1 ? "s" : ""} · live from Orange
+                  </span>
+                )}
               </div>
 
-              {/* Row 1 */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-
-                {/* Plans & Usage */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col">
-                  <h6 className="font-semibold text-base mb-1">My Plans &amp; Usage</h6>
-                  <p className="text-gray-500 text-sm mb-4">See active plans, data use and renewal options</p>
-
-                  <div className="bg-gray-50 dark:bg-gray-700 rounded p-3 mb-4">
-                    <h6 className="font-bold mb-1">{planDetails?.current_plans?.[0]?.name || "N/A"}</h6>
-                    <small className="text-green-600">Active until: {activeUntil}</small>
-                  </div>
-
-                  {/* Domestic */}
-                  <h6 className="text-sm font-semibold mb-1">Domestic Data</h6>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span>{domesticUsedGB.toFixed(2)} GB Used</span>
-                    <span>{domesticRemainingGB.toFixed(2)} GB Remaining</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-1.5 mb-1">
-                    <div className="bg-green-500 h-1.5 rounded-full" style={{ width: `${domesticPercentUsed}%` }} />
-                  </div>
-                  <small className="text-gray-400 block mb-3">
-                    {domesticPercentUsed}% used {remainingDays !== "N/A" && `• Renews in ${remainingDays} days`}
-                  </small>
-
-                  {/* Roaming */}
-                  <h6 className="text-sm font-semibold mb-1">Roaming Data</h6>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span>{intlUsedGB.toFixed(2)} GB Used</span>
-                    <span>{intlRemainingGB.toFixed(2)} GB Remaining</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-1.5 mb-1">
-                    <div className="bg-yellow-400 h-1.5 rounded-full" style={{ width: `${intlPercentUsed}%` }} />
-                  </div>
-                  <small className="text-gray-400 block mb-4">
-                    {intlPercentUsed}% used {remainingDays !== "N/A" && `• Renews in ${remainingDays} days`}
-                  </small>
-
-                  <div className="flex gap-2 mt-auto">
-                    <Link
-                      className="px-3 py-1.5 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition-colors"
-                      href={`/dashboard/plan-usages/${primaryLineId}`}
-                    >
-                      View details
-                    </Link>
-                    <Link
-                      className="px-3 py-1.5 bg-yellow-400 text-white text-sm rounded-md hover:bg-yellow-500 transition-colors"
-                      href="/plans"
-                    >
-                      Upgrade Plan
-                    </Link>
-                  </div>
-                </div>
-
-                {/* Devices & SIMs */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col">
-                  <h6 className="font-semibold text-base mb-1">My Devices &amp; SIMs</h6>
-                  <p className="text-gray-500 text-sm mb-4">Activate, pause, or switch your pSIM/eSIM</p>
-
-                  {devices.map((d, i) => (
-                    <div key={i} className="flex justify-between items-center border-b pb-3 mb-3">
-                      <div>
-                        <strong>{d.label}</strong>
-                        <p className="text-gray-400 text-xs mb-0">{d.note}</p>
-                      </div>
-                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-                        d.status === "Active"
-                          ? "bg-green-600 text-white"
-                          : "bg-yellow-400 text-gray-800"
-                      }`}>
-                        {d.status}
-                      </span>
+              {ordersLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {[0, 1, 2].map(i => (
+                    <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm space-y-3">
+                      <Skel className="h-4 w-32" />
+                      <Skel className="h-6 w-24" />
+                      <Skel className="h-1.5 w-full" />
                     </div>
                   ))}
-
-                  <div className="flex gap-2 mt-auto pt-2">
-                    {subscriber?.id && (
-                      <Link href={`/dashboard/my-devices-sims/${subscriber.id}`}>
-                        <button className="px-3 py-1.5 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition-colors">
-                          Manage SIMs
-                        </button>
-                      </Link>
-                    )}
-                    {/* <Link href="/dashboard/add-device/">
-                      <button className="px-3 py-1.5 border border-green-600 text-green-600 text-sm rounded-md hover:bg-green-50 transition-colors">
-                        Add Device
-                      </button>
-                    </Link> */}
-                  </div>
                 </div>
-
-                {/* Billing & Payment */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col">
-                  <h6 className="font-semibold text-base mb-1">Billing &amp; Payment</h6>
-                  <p className="text-gray-500 text-sm mb-4">Update payment method or view invoices</p>
-
-                  <div className="flex justify-between items-center mb-3">
-                    <div>
-                      <h5 className="font-bold mb-0">${Number(currentBilli).toFixed(2)}</h5>
-                      <small className="text-gray-400">Current Bill</small>
-                    </div>
-                    <div>
-                      <h6 className="font-bold mb-0">{nextPayment}</h6>
-                      <small className="text-gray-400">Next Payment</small>
-                    </div>
-                  </div>
-
-                  <p className="text-gray-500 text-sm mb-2">Payment Method</p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {sims.map((sim, i) => <SimCard key={i} sim={sim} />)}
                 </div>
+              )}
+            </section>
+          )}
+
+          {/* ── Orders + Quick actions ─────────────────────────────── */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            {/* Recent orders */}
+            <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-semibold text-gray-900 dark:text-white">Order History</h2>
+                <Link href="/dashboard/orders" className="text-sm text-green-600 hover:underline">View all →</Link>
               </div>
 
-              {/* Row 2 */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-                {/* Account Settings */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col">
-                  <h6 className="font-semibold text-base mb-1">Account Settings</h6>
-                  <p className="text-gray-500 text-sm mb-4">Manage password, contact info, and security</p>
-                  <p className="text-sm font-semibold mb-1">Contact Info</p>
-                  <p className="text-gray-400 text-sm mb-0">info@zoikoorbit.com</p>
-                  <p className="text-gray-400 text-sm mb-4">+1 (800) 399-0087</p>
-                  <p className="text-sm font-semibold mb-1">Security</p>
-                  <p className="text-gray-400 text-sm mb-4">
-                    Two-factor authentication {subscriber?.two_fa ? "enabled" : "disabled"}
-                  </p>
-                  <div className="flex gap-2 mt-auto">
-                    <Link href="dashboard/edit-profile"
-                      className="px-3 py-1.5 border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-50 transition-colors"
-                    >
-                      Edit Profile
-                    </Link>
-                    {/* <button className="px-3 py-1.5 border border-green-600 text-green-600 text-sm rounded-md hover:bg-green-50 transition-colors">
-                      Security Settings
-                    </button> */}
-                  </div>
-                </div>
-
-                {/* Order History */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col">
-                  <h6 className="font-semibold text-base mb-1">Order History</h6>
-                  <p className="text-gray-500 text-sm mb-4">Track previous orders</p>
-                  {orders.slice(0, 3).map((o, i) => (
-                    <div key={i} className="mb-3">
-                      <p className="text-xs text-gray-400 mb-1">{o.date || o.created_at || ""}</p>
-                      <p>
-                        <strong>Order {o.id || o.order_id || ""} - {o.description || ""}</strong>{" "}
-                        <span className="text-gray-400">${Number(o.amount || o.total || 0).toFixed(2)}</span>
-                      </p>
+              {ordersLoading ? (
+                <div className="space-y-4">
+                  {[0, 1, 2].map(i => (
+                    <div key={i} className="flex justify-between py-3 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                      <div className="space-y-1.5"><Skel className="h-4 w-36" /><Skel className="h-3 w-24" /></div>
+                      <Skel className="h-6 w-14" />
                     </div>
                   ))}
-                  <div className="flex gap-2 mt-auto">
-                    <Link href="/dashboard/orders">
-                      <button className="px-3 py-1.5 border border-green-600 text-green-600 text-sm rounded-md hover:bg-green-50 transition-colors">
-                        View All Orders
-                      </button>
-                    </Link>
-                    {/* <button className="px-3 py-1.5 border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-50 transition-colors">
-                      Track Shipment
-                    </button> */}
-                  </div>
                 </div>
-
-                {/* Support */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col">
-                  <h6 className="font-semibold text-base text-red-500 mb-1">Request Support</h6>
-                  <p className="text-gray-500 text-sm mb-4">Instant access to help with account pre-filled</p>
-                  <div className="bg-yellow-50 border border-yellow-300 text-yellow-800 px-4 py-2 rounded text-sm mb-4">
-                    Need help? Our driver support team is available 24/7
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    {/* <button
-                      className="w-full px-3 py-1.5 border border-green-600 text-green-600 text-sm rounded-md hover:bg-green-50 transition-colors"
-                      onClick={openChat}
-                    >
-                      Live Chat
-                    </button>
-                    <Link href="/customer-service">
-                      <button className="w-full px-3 py-1.5 border border-green-600 text-green-600 text-sm rounded-md hover:bg-green-50 transition-colors">
-                        Call Support
-                      </button>
-                    </Link> */}
-                    <Link href="/faqs-self-service">
-                      <button className="w-full px-3 py-1.5 border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-50 transition-colors">
-                        FAQ
-                      </button>
-                    </Link>
-                  </div>
-                  <div className="flex gap-2 mt-3">
-                    <Link href="/support">
-                      <button className="px-3 py-1.5 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition-colors">
-                        Contact Support
-                      </button>
-                    </Link>
-                  </div>
+              ) : recentOrders.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-400 text-sm mb-4">No orders yet.</p>
+                  <Link href="/plans" className="px-4 py-2 bg-gray-900 text-white text-sm rounded-md hover:bg-gray-700">Browse Plans</Link>
                 </div>
+              ) : (
+                <ul className="divide-y divide-gray-100 dark:divide-gray-700">
+                  {recentOrders.map(o => {
+                    const planSummary = o.lines.length === 0 ? "Order"
+                      : o.lines.length === 1 ? o.lines[0].plan_name
+                      : `${o.lines[0].plan_name} +${o.lines.length - 1} more`;
+                    return (
+                      <li key={o.id}>
+                        <Link
+                          href={`/dashboard/orders/${o.id}`}
+                          className="flex items-center justify-between py-3 -mx-2 px-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/40 transition"
+                        >
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                              <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{planSummary}</p>
+                              <StatusBadge status={o.status} />
+                            </div>
+                            <p className="text-xs text-gray-400 mt-0.5">
+                              #{o.id} · {fmtDate(o.captured_at)} · {o.line_count} SIM{o.line_count !== 1 ? "s" : ""}
+                              {o.has_esim ? " (eSIM)" : ""}{o.has_psim ? " (pSIM)" : ""}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2 ml-4 shrink-0">
+                            <span className="text-sm font-semibold">{fmtMoney(o.total, o.currency)}</span>
+                            <svg className="w-4 h-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
 
+            {/* Quick actions */}
+            <div className="space-y-4">
+
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5">
+                <h2 className="font-semibold text-gray-900 dark:text-white mb-1">Account</h2>
+                <p className="text-xs text-gray-400 truncate mb-4">{userEmail || "—"}</p>
+                <div className="flex flex-col gap-2">
+                  <Link href="/dashboard/edit-profile" className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-white text-sm rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    Edit Profile
+                  </Link>
+                  <Link href="/dashboard/security" className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-white text-sm rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    Security Settings
+                  </Link>
+                </div>
               </div>
-            </>
+
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5">
+                <h2 className="font-semibold text-gray-900 dark:text-white mb-3">Plans</h2>
+                <div className="flex flex-col gap-2">
+                  <Link href="/plans" className="w-full text-center px-3 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition">
+                    Browse Plans
+                  </Link>
+                  <Link href="/top-up-plans" className="w-full text-center px-3 py-2 border border-green-600 text-green-600 text-sm rounded-md hover:bg-green-50 transition">
+                    Buy Top-Up Data
+                  </Link>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5">
+                <h2 className="font-semibold text-red-500 mb-3">Support</h2>
+                <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs px-3 py-2 rounded mb-3">
+                  Our support team is available 24/7
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Link href="/support" className="w-full text-center px-3 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 transition">
+                    Contact Support
+                  </Link>
+                  <Link href="/faqs-self-service" className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-white text-sm rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    FAQ
+                  </Link>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {/* ── All SIMs summary table ─────────────────────────────── */}
+          {sims.length > 0 && (
+            <section>
+              <h2 className="font-semibold text-gray-900 dark:text-white mb-3">My SIM Cards</h2>
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-100 dark:border-gray-700 text-left">
+                      <th className="px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Plan</th>
+                      <th className="px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide hidden sm:table-cell">MSISDN</th>
+                      <th className="px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Type</th>
+                      <th className="px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Remaining</th>
+                      <th className="px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide hidden md:table-cell">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                    {sims.map((sim, i) => (
+                      <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition">
+                        <td className="px-5 py-3 font-medium text-gray-900 dark:text-white truncate max-w-[160px]">
+                          {sim.plan_name || "—"}
+                        </td>
+                        <td className="px-5 py-3 font-mono text-gray-500 hidden sm:table-cell">{sim.msisdn}</td>
+                        <td className="px-5 py-3">
+                          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                            sim.sim_type.toLowerCase() === "esim" ? "bg-blue-50 text-blue-700" : "bg-purple-50 text-purple-700"
+                          }`}>
+                            {sim.sim_type || "SIM"}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3 text-gray-700 dark:text-gray-300">
+                          {sim.balanceLoading ? <Skel className="h-4 w-16" />
+                            : sim.balance ? mbDisplay(Number(sim.balance.remaining))
+                            : <span className="text-gray-400 text-xs">—</span>}
+                        </td>
+                        <td className="px-5 py-3 hidden md:table-cell">
+                          <StatusBadge status={sim.order_status} />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
           )}
+
         </div>
       </main>
 
-      {/* Add Card Modal */}
-      {showCardModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4">
-            <div className="flex justify-between items-center px-6 py-4 border-b">
-              <h5 className="font-semibold text-lg">Add Payment Card</h5>
-              <button
-                onClick={() => setShowCardModal(false)}
-                className="text-gray-400 hover:text-gray-600 text-xl leading-none"
-              >
-                &times;
-              </button>
-            </div>
-            <form onSubmit={saveCard} className="px-6 py-4 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
-                <input
-                  type="text"
-                  placeholder="1234123412341234"
-                  name="card_number"
-                  maxLength={16}
-                  value={newCard.card_number}
-                  onChange={handleNumericInput}
-                  required
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Card Holder Name</label>
-                <input
-                  type="text"
-                  placeholder="John Doe"
-                  name="card_holder_name"
-                  value={newCard.card_holder_name}
-                  onChange={(e) => setNewCard({ ...newCard, card_holder_name: e.target.value })}
-                  required
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Month (MM)</label>
-                  <input
-                    type="text"
-                    name="exp_month"
-                    placeholder="08"
-                    maxLength={2}
-                    value={newCard.exp_month}
-                    onChange={handleNumericInput}
-                    required
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Year (YYYY)</label>
-                  <input
-                    type="text"
-                    name="exp_year"
-                    placeholder="2028"
-                    maxLength={4}
-                    value={newCard.exp_year}
-                    onChange={handleNumericInput}
-                    required
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">CVV</label>
-                <input
-                  type="password"
-                  name="cvv"
-                  placeholder="123"
-                  maxLength={4}
-                  value={newCard.cvv}
-                  onChange={handleNumericInput}
-                  required
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                />
-              </div>
-              <div className="flex justify-end gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowCardModal(false)}
-                  disabled={savingCard}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={savingCard}
-                  className="px-4 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition-colors disabled:opacity-50"
-                >
-                  {savingCard ? "Saving..." : "Save Card"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Activate SIM Modal */}
+      {/* ── Activate SIM Modal ──────────────────────────────────────── */}
       {showSimModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl mx-4">
-            <div className="px-6 pt-6 pb-0 border-b pb-4">
-              <div className="flex justify-between items-start">
-                <div className="flex-1 text-center">
-                  <h4 className="font-bold text-xl mb-1">Get Your SIM in 3 Simple Steps</h4>
-                  <p className="text-gray-400 text-sm mb-0">Quick activation. Seamless connectivity. No paperwork.</p>
-                </div>
-                <button
-                  onClick={() => setShowSimModal(false)}
-                  className="text-gray-400 hover:text-gray-600 text-xl leading-none ml-4"
-                >
-                  &times;
-                </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-2xl mx-4">
+            <div className="flex justify-between items-start px-6 py-5 border-b dark:border-gray-700">
+              <div>
+                <h4 className="font-bold text-xl">Get Your SIM in 3 Simple Steps</h4>
+                <p className="text-gray-400 text-sm mt-0.5">Quick activation. Seamless connectivity. No paperwork.</p>
               </div>
+              <button onClick={() => setShowSimModal(false)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none ml-4">&times;</button>
             </div>
-            <div className="px-6 py-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  { step: 1, title: "Choose a Plan", desc: "Pick a plan that fits your needs — Unlimited, Prepaid, Postpaid, Business, or Travel plans available.", full: false },
-                  { step: 2, title: "Select SIM Type", desc: "Choose eSIM for instant activation or order a physical SIM delivered to your doorstep.", full: false },
-                  { step: 3, title: "Activate & Go", desc: "Complete activation online and enjoy fast, reliable 4G/5G coverage within minutes.", full: true },
-                ].map(({ step, title, desc, full }) => (
-                  <div key={step} className={`${full ? "md:col-span-2" : ""} h-full p-4 rounded-lg border bg-gray-50`}>
-                    <div className="flex gap-3">
-                      <div className="w-9 h-9 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-sm shrink-0">
-                        {step}
-                      </div>
-                      <div>
-                        <h6 className="font-semibold text-red-500 mb-1">{title}</h6>
-                        <p className="text-gray-400 text-sm mb-0">{desc}</p>
-                      </div>
+            <div className="px-6 py-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                { step: 1, title: "Choose a Plan", desc: "Pick a plan — Unlimited, Prepaid, Postpaid, Business or Travel.", full: false },
+                { step: 2, title: "Select SIM Type", desc: "Choose eSIM for instant activation or a physical SIM delivered to you.", full: false },
+                { step: 3, title: "Activate & Go", desc: "Complete activation online and enjoy fast 4G/5G coverage within minutes.", full: true },
+              ].map(({ step, title, desc, full }) => (
+                <div key={step} className={`${full ? "md:col-span-2" : ""} p-4 rounded-lg border bg-gray-50 dark:bg-gray-700 dark:border-gray-600`}>
+                  <div className="flex gap-3">
+                    <div className="w-9 h-9 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-sm shrink-0">{step}</div>
+                    <div>
+                      <h6 className="font-semibold text-red-500 mb-1">{title}</h6>
+                      <p className="text-gray-400 text-sm">{desc}</p>
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
             <div className="px-6 pb-6 flex justify-center">
               <button
-                className="px-8 py-2.5 bg-red-600 text-white font-semibold rounded-md hover:bg-red-700 transition-colors"
-                onClick={() => { setShowSimModal(false); router.push("/all-plans"); }}
+                className="px-8 py-2.5 bg-red-600 text-white font-semibold rounded-md hover:bg-red-700 transition"
+                onClick={() => { setShowSimModal(false); router.push("/plans"); }}
               >
                 View Plans &amp; Activate
               </button>
