@@ -239,7 +239,7 @@ export default function MyAccountPage() {
         const userEmail: string = userData?.email || "";
 
         //const userEmail: string = "info@golitemobile.com";
-        setUserName(userData?.name || "Customer");
+        setUserName(userData?.username || "Customer");
 
         await fetchCards();
 
