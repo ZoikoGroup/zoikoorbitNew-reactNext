@@ -26,6 +26,7 @@ interface PasswordForm {
 interface Toast {
   msg: string;
   type: "success" | "error" | "";
+  visible: boolean;
 }
 
 const PROFILE_API  = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/accounts/update-profile/`;
@@ -40,7 +41,7 @@ export default function EditProfilePage() {
   const [passForm, setPassForm]     = useState<PasswordForm>({ current_password: "", new_password: "", confirm_password: "" });
   const [passLoading, setPassLoading] = useState(false);
   const [showPass, setShowPass]     = useState(false);
-  const [toast, setToast]           = useState<Toast>({ msg: "", type: "" });
+  const [toast, setToast]           = useState<Toast>({ msg: "", type: "", visible: false });
 
   // ── Load from localStorage ──────────────────────────────────────
   useEffect(() => {
@@ -60,8 +61,9 @@ export default function EditProfilePage() {
 
   // ── Toast ────────────────────────────────────────────────────────
   function showToast(msg: string, type: "success" | "error") {
-    setToast({ msg, type });
-    setTimeout(() => setToast({ msg: "", type: "" }), 3500);
+    setToast({ msg, type, visible: true });
+    setTimeout(() => setToast(prev => ({ ...prev, visible: false })), 3000);
+    setTimeout(() => setToast({ msg: "", type: "", visible: false }), 3400);
   }
 
   // ── Save profile ─────────────────────────────────────────────────
@@ -157,15 +159,28 @@ export default function EditProfilePage() {
             </button>
           </div>
 
-          {/* Toast */}
+          {/* Floating toast — slides in from right */}
           {toast.msg && (
-            <div className={`flex items-center gap-2 px-4 py-3 rounded-lg border text-sm ${
-              toast.type === "success"
-                ? "bg-green-50 border-green-300 text-green-700"
-                : "bg-red-50 border-red-300 text-red-700"
-            }`}>
-              <span>{toast.type === "success" ? "✓" : "✕"}</span>
-              {toast.msg}
+            <div
+              style={{
+                transition: "transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease",
+                transform: toast.visible ? "translateX(0)" : "translateX(110%)",
+                opacity: toast.visible ? 1 : 0,
+              }}
+              className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl border text-sm font-medium max-w-xs w-full ${
+                toast.type === "success"
+                  ? "bg-green-600 border-green-700 text-white"
+                  : "bg-red-600 border-red-700 text-white"
+              }`}
+            >
+              <span className="text-lg shrink-0">{toast.type === "success" ? "✓" : "✕"}</span>
+              <span className="flex-1">{toast.msg}</span>
+              <button
+                onClick={() => setToast(prev => ({ ...prev, visible: false }))}
+                className="shrink-0 opacity-70 hover:opacity-100 text-base leading-none ml-1"
+              >
+                &times;
+              </button>
             </div>
           )}
 
