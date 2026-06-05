@@ -4,7 +4,6 @@ import React from "react";
 
 interface DashboardHeroProps {
   userName?: string;
-  memberSince?: string;
   totalOrders?: number;
   activeSims?: number;
   loading?: boolean;
@@ -16,27 +15,12 @@ function PulseSkeleton() {
 
 export default function DashboardHero({
   userName = "Customer",
-  memberSince,
   totalOrders,
   activeSims,
   loading = false,
 }: DashboardHeroProps) {
-  const formattedSince = memberSince
-    ? (() => {
-        try {
-          return new Date(memberSince).toLocaleDateString("en-US", {
-            month: "short",
-            year: "numeric",
-          });
-        } catch {
-          return memberSince;
-        }
-      })()
-    : "—";
-
   const stats = [
     { title: "Account Status", value: "Active",           dynamic: false },
-    { title: "Member Since",   value: formattedSince,     dynamic: false },
     { title: "Total Orders",   value: totalOrders ?? "—", dynamic: true  },
     { title: "Active SIMs",    value: activeSims ?? "—",  dynamic: true  },
   ];
