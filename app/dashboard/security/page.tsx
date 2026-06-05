@@ -154,49 +154,6 @@ export default function SecurityPage() {
             </div>
           )}
 
-          {/* Two-Factor Authentication */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="text-green-500 text-xl">
-                <FaShieldAlt />
-              </div>
-              <h5 className="font-semibold text-base">Two-Factor Authentication</h5>
-            </div>
-
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-              Add an extra layer of protection by requiring a verification code
-              in addition to your password when you sign in.
-            </p>
-
-            <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 rounded p-4 mb-4">
-              <div>
-                <p className="text-sm font-medium">
-                  {twoFAEnabled ? "2FA is currently ON" : "2FA is currently OFF"}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                  {twoFAEnabled
-                    ? "You'll be asked for a verification code on new sign-ins."
-                    : "We recommend enabling 2FA for better account security."}
-                </p>
-              </div>
-              <button
-                onClick={toggle2FA}
-                disabled={twoFALoading}
-                className={`px-4 py-1.5 text-sm rounded-md text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                  twoFAEnabled
-                    ? "bg-red-600 hover:bg-red-700"
-                    : "bg-green-600 hover:bg-green-700"
-                }`}
-              >
-                {twoFALoading
-                  ? "Working..."
-                  : twoFAEnabled
-                  ? "Disable 2FA"
-                  : "Enable 2FA"}
-              </button>
-            </div>
-          </div>
-
           {/* Change Password CTA */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
             <div className="flex items-center gap-3 mb-4">
