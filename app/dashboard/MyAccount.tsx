@@ -542,7 +542,7 @@ export default function MyAccountPage() {
                   Our support team is available 24/7
                 </div>
                 <div className="flex flex-col gap-2">
-                  <Link href="/support" className="w-full text-center px-3 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 transition">
+                  <Link href="https://zoiko-orbit-chatbot-git-722985113446.europe-west1.run.app/ui/" target="_blank" className="w-full text-center px-3 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 transition">
                     Contact Support
                   </Link>
                   <Link href="/faqs-self-service" className="w-full text-center px-3 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-white text-sm rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition">
