@@ -1,20 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FaUser, FaLock, FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
-//const BASE_URL = "https://api.driverxmobile.com/api/editprofile/";
+/**
+ * Edit Profile — wired to Django:
+ *   PUT /api/accounts/update-profile/
+ *   Auth: Token <zoikoorbit_token>
+ *   Fields: username, email, first_name, last_name
+ *
+ * localStorage keys used by this site:
+ *   zoikoorbit_token  — auth token
+ *   zoikoorbit_user   — JSON user object
+ */
 
-const BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/editprofile/`;
-
-interface NameForm {
+interface ProfileForm {
+  username: string;
+  email: string;
   first_name: string;
   last_name: string;
-}
-
-interface PasswordForm {
-  password: string;
-  confirm_password: string;
 }
 
 interface Toast {
@@ -22,286 +26,208 @@ interface Toast {
   type: "success" | "error" | "";
 }
 
+const API = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/accounts/update-profile/`;
+
 export default function EditProfilePage() {
-  const [token, setToken] = useState<string>("");
-  const [nameData, setNameData] = useState<NameForm>({ first_name: "", last_name: "" });
-  const [passData, setPassData] = useState<PasswordForm>({ password: "", confirm_password: "" });
-  const [nameLoading, setNameLoading] = useState<boolean>(false);
-  const [passLoading, setPassLoading] = useState<boolean>(false);
-  const [toast, setToast] = useState<Toast>({ msg: "", type: "" });
-  const [username, setUsername] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
+  const router = useRouter();
+  const [token, setToken]         = useState("");
+  const [form, setForm]           = useState<ProfileForm>({ username: "", email: "", first_name: "", last_name: "" });
+  const [saving, setSaving]       = useState(false);
+  const [toast, setToast]         = useState<Toast>({ msg: "", type: "" });
 
-  // ── Load token & user from localStorage ──
+  // ── Load from localStorage ──────────────────────────────────────
   useEffect(() => {
-    const storedToken = localStorage.getItem("token") || "";
-    const storedUser = localStorage.getItem("user");
+    const t = localStorage.getItem("zoikoorbit_token") || "";
+    setToken(t);
+    if (!t) { router.replace("/login?next=/dashboard/edit-profile"); return; }
 
-    setToken(storedToken);
+    try {
+      const u = JSON.parse(localStorage.getItem("zoikoorbit_user") || "{}");
+      setForm({
+        username:   u.username   || "",
+        email:      u.email      || "",
+        first_name: u.first_name || "",
+        last_name:  u.last_name  || "",
+      });
+    } catch { /* ignore */ }
+  }, [router]);
 
-    if (storedUser) {
-      try {
-        const user = JSON.parse(storedUser);
-        setNameData({
-          first_name: user.first_name || "",
-          last_name: user.last_name || "",
-        });
-        setUsername(user.username || "");
-        setEmail(user.email || "");
-      } catch {
-        console.error("Failed to parse driverx_user");
-      }
-    }
-  }, []);
-
-  const showToast = (msg: string, type: "success" | "error") => {
+  // ── Toast helper ────────────────────────────────────────────────
+  function showToast(msg: string, type: "success" | "error") {
     setToast({ msg, type });
     setTimeout(() => setToast({ msg: "", type: "" }), 3500);
-  };
-
-  // ── Update name ──
-  const updateName = async () => {
-    if (!nameData.first_name && !nameData.last_name) {
-      showToast("Please enter first name or last name.", "error");
-      return;
-    }
-    setNameLoading(true);
-    try {
-      const res = await fetch(BASE_URL, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Token ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(nameData),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        const storedUser = localStorage.getItem("driverx_user");
-        if (storedUser) {
-          const user = JSON.parse(storedUser);
-          localStorage.setItem("driverx_user", JSON.stringify({ ...user, ...nameData }));
-        }
-        showToast("Name updated successfully.", "success");
-      } else {
-        const err = Object.values(data).flat().join(" ");
-        showToast((err as string) || "Something went wrong.", "error");
-      }
-    } catch {
-      showToast("Network error. Please try again.", "error");
-    }
-    setNameLoading(false);
-  };
-
-  // ── Update password ──
-  const updatePassword = async () => {
-    if (!passData.password || !passData.confirm_password) {
-      showToast("Please fill in both password fields.", "error");
-      return;
-    }
-    if (passData.password.length < 8) {
-      showToast("Password must be at least 8 characters.", "error");
-      return;
-    }
-    if (passData.password !== passData.confirm_password) {
-      showToast("Passwords do not match.", "error");
-      return;
-    }
-    setPassLoading(true);
-    try {
-      const res = await fetch(BASE_URL, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Token ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(passData),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        showToast("Password updated successfully.", "success");
-        setPassData({ password: "", confirm_password: "" });
-      } else {
-        const err = Object.values(data).flat().join(" ");
-        showToast((err as string) || "Something went wrong.", "error");
-      }
-    } catch {
-      showToast("Network error. Please try again.", "error");
-    }
-    setPassLoading(false);
-  };
-
-  // ── Not logged in ──
-  if (!token) {
-    return (
-      <div className="flex flex-col min-h-screen">
-        <main className="grow dark:bg-gray-900 dark:text-white bg-gray-100 py-8 px-4">
-          <div className="max-w-5xl mx-auto">
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-              You are not logged in. Please log in first.
-            </div>
-          </div>
-        </main>
-      </div>
-    );
   }
 
+  // ── Submit ──────────────────────────────────────────────────────
+  async function handleSave() {
+    if (!form.username.trim()) { showToast("Username is required.", "error"); return; }
+    if (!form.email.trim())    { showToast("Email is required.", "error"); return; }
+
+    setSaving(true);
+    try {
+      const res  = await fetch(API, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        // Sync localStorage so the rest of the dashboard stays fresh
+        const stored = JSON.parse(localStorage.getItem("zoikoorbit_user") || "{}");
+        localStorage.setItem("zoikoorbit_user", JSON.stringify({ ...stored, ...data.user }));
+        showToast("Profile updated successfully.", "success");
+      } else {
+        const err = Object.values(data).flat().join(" ");
+        showToast((err as string) || "Something went wrong.", "error");
+      }
+    } catch {
+      showToast("Network error. Please try again.", "error");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  }
+
+  // ── Render ──────────────────────────────────────────────────────
   return (
     <div className="flex flex-col min-h-screen">
-      <main className="grow dark:bg-gray-900 dark:text-white bg-gray-100 py-8 px-4">
-        <div className="max-w-5xl mx-auto">
+      <main className="grow bg-gray-100 dark:bg-gray-900 dark:text-white py-8 px-4">
+        <div className="max-w-2xl mx-auto space-y-6">
 
-          {/* Page Header */}
-          <div className="flex justify-between items-center mb-6">
-            <h4 className="text-xl font-bold">Edit Profile</h4>
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Edit Profile</h1>
+            <button
+              onClick={() => router.back()}
+              className="text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition"
+            >
+              ← Back
+            </button>
           </div>
 
           {/* Toast */}
           {toast.msg && (
-            <div className={`flex items-center gap-2 px-4 py-3 rounded mb-6 border text-sm ${
+            <div className={`flex items-center gap-2 px-4 py-3 rounded-lg border text-sm ${
               toast.type === "success"
-                ? "bg-green-50 border-green-400 text-green-700"
-                : "bg-red-100 border-red-400 text-red-700"
+                ? "bg-green-50 border-green-300 text-green-700"
+                : "bg-red-50 border-red-300 text-red-700"
             }`}>
-              {toast.type === "success"
-                ? <FaCheckCircle className="text-green-500" />
-                : <FaExclamationCircle className="text-red-500" />
-              }
+              <span>{toast.type === "success" ? "✓" : "✕"}</span>
               {toast.msg}
             </div>
           )}
 
-          {/* Account Info Card (read-only) */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-            <h5 className="font-semibold text-base mb-4">Account Info</h5>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <p className="text-gray-400 text-xs mb-1">Username</p>
-                <p className="text-sm font-medium">{username || "—"}</p>
+          {/* Profile card */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 space-y-5">
+
+            {/* Avatar placeholder */}
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-full bg-[#10446C] flex items-center justify-center text-white text-xl font-bold shrink-0">
+                {form.first_name ? form.first_name[0].toUpperCase() : form.username?.[0]?.toUpperCase() || "?"}
               </div>
               <div>
-                <p className="text-gray-400 text-xs mb-1">Email</p>
-                <p className="text-sm font-medium">{email || "—"}</p>
+                <p className="font-semibold text-gray-900 dark:text-white">
+                  {form.first_name || form.username || "Your Name"}
+                  {form.last_name ? ` ${form.last_name}` : ""}
+                </p>
+                <p className="text-xs text-gray-400">{form.email}</p>
               </div>
             </div>
-          </div>
 
-          {/* Personal Info Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="text-green-500 text-xl">
-                <FaUser />
-              </div>
-              <h5 className="font-semibold text-base">Personal Info</h5>
-            </div>
+            <hr className="border-gray-100 dark:border-gray-700" />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            {/* Fields */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
               <div>
-                <label className="block text-sm text-gray-500 dark:text-gray-400 mb-1.5">
-                  First name
+                <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+                  First Name
                 </label>
                 <input
                   type="text"
+                  name="first_name"
                   placeholder="John"
-                  value={nameData.first_name}
-                  onChange={(e) => setNameData({ ...nameData, first_name: e.target.value })}
-                  className="w-full h-10 px-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition"
+                  value={form.first_name}
+                  onChange={handleChange}
+                  className="w-full h-10 px-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition"
                 />
               </div>
+
               <div>
-                <label className="block text-sm text-gray-500 dark:text-gray-400 mb-1.5">
-                  Last name
+                <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+                  Last Name
                 </label>
                 <input
                   type="text"
+                  name="last_name"
                   placeholder="Doe"
-                  value={nameData.last_name}
-                  onChange={(e) => setNameData({ ...nameData, last_name: e.target.value })}
-                  className="w-full h-10 px-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition"
+                  value={form.last_name}
+                  onChange={handleChange}
+                  className="w-full h-10 px-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition"
                 />
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  name="username"
+                  placeholder="johndoe"
+                  value={form.username}
+                  onChange={handleChange}
+                  className="w-full h-10 px-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="john@example.com"
+                  value={form.email}
+                  onChange={handleChange}
+                  className="w-full h-10 px-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition"
+                />
+                <p className="text-[11px] text-gray-400 mt-1">Changing email affects your login.</p>
+              </div>
+
             </div>
 
-            <div className="flex gap-3 flex-wrap">
+            {/* Actions */}
+            <div className="flex gap-3 pt-2">
               <button
-                onClick={updateName}
-                disabled={nameLoading}
-                className="px-4 py-1.5 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                onClick={handleSave}
+                disabled={saving}
+                className="px-5 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
               >
-                {nameLoading ? "Saving..." : "Save Name"}
+                {saving ? "Saving…" : "Save Changes"}
               </button>
               <button
-                onClick={() => window.history.back()}
-                className="px-4 py-1.5 border border-gray-300 text-gray-700 dark:text-gray-300 text-sm rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                onClick={() => router.back()}
+                className="px-5 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-white text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
               >
-                ← Back
+                Cancel
               </button>
             </div>
           </div>
 
-          {/* Change Password Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="text-green-500 text-xl">
-                <FaLock />
-              </div>
-              <h5 className="font-semibold text-base">Change Password</h5>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-sm text-gray-500 dark:text-gray-400 mb-1.5">
-                  New password
-                </label>
-                <input
-                  type="password"
-                  placeholder="Min. 8 characters"
-                  value={passData.password}
-                  onChange={(e) => setPassData({ ...passData, password: e.target.value })}
-                  className="w-full h-10 px-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-500 dark:text-gray-400 mb-1.5">
-                  Confirm password
-                </label>
-                <input
-                  type="password"
-                  placeholder="Repeat password"
-                  value={passData.confirm_password}
-                  onChange={(e) => setPassData({ ...passData, confirm_password: e.target.value })}
-                  className="w-full h-10 px-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition"
-                />
-              </div>
-            </div>
-
-            {/* Password strength hint */}
-            {passData.password && (
-              <p className={`text-xs mb-4 ${
-                passData.password.length >= 8 ? "text-green-600" : "text-red-500"
-              }`}>
-                {passData.password.length >= 8
-                  ? "✓ Password length is good"
-                  : `✗ Need ${8 - passData.password.length} more character(s)`}
-              </p>
-            )}
-
-            <div className="flex gap-3 flex-wrap">
-              <button
-                onClick={updatePassword}
-                disabled={passLoading}
-                className="px-4 py-1.5 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {passLoading ? "Updating..." : "Update Password"}
-              </button>
-              <button
-                onClick={() => setPassData({ password: "", confirm_password: "" })}
-                className="px-4 py-1.5 border border-gray-300 text-gray-700 dark:text-gray-300 text-sm rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-              >
-                Clear
-              </button>
-            </div>
-          </div>
+          {/* Info note */}
+          <p className="text-xs text-gray-400 text-center">
+            Password changes are handled in{" "}
+            <a href="/dashboard/security" className="text-green-600 hover:underline">Security Settings</a>.
+          </p>
 
         </div>
       </main>
