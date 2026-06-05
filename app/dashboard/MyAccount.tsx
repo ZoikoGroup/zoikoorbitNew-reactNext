@@ -240,7 +240,7 @@ function SimCard({ sim }: { sim: SimInfo }) {
       ) : null}
 
       {/* ICCID */}
-      <p className="text-[10px] font-mono text-gray-300 dark:text-gray-600 truncate">ICCID: {sim.iccid}</p>
+      <p className="text-[10px] font-mono text-gray-500 dark:text-gray-600 truncate">ICCID: {sim.iccid}</p>
 
       {/* Actions */}
       <div className="flex gap-2 mt-auto pt-1">
