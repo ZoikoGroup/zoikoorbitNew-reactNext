@@ -66,9 +66,7 @@ export default function PlansPage() {
   // Compute matching variations + group + sort
 const cards = useMemo(() => {
   if (!data) return [];
-  {/*const matching = applyFilters(data.variations, filters);
-  return sortVariations(matching, sortKey);
-}, [data, filters, sortKey]);*/}
+
 const updatedFilters = {
     ...filters,
     region: filters.region || selectedCountry,
@@ -80,6 +78,23 @@ const updatedFilters = {
     data.variations,
     updatedFilters
   );
+
+  // Deduplicate: when multiple variations share the same plan name, data,
+  // duration and price (same plan sold across different country regions),
+  // keep only the first occurrence so each plan appears once in the list.
+  const seen = new Set<string>();
+  matching = matching.filter((v) => {
+    const attrs = v.attributes as Record<string, { slug: string }>;
+    const key = [
+      v.parent_name,
+      attrs?.data_allowance?.slug ?? "",
+      attrs?.duration?.slug ?? "",
+      String(v.price),
+    ].join("|");
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 
   // Sort plans
   return sortVariations(
