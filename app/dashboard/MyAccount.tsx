@@ -244,7 +244,6 @@ function SimCard({ sim }: { sim: SimInfo }) {
 
       {/* Actions */}
       <div className="flex gap-2 mt-auto pt-1">
-        <Link href="/top-up-plans" className="flex-1 text-center px-2 py-1.5 bg-green-600 text-white text-xs rounded-md hover:bg-green-700 transition">Top-Up</Link>
         <Link href={`/dashboard/orders/${sim.order_id}`} className="flex-1 text-center px-2 py-1.5 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-white text-xs rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition">View Order</Link>
       </div>
     </div>
@@ -259,7 +258,6 @@ export default function MyAccountPage() {
   const [ready,     setReady]     = useState(false);
   const [userName,  setUserName]  = useState("Customer");
   const [userEmail, setUserEmail] = useState("");
-  const [memberSince, setMemberSince] = useState<string | undefined>();
 
   // Malima orders
   const [ordersLoading, setOrdersLoading] = useState(true);
@@ -278,7 +276,6 @@ export default function MyAccountPage() {
     const u = readUser();
     setUserName(u?.username || u?.email?.split("@")[0] || "Customer");
     setUserEmail(u?.email || "");
-    if (u?.created_at) setMemberSince(u.created_at);
     setReady(true);
   }, [router]);
 
@@ -388,7 +385,6 @@ export default function MyAccountPage() {
       {/* Hero with dynamic stats */}
       <DashboardHero
         userName={userName}
-        memberSince={memberSince}
         totalOrders={ordersLoading ? undefined : orders.length}
         activeSims={ordersLoading ? undefined : sims.length}
         loading={ordersLoading}
@@ -536,9 +532,6 @@ export default function MyAccountPage() {
                 <div className="flex flex-col gap-2">
                   <Link href="/plans" className="w-full text-center px-3 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition">
                     Browse Plans
-                  </Link>
-                  <Link href="/top-up-plans" className="w-full text-center px-3 py-2 border border-green-600 text-green-600 text-sm rounded-md hover:bg-green-50 transition">
-                    Buy Top-Up Data
                   </Link>
                 </div>
               </div>
