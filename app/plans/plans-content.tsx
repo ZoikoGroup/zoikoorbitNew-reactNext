@@ -27,7 +27,7 @@ export default function PlansPage() {
     const [page, setPage] = useState(1);
     const PAGE_SIZE = 6;
     const [filters, setFilters] = useState<Filters>({
-                                                        region: null,
+                                                        region: "europe-uk",
                                                         dataBucket: null,
                                                         duration: null,
                                                     });
