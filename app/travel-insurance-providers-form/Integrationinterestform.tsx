@@ -16,7 +16,7 @@ interface FormData {
   distributionChannels: string[];
   businessObjective: string;
   agreed: boolean;
-  isRobot: boolean;
+  // isRobot: boolean;
 }
 
 interface Toast {
@@ -39,7 +39,7 @@ export default function IntegrationInterestForm() {
     distributionChannels: [],
     businessObjective: "",
     agreed: false,
-    isRobot: false,
+    // isRobot: false,
   });
 
   const [toast, setToast] = useState<Toast | null>(null);
@@ -110,14 +110,14 @@ export default function IntegrationInterestForm() {
       return;
     }
 
-    if (!formData.isRobot) {
-      showToast({
-        type: "warning",
-        title: "Verification Required",
-        message: "Please confirm you are not a robot to continue.",
-      });
-      return;
-    }
+    // if (!formData.isRobot) {
+    //   showToast({
+    //     type: "warning",
+    //     title: "Verification Required",
+    //     message: "Please confirm you are not a robot to continue.",
+    //   });
+      // return;
+    // }
 
     setIsSubmitting(true);
     const integration_interest_url  = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/integration-interest/`;
@@ -170,7 +170,7 @@ export default function IntegrationInterestForm() {
           distributionChannels: [],
           businessObjective: "",
           agreed: false,
-          isRobot: false,
+          // isRobot: false,
         });
       } else {
         console.error(data);
@@ -505,7 +505,7 @@ export default function IntegrationInterestForm() {
           </div>
 
           {/* reCAPTCHA placeholder */}
-          <div className="mb-5">
+          {/* <div className="mb-5">
             <label className="inline-flex items-center gap-3 px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer w-full max-w-xs">
               <input
                 type="checkbox"
@@ -523,7 +523,7 @@ export default function IntegrationInterestForm() {
                 <span>Privacy - Terms</span>
               </div>
             </label>
-          </div>
+          </div> */}
 
           {/* Consent checkbox */}
           <div className="mb-7">
