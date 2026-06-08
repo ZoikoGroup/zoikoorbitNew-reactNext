@@ -1,6 +1,7 @@
 "use client"
 import {useState} from 'react'
 import Image from 'next/image'
+import { ChevronDown } from 'lucide-react'
 import toast from "react-hot-toast";
 
 const enterpriseFeatures = [
@@ -32,26 +33,46 @@ const businessSolutions = [
     id: 1,
     image: "/image/plan-icon1.webp",
     title: "Corporate Travel Plans",
-    description:
-      "Pre-trip provisioning, data pools, expense integration.",
+    description: "Pre-trip provisioning, data pools, expense integration.",
     link: "#",
   },
   {
     id: 2,
     image: "/image/plan-icon2.jpg",
     title: "Remote Worker Data",
-    description:
-      "Always-on connectivity for distributed teams.",
+    description: "Always-on connectivity for distributed teams.",
     link: "#",
   },
   {
     id: 3,
     image: "/image/plan-icon3.webp",
     title: "Bespoke Global Programs",
-    description:
-      "Tailored plans for industries like energy, consulting, etc.",
+    description: "Tailored plans for industries like energy, consulting, etc.",
     link: "#",
   },
+];
+
+const countryCodes = [
+  { code: "+1",   flag: "🇺🇸", label: "US" },
+  { code: "+44",  flag: "🇬🇧", label: "UK" },
+  { code: "+91",  flag: "🇮🇳", label: "IN" },
+  { code: "+61",  flag: "🇦🇺", label: "AU" },
+  { code: "+49",  flag: "🇩🇪", label: "DE" },
+  { code: "+33",  flag: "🇫🇷", label: "FR" },
+  { code: "+971", flag: "🇦🇪", label: "AE" },
+  { code: "+65",  flag: "🇸🇬", label: "SG" },
+  { code: "+81",  flag: "🇯🇵", label: "JP" },
+  { code: "+86",  flag: "🇨🇳", label: "CN" },
+  { code: "+55",  flag: "🇧🇷", label: "BR" },
+  { code: "+27",  flag: "🇿🇦", label: "ZA" },
+  { code: "+234", flag: "🇳🇬", label: "NG" },
+  { code: "+254", flag: "🇰🇪", label: "KE" },
+  { code: "+92",  flag: "🇵🇰", label: "PK" },
+  { code: "+880", flag: "🇧🇩", label: "BD" },
+  { code: "+7",   flag: "🇷🇺", label: "RU" },
+  { code: "+82",  flag: "🇰🇷", label: "KR" },
+  { code: "+39",  flag: "🇮🇹", label: "IT" },
+  { code: "+34",  flag: "🇪🇸", label: "ES" },
 ];
 
 type FormData = {
@@ -60,6 +81,7 @@ type FormData = {
   business_email: string;
   role: string;
   website: string;
+  country_code: string;
   phone_number: string;
   enquiry_type: string;
   message: string;
@@ -74,6 +96,7 @@ const emptyForm: FormData = {
   business_email: "",
   role: "",
   website: "",
+  country_code: "+44",
   phone_number: "",
   enquiry_type: "",
   message: "",
@@ -98,8 +121,11 @@ function validateForm(data: FormData): FormErrors {
   if (!data.role)
     errors.role = "Please select a role.";
 
-  if (!data.phone_number.trim())
+  if (!data.phone_number.trim()) {
     errors.phone_number = "Phone number is required.";
+  } else if (!/^\d{6,14}$/.test(data.phone_number.replace(/\s+/g, ""))) {
+    errors.phone_number = "Enter a valid number without country code (e.g. 7911123456).";
+  }
 
   if (!data.message.trim())
     errors.message = "Message is required.";
@@ -161,6 +187,17 @@ export default function BusinessesEnterprises() {
     }
   };
 
+  // digits-only handler for phone field
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, "");
+    const updated = { ...formData, phone_number: digits };
+    setFormData(updated);
+    if (touched.phone_number) {
+      const newErrors = validateForm(updated);
+      setErrors((prev) => ({ ...prev, phone_number: newErrors.phone_number }));
+    }
+  };
+
   const handleBlur = (
     e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
@@ -190,12 +227,20 @@ export default function BusinessesEnterprises() {
     setLoading(true);
 
     try {
+      const payload = {
+        ...formData,
+        phone_number: `${formData.country_code}${formData.phone_number}`,
+      };
+      // remove country_code from payload as it's merged into phone_number
+      const { country_code, ...rest } = payload;
+      void country_code;
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/business-enterprise/enterprise-inquiry/`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(rest),
         }
       );
 
@@ -485,20 +530,54 @@ export default function BusinessesEnterprises() {
                                         />
                                     </div>
 
+                                    {/* PHONE — country code dropdown + number input */}
                                     <div>
                                         <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300">
-                                            Phone (Intl friendly)<RequiredMark />
+                                            Phone Number<RequiredMark />
                                         </label>
-                                        <input
-                                            type="text"
-                                            placeholder="Enter Phone Number"
-                                            name="phone_number"
-                                            value={formData.phone_number}
-                                            onChange={handleChange}
-                                            onBlur={handleBlur}
-                                            className={errors.phone_number ? inputError : inputNormal}
-                                        />
-                                        <FieldError message={errors.phone_number} />
+                                        <div className={`flex h-11 rounded-md border overflow-hidden transition ${
+                                            errors.phone_number
+                                                ? "border-red-500"
+                                                : "border-gray-300 dark:border-gray-700 focus-within:border-[#007C91]"
+                                        }`}>
+                                            {/* Country code select */}
+                                            <div className="relative flex-shrink-0">
+                                                <select
+                                                    name="country_code"
+                                                    value={formData.country_code}
+                                                    onChange={handleChange}
+                                                    className="h-full pl-2 pr-6 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white text-xs border-r border-gray-300 dark:border-gray-600 focus:outline-none appearance-none cursor-pointer"
+                                                >
+                                                    {countryCodes.map((c) => (
+                                                        <option key={c.code} value={c.code}>
+                                                            {c.flag} {c.code}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <ChevronDown className="w-3 h-3 text-gray-500 absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                            </div>
+                                            {/* Number input — digits only */}
+                                            <input
+                                                type="tel"
+                                                name="phone_number"
+                                                value={formData.phone_number}
+                                                onChange={handlePhoneChange}
+                                                onBlur={handleBlur}
+                                                placeholder="7911 123456"
+                                                className="flex-1 px-3 text-sm bg-[#f3f3f3] dark:bg-[#1f2937] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
+                                            />
+                                        </div>
+                                        {errors.phone_number ? (
+                                            <FieldError message={errors.phone_number} />
+                                        ) : formData.phone_number && !errors.phone_number ? (
+                                            <p className="mt-1 text-xs text-[#007C91] dark:text-teal-400">
+                                                Full number: {formData.country_code} {formData.phone_number}
+                                            </p>
+                                        ) : (
+                                            <p className="mt-1 text-xs text-gray-400">
+                                                Select country code, then enter number without it.
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
 
