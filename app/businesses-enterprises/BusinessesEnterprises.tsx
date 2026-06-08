@@ -550,7 +550,7 @@ export default function BusinessesEnterprises() {
                                                 >
                                                     {countryCodes.map((c) => (
                                                         <option key={c.code} value={c.code}>
-                                                            <span className="h-10 flex items-center justify-center">{c.flag}</span> {c.code}
+                                                            {c.label} {c.code}
                                                         </option>
                                                     ))}
                                                 </select>
