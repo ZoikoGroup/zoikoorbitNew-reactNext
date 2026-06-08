@@ -53,7 +53,6 @@ function validateForm(data: FormData): FormErrors {
   if (data.website.trim()) {
     try {
       const url = data.website.trim();
-      // Accept with or without protocol
       new URL(url.startsWith("http") ? url : `https://${url}`);
     } catch {
       errors.website = "Enter a valid URL (e.g. https://example.com).";
@@ -62,6 +61,12 @@ function validateForm(data: FormData): FormErrors {
 
   if (!data.country_region)
     errors.country_region = "Please select a country / region.";
+
+  if (!data.role_function.trim())
+    errors.role_function = "Role / function is required.";
+
+  if (!data.partnership_interest.trim())
+    errors.partnership_interest = "Partnership interest is required.";
 
   if (!data.consent)
     errors.consent = "You must agree to be contacted before submitting.";
@@ -124,7 +129,6 @@ export default function TravelEcosystemPartners() {
     const updated = { ...formData, [key]: newValue } as FormData;
     setFormData(updated);
 
-    // Re-validate the touched field on every change
     if (touched[key]) {
       const newErrors = validateForm(updated);
       setErrors((prev) => ({ ...prev, [key]: newErrors[key] }));
@@ -145,7 +149,6 @@ export default function TravelEcosystemPartners() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Mark all fields as touched and run full validation
     const allTouched = Object.keys(emptyForm).reduce(
       (acc, k) => ({ ...acc, [k]: true }),
       {} as Record<keyof FormData, boolean>
@@ -185,7 +188,6 @@ export default function TravelEcosystemPartners() {
         setTouched({});
       } else {
         console.error("Backend Errors:", data);
-        // Map backend field errors into inline errors if available
         if (data && typeof data === "object") {
           const backendErrors: FormErrors = {};
           for (const [field, messages] of Object.entries(data)) {
@@ -633,7 +635,7 @@ export default function TravelEcosystemPartners() {
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
                     <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300">
-                      Role / Function
+                      Role / Function<RequiredMark />
                     </label>
                     <input
                       type="text"
@@ -642,8 +644,9 @@ export default function TravelEcosystemPartners() {
                       value={formData.role_function}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className={inputNormal}
+                      className={errors.role_function ? inputError : inputNormal}
                     />
+                    <FieldError message={errors.role_function} />
                   </div>
                   <div>
                     <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300">
@@ -670,7 +673,7 @@ export default function TravelEcosystemPartners() {
                 {/* Partnership Interest */}
                 <div>
                   <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300">
-                    Partnership Interest
+                    Partnership Interest<RequiredMark />
                   </label>
                   <input
                     type="text"
@@ -679,8 +682,9 @@ export default function TravelEcosystemPartners() {
                     value={formData.partnership_interest}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={inputNormal}
+                    className={errors.partnership_interest ? inputError : inputNormal}
                   />
+                  <FieldError message={errors.partnership_interest} />
                 </div>
 
                 {/* Message */}
