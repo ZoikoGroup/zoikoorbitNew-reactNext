@@ -76,7 +76,7 @@ const ZoikoOrbitPage = () => {
       };
 
       const response = await fetch(
-  `${process.env.NEXT_PUBLIC_API_URL}/api/enterprise-inquiry/`,
+  `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/enterprise-inquiry/`,
         {
           method: "POST",
           headers: {
