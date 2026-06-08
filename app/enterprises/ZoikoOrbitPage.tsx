@@ -54,7 +54,8 @@ const ZoikoOrbitPage = () => {
       !formData.business_email.trim() ||
       !formData.company_name.trim() ||
       !formData.country.trim() ||
-      !formData.inquiry_type.trim()
+      !formData.inquiry_type.trim() ||
+      !formData.message.trim()
     ) {
       setErrorMessage("Please fill in all required fields.");
       return;
@@ -134,14 +135,11 @@ const ZoikoOrbitPage = () => {
             src="/image/Rectangle 4 (7).png"
             alt="Travel background"
             className="hidden md:block w-full h-full object-cover object-center opacity-90"
-            // style={{ objectPosition: '60% 50%' }}
           />
-
           <img
             src="/image/Rectangle893(2).jpg"
             alt="Travel background"
             className="block md:hidden w-full h-full object-cover object-center opacity-90"
-            // style={{ objectPosition: '60% 50%' }}
           />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
@@ -158,7 +156,6 @@ const ZoikoOrbitPage = () => {
             </button>
             </a>
           </div>
-      
         </div>
       </section>
 
@@ -170,7 +167,6 @@ const ZoikoOrbitPage = () => {
           </h2>
           <p className="text-gray-500 dark:text-white mb-12">Unlock new revenue and delight travelers with ready-to-activate global data.</p>
 
-          {/* Single grey container holding 3 feature blocks */}
           <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-8 md:p-12">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:divide-x md:divide-gray-200 dark:md:divide-gray-700">
               {[
@@ -290,12 +286,12 @@ const ZoikoOrbitPage = () => {
       </section>
 
       {/* PROVEN AT GLOBAL SCALE */}
-    <section className="py-16 bg-white dark:bg-gray-900">
+      <section className="py-16 bg-white dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 text-center">Proven at Global Scale.</h2>
           <p className="text-gray-500 dark:text-white text-center mb-12">Enterprises reduce roaming spend and improve traveler experience with Zoiko Orbit™</p>
 
-          {/* Case Study 1 - Image left, text right */}
+          {/* Case Study 1 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center mb-16">
             <div className="relative w-full max-w-[520px] h-80">
               <Image src="/image/image-11.png" alt="Legal case study" fill className="object-contain" />
@@ -312,161 +308,109 @@ const ZoikoOrbitPage = () => {
                 Industry: Legal Services, International Arbitration, Corporate Law<br />
                 Use Case Focus: Executive Airport Mobility & Real-Time Connectivity
               </p>
-<>
-  {showMore && (
-    <div className="mt-5">
-      <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">
-        The Challenge
-      </h3>
-
-      <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
-        <li>Excessive roaming charges across international transit hubs.</li>
-        <li>Inconsistent network access during executive travel.</li>
-        <li>Unreliable video-call quality during urgent legal proceedings.</li>
-        <li>Fragmented IT controls for global mobile device usage.</li>
-      </ul>
-
-      <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">
-        The Zoiko Orbit™ Solution
-      </h3>
-
-      <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
-        <li>Enterprise-grade eSIM deployment across 20+ countries.</li>
-        <li>Smart regional network routing for low latency connectivity.</li>
-        <li>Centralized policy-driven authentication and billing controls.</li>
-        <li>SLA-backed roaming plans with geo-fencing support.</li>
-        <li>Automated onboarding with GDPR & ISO 27001 compliance.</li>
-      </ul>
-
-      <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">
-        The Results
-      </h3>
-
-      <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
-        <li>62% reduction in roaming costs.</li>
-        <li>89% improvement in HD video-call stability.</li>
-        <li>Zero downtime during urgent legal transactions.</li>
-        <li>Full deployment completed in less than 2 weeks.</li>
-      </ul>
-
-      <p className="italic text-sm text-gray-600 dark:text-white mb-5">
-        “Zoiko Orbit redefined how our partners connect globally —
-        seamless, compliant, and always-on.”
-      </p>
-    </div>
-  )}
-
-  <button
-    onClick={() => setShowMore(!showMore)}
-    className="text-teal-700 dark:text-teal-400 text-sm font-semibold hover:underline"
-  >
-    {showMore ? "Read less →" : "Read More →"}
-  </button>
-</>            </div>
+              <>
+                {showMore && (
+                  <div className="mt-5">
+                    <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">The Challenge</h3>
+                    <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+                      <li>Excessive roaming charges across international transit hubs.</li>
+                      <li>Inconsistent network access during executive travel.</li>
+                      <li>Unreliable video-call quality during urgent legal proceedings.</li>
+                      <li>Fragmented IT controls for global mobile device usage.</li>
+                    </ul>
+                    <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">The Zoiko Orbit™ Solution</h3>
+                    <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+                      <li>Enterprise-grade eSIM deployment across 20+ countries.</li>
+                      <li>Smart regional network routing for low latency connectivity.</li>
+                      <li>Centralized policy-driven authentication and billing controls.</li>
+                      <li>SLA-backed roaming plans with geo-fencing support.</li>
+                      <li>Automated onboarding with GDPR & ISO 27001 compliance.</li>
+                    </ul>
+                    <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">The Results</h3>
+                    <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+                      <li>62% reduction in roaming costs.</li>
+                      <li>89% improvement in HD video-call stability.</li>
+                      <li>Zero downtime during urgent legal transactions.</li>
+                      <li>Full deployment completed in less than 2 weeks.</li>
+                    </ul>
+                    <p className="italic text-sm text-gray-600 dark:text-white mb-5">
+                      "Zoiko Orbit redefined how our partners connect globally — seamless, compliant, and always-on."
+                    </p>
+                  </div>
+                )}
+                <button
+                  onClick={() => setShowMore(!showMore)}
+                  className="text-teal-700 dark:text-teal-400 text-sm font-semibold hover:underline"
+                >
+                  {showMore ? "Read less →" : "Read More →"}
+                </button>
+              </>
+            </div>
           </div>
 
-          {/* Case Study 2 - Text left, image right */}
+          {/* Case Study 2 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
             <div>
-  <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">
-    Luxury Reimagined: How a Global Hospitality Group Delivered Always-On VIP Connectivity Across 17 Countries
-  </h3>
-
-  <p className="text-sm text-gray-500 dark:text-white font-semibold mb-2">
-    Client Overview
-  </p>
-
-  <p className="text-sm text-gray-600 dark:text-white mb-3">
-    A premier hospitality chain operating over 200 properties across the Caribbean,
-    LATAM, Europe, and Southeast Asia, catering to elite travellers and
-    high-net-worth clientele.
-  </p>
-
-  <p className="text-xs text-gray-500 dark:text-white mb-4">
-    Industry: Travel, Leisure & Hospitality<br />
-    Use Case Focus: Guest eSIM Integration & Staff Mobility
-  </p>
-
-  {showMore2 && (
-    <>
-      <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">
-        The Challenge
-      </h3>
-
-      <p className="text-sm text-gray-600 dark:text-white mb-3">
-        Guests arriving from international markets faced:
-      </p>
-
-      <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
-        <li>Costly and complex SIM-swapping</li>
-        <li>Unreliable roaming with inconsistent speeds</li>
-        <li>Delayed concierge communications and check-in friction</li>
-      </ul>
-
-      <p className="text-sm text-gray-600 dark:text-white mb-3">
-        Internal staff — especially front-of-house teams — relied on local SIM cards that led to:
-      </p>
-
-      <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
-        <li>Frequent disconnections</li>
-        <li>Missed VIP engagements</li>
-        <li>Lack of visibility into staff communication uptime</li>
-      </ul>
-
-      <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">
-        The Zoiko Orbit™ Solution
-      </h3>
-
-      <p className="text-sm text-gray-600 dark:text-white mb-3">
-        Zoiko Orbit delivered a white-labelled solution embedded within the brand’s loyalty ecosystem, enabling:
-      </p>
-
-      <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
-        <li>Instant eSIM activation via QR codes at check-in</li>
-        <li>Dedicated VIP mobile plans with high-speed roaming in 190+ countries</li>
-        <li>Regional management dashboards to track usage per property</li>
-        <li>eSIM-based roaming for guest services teams with failover protection</li>
-        <li>Multi-language setup interface for global guest accessibility</li>
-      </ul>
-
-      <p className="text-sm text-gray-600 dark:text-white mb-5">
-        The Orbit Concierge Suite also provided guest behavior analytics,
-        enabling premium upsells and loyalty tracking.
-      </p>
-
-      <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">
-        The Results
-      </h3>
-
-      <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
-        <li>41% boost in VIP satisfaction metrics across SEA and the Caribbean</li>
-        <li>96% reduction in guest mobile complaints</li>
-        <li>30% increase in staff response time efficiency</li>
-        <li>Introduced new $29.99 revenue stream per eSIM at flagship properties</li>
-        <li>100% guest services staff fully migrated in under 4 weeks</li>
-      </ul>
-
-      <p className="text-sm text-gray-600 dark:text-white mb-2">
-        Testimonial:
-      </p>
-
-      <p className="italic text-sm text-gray-600 dark:text-white mb-5">
-        “Zoiko Orbit gave our brand a connectivity edge — guests feel the luxury from the moment they land, and our teams never miss a beat.”
-      </p>
-
-      <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white mb-5">
-        <li>Group Director of Guest Experience</li>
-      </ul>
-    </>
-  )}
-
-  <button
-    onClick={() => setShowMore2(!showMore2)}
-    className="text-teal-700 dark:text-teal-400 text-sm font-semibold hover:underline"
-  >
-    {showMore2 ? "Read Less →" : "Read More →"}
-  </button>
-</div>
+              <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">
+                Luxury Reimagined: How a Global Hospitality Group Delivered Always-On VIP Connectivity Across 17 Countries
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-white font-semibold mb-2">Client Overview</p>
+              <p className="text-sm text-gray-600 dark:text-white mb-3">
+                A premier hospitality chain operating over 200 properties across the Caribbean, LATAM, Europe, and Southeast Asia, catering to elite travellers and high-net-worth clientele.
+              </p>
+              <p className="text-xs text-gray-500 dark:text-white mb-4">
+                Industry: Travel, Leisure & Hospitality<br />
+                Use Case Focus: Guest eSIM Integration & Staff Mobility
+              </p>
+              {showMore2 && (
+                <>
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">The Challenge</h3>
+                  <p className="text-sm text-gray-600 dark:text-white mb-3">Guests arriving from international markets faced:</p>
+                  <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+                    <li>Costly and complex SIM-swapping</li>
+                    <li>Unreliable roaming with inconsistent speeds</li>
+                    <li>Delayed concierge communications and check-in friction</li>
+                  </ul>
+                  <p className="text-sm text-gray-600 dark:text-white mb-3">Internal staff — especially front-of-house teams — relied on local SIM cards that led to:</p>
+                  <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+                    <li>Frequent disconnections</li>
+                    <li>Missed VIP engagements</li>
+                    <li>Lack of visibility into staff communication uptime</li>
+                  </ul>
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">The Zoiko Orbit™ Solution</h3>
+                  <p className="text-sm text-gray-600 dark:text-white mb-3">Zoiko Orbit delivered a white-labelled solution embedded within the brand's loyalty ecosystem, enabling:</p>
+                  <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+                    <li>Instant eSIM activation via QR codes at check-in</li>
+                    <li>Dedicated VIP mobile plans with high-speed roaming in 190+ countries</li>
+                    <li>Regional management dashboards to track usage per property</li>
+                    <li>eSIM-based roaming for guest services teams with failover protection</li>
+                    <li>Multi-language setup interface for global guest accessibility</li>
+                  </ul>
+                  <p className="text-sm text-gray-600 dark:text-white mb-5">The Orbit Concierge Suite also provided guest behavior analytics, enabling premium upsells and loyalty tracking.</p>
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">The Results</h3>
+                  <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+                    <li>41% boost in VIP satisfaction metrics across SEA and the Caribbean</li>
+                    <li>96% reduction in guest mobile complaints</li>
+                    <li>30% increase in staff response time efficiency</li>
+                    <li>Introduced new $29.99 revenue stream per eSIM at flagship properties</li>
+                    <li>100% guest services staff fully migrated in under 4 weeks</li>
+                  </ul>
+                  <p className="text-sm text-gray-600 dark:text-white mb-2">Testimonial:</p>
+                  <p className="italic text-sm text-gray-600 dark:text-white mb-5">
+                    "Zoiko Orbit gave our brand a connectivity edge — guests feel the luxury from the moment they land, and our teams never miss a beat."
+                  </p>
+                  <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white mb-5">
+                    <li>Group Director of Guest Experience</li>
+                  </ul>
+                </>
+              )}
+              <button
+                onClick={() => setShowMore2(!showMore2)}
+                className="text-teal-700 dark:text-teal-400 text-sm font-semibold hover:underline"
+              >
+                {showMore2 ? "Read Less →" : "Read More →"}
+              </button>
+            </div>
             <div className="relative w-full max-w-[520px] h-80">
               <Image src="/image/image-12.png" alt="Hospitality case study" fill className="object-contain" />
             </div>
@@ -474,233 +418,213 @@ const ZoikoOrbitPage = () => {
         </div>
       </section>
 
-    {/*   CONTACT / CONSULTATION SECTION   */}
-<section className="relative bg-[#f5f5f5] dark:bg-gray-900 overflow-hidden pb-24">
+      {/* CONTACT / CONSULTATION SECTION */}
+      <section className="relative bg-[#f5f5f5] dark:bg-gray-900 overflow-hidden pb-24">
 
-  {/* Top Banner Image */}
-  <div className="relative w-full h-[320px] md:h-[420px]">
-    <Image
-      src="/image/Rectangle 19.png"
-      alt="travel"
-      fill
-      className="object-cover"
-      priority
-    />
-
-    {/* Soft Overlay */}
-    <div className="absolute inset-0 bg-black/10"></div>
-  </div>
-
-  {/* World Map Background */}
-  <div className="absolute left-0 bottom-10 w-[320px] md:w-[500px] opacity-20 pointer-events-none">
-    <Image
-      src="/image/map.png"
-      alt="world map"
-      width={500}
-      height={500}
-      className="object-contain"
-    />
-  </div>
-
-  {/* Form Card */}
-  <div className="relative max-w-7xl mx-auto px-6">
-    
-    <div className="bg-white dark:bg-gray-900 max-w-4xl ml-auto -mt-32 rounded-2xl shadow-xl p-8 md:p-10 border border-gray-100 dark:border-gray-700">
-
-      {/* Heading */}
-      <div className="mb-8">
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight">
-          Let's Transform Your <br />
-          Global Travel & Mobility Program.
-        </h2>
-
-        <p className="text-gray-600 dark:text-white mt-3">
-          Share a few details and our specialists will respond within 24 hours
-        </p>
-      </div>
-
-      {/* Form */}
-      <form className="space-y-5" onSubmit={handleSubmit}>
-
-        {/* Row 1 */}
-        <div className="grid md:grid-cols-2 gap-5">
-
-          <div>
-            <label className="text-sm text-gray-700 dark:text-white mb-2 block">
-              First Name <span className="text-red-500">*</span>
-            </label>
-
-            <input
-              type="text"
-              name="first_name"
-              value={formData.first_name}
-              onChange={handleChange}
-              placeholder="Enter First Name"
-              className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
-            />
-          </div>
-
-          <div>
-            <label className="text-sm text-gray-700 dark:text-white mb-2 block">
-              Last Name <span className="text-red-500">*</span>
-            </label>
-
-            <input
-              type="text"
-              name="last_name"
-              value={formData.last_name}
-              onChange={handleChange}
-              placeholder="Enter Last Name"
-              className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
-            />
-          </div>
-
+        {/* Top Banner Image */}
+        <div className="relative w-full h-[320px] md:h-[420px]">
+          <Image
+            src="/image/Rectangle 19.png"
+            alt="travel"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-black/10"></div>
         </div>
 
-        {/* Row 2 */}
-        <div className="grid md:grid-cols-2 gap-5">
-
-          <div>
-            <label className="text-sm text-gray-700 dark:text-white mb-2 block">
-              Business Email <span className="text-red-500">*</span>
-            </label>
-
-            <input
-              type="email"
-              name="business_email"
-              value={formData.business_email}
-              onChange={handleChange}
-              placeholder="Enter Work Email"
-              className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
-            />
-          </div>
-
-          <div>
-            <label className="text-sm text-gray-700 dark:text-white mb-2 block">
-              Company / Organization <span className="text-red-500">*</span>
-            </label>
-
-            <input
-              type="text"
-              name="company_name"
-              value={formData.company_name}
-              onChange={handleChange}
-              placeholder="Enter Company/Organization Name"
-              className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
-            />
-          </div>
-
-        </div>
-
-        {/* Row 3 */}
-        <div className="grid md:grid-cols-2 gap-5">
-
-          <div>
-            <label className="text-sm text-gray-700 dark:text-white mb-2 block">
-              Phone (If Needed)
-            </label>
-
-            <input
-              type="text"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder="Enter Website URL"
-              className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
-            />
-          </div>
-
-          <div>
-            <label className="text-sm text-gray-700 dark:text-white mb-2 block">
-              Country / Region <span className="text-red-500">*</span>
-            </label>
-
-            <select
-              name="country"
-              value={formData.country}
-              onChange={handleChange}
-              className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600 text-gray-600 dark:[&>option]:bg-gray-800 dark:[&>option]:text-white"
-            >
-              <option value="">Select Option</option>
-              <option value="India">India</option>
-              <option value="United States">United States</option>
-              <option value="United Kingdom">United Kingdom</option>
-            </select>
-          </div>
-
-        </div>
-
-        {/* Inquiry */}
-        <div>
-          <label className="text-sm text-gray-700 dark:text-white mb-2 block">
-            Inquiry Type <span className="text-red-500">*</span>
-          </label>
-
-          <input
-            type="text"
-            name="inquiry_type"
-            value={formData.inquiry_type}
-            onChange={handleChange}
-            placeholder="Corporate Travel, Remote Workforce, Bulk Deployment, Security Review, Integration Other"
-            className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
+        {/* World Map Background */}
+        <div className="absolute left-0 bottom-10 w-[320px] md:w-[500px] opacity-20 pointer-events-none">
+          <Image
+            src="/image/map.png"
+            alt="world map"
+            width={500}
+            height={500}
+            className="object-contain"
           />
         </div>
 
-        {/* Message */}
-        <div>
-          <textarea
-            rows={5}
-            name="message"
-            value={formData.message}
-            onChange={handleChange}
-            placeholder="Enter your message..."
-            className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-4 outline-none resize-none focus:ring-2 focus:ring-teal-600"
-          />
+        {/* Form Card */}
+        <div className="relative max-w-7xl mx-auto px-6">
+          <div className="bg-white dark:bg-gray-900 max-w-4xl ml-auto -mt-32 rounded-2xl shadow-xl p-8 md:p-10 border border-gray-100 dark:border-gray-700">
+
+            <div className="mb-8">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight">
+                Let's Transform Your <br />
+                Global Travel & Mobility Program.
+              </h2>
+              <p className="text-gray-600 dark:text-white mt-3">
+                Share a few details and our specialists will respond within 24 hours
+              </p>
+            </div>
+
+            <form className="space-y-5" onSubmit={handleSubmit}>
+
+              {/* Row 1 */}
+              <div className="grid md:grid-cols-2 gap-5">
+                <div>
+                  <label className="text-sm text-gray-700 dark:text-white mb-2 block">
+                    First Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="first_name"
+                    value={formData.first_name}
+                    onChange={handleChange}
+                    placeholder="Enter First Name"
+                    className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-gray-700 dark:text-white mb-2 block">
+                    Last Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="last_name"
+                    value={formData.last_name}
+                    onChange={handleChange}
+                    placeholder="Enter Last Name"
+                    className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
+                  />
+                </div>
+              </div>
+
+              {/* Row 2 */}
+              <div className="grid md:grid-cols-2 gap-5">
+                <div>
+                  <label className="text-sm text-gray-700 dark:text-white mb-2 block">
+                    Business Email <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    name="business_email"
+                    value={formData.business_email}
+                    onChange={handleChange}
+                    placeholder="Enter Work Email"
+                    className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-gray-700 dark:text-white mb-2 block">
+                    Company / Organization <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="company_name"
+                    value={formData.company_name}
+                    onChange={handleChange}
+                    placeholder="Enter Company/Organization Name"
+                    className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
+                  />
+                </div>
+              </div>
+
+              {/* Row 3 */}
+              <div className="grid md:grid-cols-2 gap-5">
+                <div>
+                  <label className="text-sm text-gray-700 dark:text-white mb-2 block">
+                    Phone (If Needed)
+                  </label>
+                  <input
+                    type="text"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="Enter Website URL"
+                    className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-gray-700 dark:text-white mb-2 block">
+                    Country / Region <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="country"
+                    value={formData.country}
+                    onChange={handleChange}
+                    className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600 text-gray-600 dark:[&>option]:bg-gray-800 dark:[&>option]:text-white"
+                  >
+                    <option value="">Select Option</option>
+                    <option value="India">India</option>
+                    <option value="United States">United States</option>
+                    <option value="United Kingdom">United Kingdom</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Inquiry */}
+              <div>
+                <label className="text-sm text-gray-700 dark:text-white mb-2 block">
+                  Inquiry Type <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="inquiry_type"
+                  value={formData.inquiry_type}
+                  onChange={handleChange}
+                  placeholder="Corporate Travel, Remote Workforce, Bulk Deployment, Security Review, Integration Other"
+                  className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
+                />
+              </div>
+
+              {/* Message — now required */}
+              <div>
+                <label className="text-sm text-gray-700 dark:text-white mb-2 block">
+                  Message <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  rows={5}
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  placeholder="Enter your message..."
+                  className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-4 outline-none resize-none focus:ring-2 focus:ring-teal-600"
+                />
+              </div>
+
+              {/* Checkbox */}
+              <div className="flex items-start gap-3">
+                <input
+                  id="consent"
+                  type="checkbox"
+                  name="consent"
+                  checked={formData.consent}
+                  onChange={handleChange}
+                  className="mt-1 accent-teal-700"
+                />
+                <label htmlFor="consent" className="text-sm text-gray-600 dark:text-white">
+                  I agree to be contacted by Zoiko Orbit regarding partner opportunities.
+                </label>
+              </div>
+
+              {/* Success Message */}
+              {successMessage && (
+                <p className="text-sm font-medium text-green-600 dark:text-green-400">
+                  {successMessage}
+                </p>
+              )}
+
+              {/* Error Message */}
+              {errorMessage && (
+                <p className="text-sm font-medium text-red-600 dark:text-red-400">
+                  {errorMessage}
+                </p>
+              )}
+
+              {/* Button */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="bg-teal-700 hover:bg-teal-800 transition text-white font-medium px-8 py-3 rounded-lg shadow-md disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {loading ? "Submitting..." : "Submit & Schedule a Consultation"}
+              </button>
+
+            </form>
+          </div>
         </div>
-
-        {/* Checkbox */}
-        <div className="flex items-start gap-3">
-          <input
-            id="consent"
-            type="checkbox"
-            name="consent"
-            checked={formData.consent}
-            onChange={handleChange}
-            className="mt-1 accent-teal-700"
-          />
-
-          <label htmlFor="consent" className="text-sm text-gray-600 dark:text-white">
-            I agree to be contacted by Zoiko Orbit regarding partner opportunities.
-          </label>
-        </div>
-
-        {/* Success Message */}
-        {successMessage && (
-          <p className="text-sm font-medium text-green-600 dark:text-green-400">
-            {successMessage}
-          </p>
-        )}
-
-        {/* Error Message */}
-        {errorMessage && (
-          <p className="text-sm font-medium text-red-600 dark:text-red-400">
-            {errorMessage}
-          </p>
-        )}
-
-        {/* Button */}
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-teal-700 hover:bg-teal-800 transition text-white font-medium px-8 py-3 rounded-lg shadow-md disabled:cursor-not-allowed disabled:opacity-70"
-        >
-          {loading ? "Submitting..." : "Submit & Schedule a Consultation"}
-        </button>
-
-      </form>
-    </div>
-  </div>
-</section>
+      </section>
 
       {/* FAQ SECTION */}
       <section className="py-16 bg-white dark:bg-gray-900">
