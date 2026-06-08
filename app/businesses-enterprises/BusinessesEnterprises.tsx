@@ -535,7 +535,7 @@ export default function BusinessesEnterprises() {
                                         <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300">
                                             Phone Number<RequiredMark />
                                         </label>
-                                        <div className={`flex h-11 rounded-md border overflow-hidden transition ${
+                                        <div className={`flex h-full rounded-md border overflow-hidden transition ${
                                             errors.phone_number
                                                 ? "border-red-500"
                                                 : "border-gray-300 dark:border-gray-700 focus-within:border-[#007C91]"
