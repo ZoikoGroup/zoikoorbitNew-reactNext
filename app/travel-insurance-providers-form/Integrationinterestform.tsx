@@ -8,6 +8,7 @@ interface FormData {
   jobTitle: string;
   companyName: string;
   businessEmail: string;
+  countryCode: string;
   phoneNumber: string;
   businessWebsite: string;
   integrationInterests: string[];
@@ -24,12 +25,36 @@ interface Toast {
   message: string;
 }
 
+const countryCodes = [
+  { code: "+1", flag: "🇺🇸", label: "US" },
+  { code: "+44", flag: "🇬🇧", label: "UK" },
+  { code: "+91", flag: "🇮🇳", label: "IN" },
+  { code: "+61", flag: "🇦🇺", label: "AU" },
+  { code: "+49", flag: "🇩🇪", label: "DE" },
+  { code: "+33", flag: "🇫🇷", label: "FR" },
+  { code: "+971", flag: "🇦🇪", label: "AE" },
+  { code: "+65", flag: "🇸🇬", label: "SG" },
+  { code: "+81", flag: "🇯🇵", label: "JP" },
+  { code: "+86", flag: "🇨🇳", label: "CN" },
+  { code: "+55", flag: "🇧🇷", label: "BR" },
+  { code: "+27", flag: "🇿🇦", label: "ZA" },
+  { code: "+234", flag: "🇳🇬", label: "NG" },
+  { code: "+254", flag: "🇰🇪", label: "KE" },
+  { code: "+92", flag: "🇵🇰", label: "PK" },
+  { code: "+880", flag: "🇧🇩", label: "BD" },
+  { code: "+7", flag: "🇷🇺", label: "RU" },
+  { code: "+82", flag: "🇰🇷", label: "KR" },
+  { code: "+39", flag: "🇮🇹", label: "IT" },
+  { code: "+34", flag: "🇪🇸", label: "ES" },
+];
+
 export default function IntegrationInterestForm() {
   const [formData, setFormData] = useState<FormData>({
     fullName: "",
     jobTitle: "",
     companyName: "",
     businessEmail: "",
+    countryCode: "+44",
     phoneNumber: "",
     businessWebsite: "",
     integrationInterests: [],
@@ -96,8 +121,8 @@ export default function IntegrationInterestForm() {
     const cleaned = value.replace(/\s+/g, "");
     if (!cleaned) {
       setPhoneError("Phone number is required.");
-    } else if (!/^\+?[1-9]\d{6,14}$/.test(cleaned)) {
-      setPhoneError("Enter a valid international number (e.g. +44 7911 123456).");
+    } else if (!/^\d{6,14}$/.test(cleaned)) {
+      setPhoneError("Enter a valid number without country code (e.g. 7911123456).");
     } else {
       setPhoneError("");
     }
@@ -119,7 +144,7 @@ export default function IntegrationInterestForm() {
       showToast({
         type: "warning",
         title: "Invalid Phone Number",
-        message: "Please enter a valid international phone number.",
+        message: "Please enter a valid phone number.",
       });
       return;
     }
@@ -129,15 +154,13 @@ export default function IntegrationInterestForm() {
     try {
       const response = await fetch(integration_interest_url, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           full_name: formData.fullName,
           job_title: formData.jobTitle,
           company_name: formData.companyName,
           business_email: formData.businessEmail,
-          phone_number: formData.phoneNumber,
+          phone_number: `${formData.countryCode}${formData.phoneNumber}`,
           business_website: formData.businessWebsite,
           integration_interests: formData.integrationInterests,
           operating_regions: formData.operatingRegions,
@@ -162,6 +185,7 @@ export default function IntegrationInterestForm() {
           jobTitle: "",
           companyName: "",
           businessEmail: "",
+          countryCode: "+44",
           phoneNumber: "",
           businessWebsite: "",
           integrationInterests: [],
@@ -224,6 +248,8 @@ export default function IntegrationInterestForm() {
     }
   };
 
+  const selectedCountry = countryCodes.find((c) => c.code === formData.countryCode);
+
   return (
     <main className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300 min-h-screen">
       {/* Toast Notification */}
@@ -239,14 +265,10 @@ export default function IntegrationInterestForm() {
               {getToastStyles(toast.type).icon}
             </div>
             <div className="flex-1 min-w-0 pt-0.5">
-              <h4
-                className={`font-semibold text-sm ${getToastStyles(toast.type).titleColor} mb-0.5`}
-              >
+              <h4 className={`font-semibold text-sm ${getToastStyles(toast.type).titleColor} mb-0.5`}>
                 {toast.title}
               </h4>
-              <p
-                className={`text-xs ${getToastStyles(toast.type).messageColor} leading-relaxed`}
-              >
+              <p className={`text-xs ${getToastStyles(toast.type).messageColor} leading-relaxed`}>
                 {toast.message}
               </p>
             </div>
@@ -263,14 +285,8 @@ export default function IntegrationInterestForm() {
 
       <style jsx>{`
         @keyframes slide-in-right {
-          from {
-            opacity: 0;
-            transform: translateX(100%);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
+          from { opacity: 0; transform: translateX(100%); }
+          to { opacity: 1; transform: translateX(0); }
         }
         .animate-slide-in-right {
           animation: slide-in-right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -360,29 +376,51 @@ export default function IntegrationInterestForm() {
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                 Phone Number<span className="text-red-500 ml-0.5">*</span>
               </label>
-              <div className="flex">
-                <div className="flex items-center gap-1.5 px-3 py-3 rounded-l-lg bg-gray-50 dark:bg-gray-900 border border-r-0 border-gray-200 dark:border-gray-700">
-                  <span className="text-lg leading-none">🇺🇸</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
+              <div className={`flex rounded-lg border overflow-hidden transition-all ${
+                phoneError
+                  ? "border-red-400"
+                  : "border-gray-200 dark:border-gray-700 focus-within:ring-2 focus-within:ring-teal-500 focus-within:border-transparent"
+              }`}>
+                {/* Country code dropdown */}
+                <div className="relative flex-shrink-0">
+                  <select
+                    value={formData.countryCode}
+                    onChange={(e) => handleInputChange("countryCode", e.target.value)}
+                    className="h-full pl-3 pr-7 py-3 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white text-sm border-r border-gray-200 dark:border-gray-700 focus:outline-none appearance-none cursor-pointer"
+                  >
+                    {countryCodes.map((c) => (
+                      <option key={c.code} value={c.code}>
+                        {c.flag} {c.code}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-3.5 h-3.5 text-gray-400 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
+                {/* Number input */}
                 <input
                   type="tel"
                   required
                   value={formData.phoneNumber}
                   onChange={(e) => {
-                    handleInputChange("phoneNumber", e.target.value);
-                    validatePhone(e.target.value);
+                    // digits only
+                    const val = e.target.value.replace(/\D/g, "");
+                    handleInputChange("phoneNumber", val);
+                    validatePhone(val);
                   }}
-                  placeholder="Enter Phone Number"
-                  className={`flex-1 px-4 py-3 rounded-r-lg bg-gray-50 dark:bg-gray-900 border text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:border-transparent transition-all ${
-                    phoneError
-                      ? "border-red-400 focus:ring-red-400"
-                      : "border-gray-200 dark:border-gray-700 focus:ring-teal-500"
-                  }`}
+                  placeholder="7911 123456"
+                  className="flex-1 px-4 py-3 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
                 />
               </div>
-              {phoneError && (
+              {phoneError ? (
                 <p className="mt-1.5 text-xs text-red-500">{phoneError}</p>
+              ) : formData.phoneNumber && !phoneError ? (
+                <p className="mt-1.5 text-xs text-teal-600 dark:text-teal-400">
+                  Full number: {formData.countryCode} {formData.phoneNumber}
+                </p>
+              ) : (
+                <p className="mt-1.5 text-xs text-gray-400">
+                  Select country code, then enter number without it.
+                </p>
               )}
             </div>
             <div>
@@ -438,13 +476,9 @@ export default function IntegrationInterestForm() {
                   onChange={(e) => handleInputChange("operatingRegions", e.target.value)}
                   className="w-full px-4 py-3 pr-10 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all appearance-none cursor-pointer"
                 >
-                  <option value="" disabled>
-                    Select Operating Regions
-                  </option>
+                  <option value="" disabled>Select Operating Regions</option>
                   {operatingRegionOptions.map((region) => (
-                    <option key={region} value={region}>
-                      {region}
-                    </option>
+                    <option key={region} value={region}>{region}</option>
                   ))}
                 </select>
                 <ChevronDown className="w-4 h-4 text-gray-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -462,9 +496,7 @@ export default function IntegrationInterestForm() {
                   className="w-full px-4 py-3 pr-10 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all appearance-none cursor-pointer"
                 >
                   {travelerVolumeOptions.map((volume) => (
-                    <option key={volume} value={volume}>
-                      {volume}
-                    </option>
+                    <option key={volume} value={volume}>{volume}</option>
                   ))}
                 </select>
                 <ChevronDown className="w-4 h-4 text-gray-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -536,37 +568,16 @@ export default function IntegrationInterestForm() {
             {isSubmitting ? (
               <>
                 <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
                 Submitting...
               </>
             ) : (
               <>
                 Request Integration Demo
-                <svg
-                  className="w-4 h-4 group-hover:translate-x-1 transition-transform"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M14 5l7 7m0 0l-7 7m7-7H3"
-                  />
+                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
               </>
             )}
