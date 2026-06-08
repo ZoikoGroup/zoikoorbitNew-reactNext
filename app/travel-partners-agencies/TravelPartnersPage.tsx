@@ -264,16 +264,24 @@ const TravelPartnersPage = () => {
       </section>
 
       {/* ===== START YOUR PARTNERSHIP JOURNEY ===== */}
-      <section className="relative bg-[#f5f5f5] dark:bg-gray-900 overflow-hidden">
+      <section className="bg-[#f5f5f5] dark:bg-gray-900">
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
 
-        <div className="relative w-full h-[600px] md:h-[560px]">
-          <Image src="/image/fjgghjfghhj.png" alt="Partnership journey" fill className="object-cover" priority />
-          <div className="absolute inset-0 bg-black/10"></div>
-        </div>
+            {/* Left — background image */}
+            <div className="relative rounded-2xl overflow-hidden min-h-[400px]">
+              <Image
+                src="/image/fjgghjfghhj.png"
+                alt="Partnership journey"
+                fill
+                className="object-cover"
+                priority
+              />
+              <div className="absolute inset-0 bg-black/10" />
+            </div>
 
-        <div className="absolute inset-0 flex items-center">
-          <div className="max-w-7xl mx-auto px-6 w-full">
-            <div className="md:ml-auto md:max-w-xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 md:p-10 border border-gray-100 dark:border-gray-700">
+            {/* Right — form card */}
+            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 md:p-10 border border-gray-100 dark:border-gray-700">
 
               <div className="mb-6">
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white leading-tight mb-2">
@@ -433,6 +441,7 @@ const TravelPartnersPage = () => {
 
               </form>
             </div>
+
           </div>
         </div>
       </section>
