@@ -1,6 +1,30 @@
 "use client";
 import Image from "next/image";
 import React, { useState } from "react";
+import { ChevronDown } from "lucide-react";
+
+const countryCodes = [
+  { code: "+1",   flag: "🇺🇸", label: "US" },
+  { code: "+44",  flag: "🇬🇧", label: "UK" },
+  { code: "+91",  flag: "🇮🇳", label: "IN" },
+  { code: "+61",  flag: "🇦🇺", label: "AU" },
+  { code: "+49",  flag: "🇩🇪", label: "DE" },
+  { code: "+33",  flag: "🇫🇷", label: "FR" },
+  { code: "+971", flag: "🇦🇪", label: "AE" },
+  { code: "+65",  flag: "🇸🇬", label: "SG" },
+  { code: "+81",  flag: "🇯🇵", label: "JP" },
+  { code: "+86",  flag: "🇨🇳", label: "CN" },
+  { code: "+55",  flag: "🇧🇷", label: "BR" },
+  { code: "+27",  flag: "🇿🇦", label: "ZA" },
+  { code: "+234", flag: "🇳🇬", label: "NG" },
+  { code: "+254", flag: "🇰🇪", label: "KE" },
+  { code: "+92",  flag: "🇵🇰", label: "PK" },
+  { code: "+880", flag: "🇧🇩", label: "BD" },
+  { code: "+7",   flag: "🇷🇺", label: "RU" },
+  { code: "+82",  flag: "🇰🇷", label: "KR" },
+  { code: "+39",  flag: "🇮🇹", label: "IT" },
+  { code: "+34",  flag: "🇪🇸", label: "ES" },
+];
 
 const ZoikoOrbitPage = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -10,6 +34,7 @@ const ZoikoOrbitPage = () => {
     last_name: "",
     business_email: "",
     company_name: "",
+    country_code: "+44",
     phone: "",
     country: "",
     inquiry_type: "",
@@ -17,6 +42,7 @@ const ZoikoOrbitPage = () => {
     consent: false,
   });
 
+  const [phoneError, setPhoneError] = useState("");
   const [showMore, setShowMore] = useState(false);
   const [showMore2, setShowMore2] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -25,14 +51,22 @@ const ZoikoOrbitPage = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-
     setFormData((prev) => ({
       ...prev,
-      [name]:
-        type === "checkbox"
-          ? (e.target as HTMLInputElement).checked
-          : value,
+      [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
     }));
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, "");
+    setFormData((prev) => ({ ...prev, phone: digits }));
+    if (!digits) {
+      setPhoneError("");
+    } else if (!/^\d{6,14}$/.test(digits)) {
+      setPhoneError("Enter a valid number without country code (e.g. 7911123456).");
+    } else {
+      setPhoneError("");
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,13 +75,11 @@ const ZoikoOrbitPage = () => {
     setSuccessMessage("");
     setErrorMessage("");
 
-    // Checkbox validation
     if (!formData.consent) {
       setErrorMessage("Please agree to be contacted before submitting.");
       return;
     }
 
-    // Required field validation
     if (
       !formData.first_name.trim() ||
       !formData.last_name.trim() ||
@@ -61,10 +93,14 @@ const ZoikoOrbitPage = () => {
       return;
     }
 
-    // Basic email format check
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.business_email)) {
       setErrorMessage("Please enter a valid business email address.");
+      return;
+    }
+
+    if (formData.phone && phoneError) {
+      setErrorMessage("Please enter a valid phone number.");
       return;
     }
 
@@ -73,16 +109,17 @@ const ZoikoOrbitPage = () => {
     try {
       const payload = {
         ...formData,
-        phone: formData.phone.trim() ? formData.phone : null,
+        phone: formData.phone.trim()
+          ? `${formData.country_code}${formData.phone}`
+          : null,
+        country_code: undefined,
       };
 
       const response = await fetch(
-  `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/enterprise-inquiry/`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/enterprise-inquiry/`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         }
       );
@@ -96,19 +133,19 @@ const ZoikoOrbitPage = () => {
           last_name: "",
           business_email: "",
           company_name: "",
+          country_code: "+44",
           phone: "",
           country: "",
           inquiry_type: "",
           message: "",
           consent: false,
         });
+        setPhoneError("");
       } else {
         if (typeof data === "object" && data !== null) {
           const firstError = Object.values(data)[0];
           setErrorMessage(
-            Array.isArray(firstError)
-              ? String(firstError[0])
-              : String(firstError)
+            Array.isArray(firstError) ? String(firstError[0]) : String(firstError)
           );
         } else {
           setErrorMessage("Something went wrong. Please try again.");
@@ -151,9 +188,9 @@ const ZoikoOrbitPage = () => {
               Enterprise eSIM solutions for corporate travel, remote teams, and global device deployments
             </p>
             <a href="/plans">
-            <button className="bg-[#0B7285] text-white hover:bg-[#0B7285] text-gray-900 font-bold px-8 md:px-10 py-2.5 md:py-3 rounded-lg text-base transition-all shadow-lg">
-              Get Your eSIM
-            </button>
+              <button className="bg-[#0B7285] text-white hover:bg-[#0B7285] text-gray-900 font-bold px-8 md:px-10 py-2.5 md:py-3 rounded-lg text-base transition-all shadow-lg">
+                Get Your eSIM
+              </button>
             </a>
           </div>
         </div>
@@ -188,13 +225,7 @@ const ZoikoOrbitPage = () => {
               ].map((item, i) => (
                 <div key={i} className="flex flex-col items-start text-left px-2 md:px-6">
                   <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-teal-600/10 dark:bg-gray-900">
-                    <Image
-                      src={item.icon}
-                      alt={item.title}
-                      width={80}
-                      height={80}
-                      className="object-contain"
-                    />
+                    <Image src={item.icon} alt={item.title} width={80} height={80} className="object-contain" />
                   </div>
                   <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">{item.title}</h3>
                   <p className="text-gray-500 dark:text-white text-sm">{item.desc}</p>
@@ -232,12 +263,7 @@ const ZoikoOrbitPage = () => {
             ].map((item, i) => (
               <div key={i} className="text-left">
                 <div className="relative w-full h-44 rounded-2xl overflow-hidden mb-4">
-                  <Image
-                    src={item.img}
-                    alt={item.title}
-                    fill
-                    className="object-cover"
-                  />
+                  <Image src={item.img} alt={item.title} fill className="object-cover" />
                 </div>
                 <h3 className="font-bold text-gray-900 dark:text-white mb-2">{item.title}</h3>
                 <p className="text-gray-500 dark:text-white text-sm mb-3">{item.desc}</p>
@@ -257,12 +283,7 @@ const ZoikoOrbitPage = () => {
           <p className="text-gray-500 dark:text-white text-center mb-12">APIs, SSO, reporting feeds, and travel platform connectors accelerate rollout</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
             <div className="relative w-full h-72 rounded-2xl overflow-hidden shadow">
-              <Image
-                src="/image/multiracial-business-team-smiling-together-in-a-co-2025-02-22-04-24-03-utc 1.png"
-                alt="Team integration"
-                fill
-                className="object-cover"
-              />
+              <Image src="/image/multiracial-business-team-smiling-together-in-a-co-2025-02-22-04-24-03-utc 1.png" alt="Team integration" fill className="object-cover" />
             </div>
             <div>
               <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-4">Key Capability</h3>
@@ -308,43 +329,38 @@ const ZoikoOrbitPage = () => {
                 Industry: Legal Services, International Arbitration, Corporate Law<br />
                 Use Case Focus: Executive Airport Mobility & Real-Time Connectivity
               </p>
-              <>
-                {showMore && (
-                  <div className="mt-5">
-                    <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">The Challenge</h3>
-                    <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
-                      <li>Excessive roaming charges across international transit hubs.</li>
-                      <li>Inconsistent network access during executive travel.</li>
-                      <li>Unreliable video-call quality during urgent legal proceedings.</li>
-                      <li>Fragmented IT controls for global mobile device usage.</li>
-                    </ul>
-                    <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">The Zoiko Orbit™ Solution</h3>
-                    <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
-                      <li>Enterprise-grade eSIM deployment across 20+ countries.</li>
-                      <li>Smart regional network routing for low latency connectivity.</li>
-                      <li>Centralized policy-driven authentication and billing controls.</li>
-                      <li>SLA-backed roaming plans with geo-fencing support.</li>
-                      <li>Automated onboarding with GDPR & ISO 27001 compliance.</li>
-                    </ul>
-                    <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">The Results</h3>
-                    <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
-                      <li>62% reduction in roaming costs.</li>
-                      <li>89% improvement in HD video-call stability.</li>
-                      <li>Zero downtime during urgent legal transactions.</li>
-                      <li>Full deployment completed in less than 2 weeks.</li>
-                    </ul>
-                    <p className="italic text-sm text-gray-600 dark:text-white mb-5">
-                      "Zoiko Orbit redefined how our partners connect globally — seamless, compliant, and always-on."
-                    </p>
-                  </div>
-                )}
-                <button
-                  onClick={() => setShowMore(!showMore)}
-                  className="text-teal-700 dark:text-teal-400 text-sm font-semibold hover:underline"
-                >
-                  {showMore ? "Read less →" : "Read More →"}
-                </button>
-              </>
+              {showMore && (
+                <div className="mt-5">
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">The Challenge</h3>
+                  <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+                    <li>Excessive roaming charges across international transit hubs.</li>
+                    <li>Inconsistent network access during executive travel.</li>
+                    <li>Unreliable video-call quality during urgent legal proceedings.</li>
+                    <li>Fragmented IT controls for global mobile device usage.</li>
+                  </ul>
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">The Zoiko Orbit™ Solution</h3>
+                  <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+                    <li>Enterprise-grade eSIM deployment across 20+ countries.</li>
+                    <li>Smart regional network routing for low latency connectivity.</li>
+                    <li>Centralized policy-driven authentication and billing controls.</li>
+                    <li>SLA-backed roaming plans with geo-fencing support.</li>
+                    <li>Automated onboarding with GDPR & ISO 27001 compliance.</li>
+                  </ul>
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">The Results</h3>
+                  <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+                    <li>62% reduction in roaming costs.</li>
+                    <li>89% improvement in HD video-call stability.</li>
+                    <li>Zero downtime during urgent legal transactions.</li>
+                    <li>Full deployment completed in less than 2 weeks.</li>
+                  </ul>
+                  <p className="italic text-sm text-gray-600 dark:text-white mb-5">
+                    "Zoiko Orbit redefined how our partners connect globally — seamless, compliant, and always-on."
+                  </p>
+                </div>
+              )}
+              <button onClick={() => setShowMore(!showMore)} className="text-teal-700 dark:text-teal-400 text-sm font-semibold hover:underline">
+                {showMore ? "Read less →" : "Read More →"}
+              </button>
             </div>
           </div>
 
@@ -371,14 +387,13 @@ const ZoikoOrbitPage = () => {
                     <li>Unreliable roaming with inconsistent speeds</li>
                     <li>Delayed concierge communications and check-in friction</li>
                   </ul>
-                  <p className="text-sm text-gray-600 dark:text-white mb-3">Internal staff — especially front-of-house teams — relied on local SIM cards that led to:</p>
+                  <p className="text-sm text-gray-600 dark:text-white mb-3">Internal staff relied on local SIM cards that led to:</p>
                   <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
                     <li>Frequent disconnections</li>
                     <li>Missed VIP engagements</li>
                     <li>Lack of visibility into staff communication uptime</li>
                   </ul>
                   <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">The Zoiko Orbit™ Solution</h3>
-                  <p className="text-sm text-gray-600 dark:text-white mb-3">Zoiko Orbit delivered a white-labelled solution embedded within the brand's loyalty ecosystem, enabling:</p>
                   <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
                     <li>Instant eSIM activation via QR codes at check-in</li>
                     <li>Dedicated VIP mobile plans with high-speed roaming in 190+ countries</li>
@@ -386,7 +401,6 @@ const ZoikoOrbitPage = () => {
                     <li>eSIM-based roaming for guest services teams with failover protection</li>
                     <li>Multi-language setup interface for global guest accessibility</li>
                   </ul>
-                  <p className="text-sm text-gray-600 dark:text-white mb-5">The Orbit Concierge Suite also provided guest behavior analytics, enabling premium upsells and loyalty tracking.</p>
                   <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">The Results</h3>
                   <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
                     <li>41% boost in VIP satisfaction metrics across SEA and the Caribbean</li>
@@ -395,19 +409,12 @@ const ZoikoOrbitPage = () => {
                     <li>Introduced new $29.99 revenue stream per eSIM at flagship properties</li>
                     <li>100% guest services staff fully migrated in under 4 weeks</li>
                   </ul>
-                  <p className="text-sm text-gray-600 dark:text-white mb-2">Testimonial:</p>
                   <p className="italic text-sm text-gray-600 dark:text-white mb-5">
                     "Zoiko Orbit gave our brand a connectivity edge — guests feel the luxury from the moment they land, and our teams never miss a beat."
                   </p>
-                  <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white mb-5">
-                    <li>Group Director of Guest Experience</li>
-                  </ul>
                 </>
               )}
-              <button
-                onClick={() => setShowMore2(!showMore2)}
-                className="text-teal-700 dark:text-teal-400 text-sm font-semibold hover:underline"
-              >
+              <button onClick={() => setShowMore2(!showMore2)} className="text-teal-700 dark:text-teal-400 text-sm font-semibold hover:underline">
                 {showMore2 ? "Read Less →" : "Read More →"}
               </button>
             </div>
@@ -421,27 +428,13 @@ const ZoikoOrbitPage = () => {
       {/* CONTACT / CONSULTATION SECTION */}
       <section className="relative bg-[#f5f5f5] dark:bg-gray-900 overflow-hidden pb-24">
 
-        {/* Top Banner Image */}
         <div className="relative w-full h-[320px] md:h-[420px]">
-          <Image
-            src="/image/Rectangle 19.png"
-            alt="travel"
-            fill
-            className="object-cover"
-            priority
-          />
+          <Image src="/image/Rectangle 19.png" alt="travel" fill className="object-cover" priority />
           <div className="absolute inset-0 bg-black/10"></div>
         </div>
 
-        {/* World Map Background */}
         <div className="absolute left-0 bottom-10 w-[320px] md:w-[500px] opacity-20 pointer-events-none">
-          <Image
-            src="/image/map.png"
-            alt="world map"
-            width={500}
-            height={500}
-            className="object-contain"
-          />
+          <Image src="/image/map.png" alt="world map" width={500} height={500} className="object-contain" />
         </div>
 
         {/* Form Card */}
@@ -520,20 +513,54 @@ const ZoikoOrbitPage = () => {
                 </div>
               </div>
 
-              {/* Row 3 */}
+              {/* Row 3 — Phone + Country */}
               <div className="grid md:grid-cols-2 gap-5">
                 <div>
                   <label className="text-sm text-gray-700 dark:text-white mb-2 block">
                     Phone (If Needed)
                   </label>
-                  <input
-                    type="text"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="Enter Website URL"
-                    className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
-                  />
+                  <div className={`flex rounded-md border overflow-hidden transition ${
+                    phoneError
+                      ? "border-red-500"
+                      : "border-gray-200 dark:border-gray-700 focus-within:ring-2 focus-within:ring-teal-600"
+                  }`}>
+                    {/* Country code dropdown */}
+                    <div className="relative flex-shrink-0">
+                      <select
+                        name="country_code"
+                        value={formData.country_code}
+                        onChange={handleChange}
+                        className="h-12 pl-2 pr-6 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white text-xs border-r border-gray-300 dark:border-gray-600 focus:outline-none appearance-none cursor-pointer"
+                      >
+                        {countryCodes.map((c) => (
+                          <option key={c.code} value={c.code}>
+                            {c.flag} {c.code}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="w-3 h-3 text-gray-500 absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
+                    {/* Number input */}
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handlePhoneChange}
+                      placeholder="7911 123456"
+                      className="h-12 flex-1 px-3 text-sm bg-gray-100 dark:bg-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
+                    />
+                  </div>
+                  {phoneError ? (
+                    <p className="mt-1 text-xs text-red-500">{phoneError}</p>
+                  ) : formData.phone && !phoneError ? (
+                    <p className="mt-1 text-xs text-teal-600 dark:text-teal-400">
+                      Full number: {formData.country_code} {formData.phone}
+                    </p>
+                  ) : (
+                    <p className="mt-1 text-xs text-gray-400">
+                      Select country code, then enter number without it.
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="text-sm text-gray-700 dark:text-white mb-2 block">
@@ -568,7 +595,7 @@ const ZoikoOrbitPage = () => {
                 />
               </div>
 
-              {/* Message — now required */}
+              {/* Message */}
               <div>
                 <label className="text-sm text-gray-700 dark:text-white mb-2 block">
                   Message <span className="text-red-500">*</span>
@@ -598,21 +625,13 @@ const ZoikoOrbitPage = () => {
                 </label>
               </div>
 
-              {/* Success Message */}
               {successMessage && (
-                <p className="text-sm font-medium text-green-600 dark:text-green-400">
-                  {successMessage}
-                </p>
+                <p className="text-sm font-medium text-green-600 dark:text-green-400">{successMessage}</p>
               )}
-
-              {/* Error Message */}
               {errorMessage && (
-                <p className="text-sm font-medium text-red-600 dark:text-red-400">
-                  {errorMessage}
-                </p>
+                <p className="text-sm font-medium text-red-600 dark:text-red-400">{errorMessage}</p>
               )}
 
-              {/* Button */}
               <button
                 type="submit"
                 disabled={loading}
@@ -632,26 +651,10 @@ const ZoikoOrbitPage = () => {
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-10 text-center">Got Questions? We've Got Answers</h2>
           <div className="divide-y divide-gray-200 dark:divide-gray-700 border-t border-b border-gray-200 dark:border-gray-700">
             {[
-              {
-                id: 1,
-                question: "Can we centrally manage data for all our travelers?",
-                answer: "Contact our enterprise team to learn more about this feature and how Zoiko Orbit can be tailored to your organization's needs.",
-              },
-              {
-                id: 2,
-                question: "Do you integrate with our travel booking tool?",
-                answer: "Yes, Zoiko Orbit is designed to seamlessly integrate with popular travel booking platforms.",
-              },
-              {
-                id: 3,
-                question: "How secure is traveler data?",
-                answer: "We prioritize the security and privacy of traveler data, implementing industry-standard measures to protect it.",
-              },
-              {
-                id: 4,
-                question: "How quickly can we roll out globally?",
-                answer: "Our global infrastructure allows for rapid deployment across multiple markets.",
-              },
+              { id: 1, question: "Can we centrally manage data for all our travelers?", answer: "Contact our enterprise team to learn more about this feature and how Zoiko Orbit can be tailored to your organization's needs." },
+              { id: 2, question: "Do you integrate with our travel booking tool?", answer: "Yes, Zoiko Orbit is designed to seamlessly integrate with popular travel booking platforms." },
+              { id: 3, question: "How secure is traveler data?", answer: "We prioritize the security and privacy of traveler data, implementing industry-standard measures to protect it." },
+              { id: 4, question: "How quickly can we roll out globally?", answer: "Our global infrastructure allows for rapid deployment across multiple markets." },
             ].map((q, i) => (
               <div key={i}>
                 <button
@@ -662,9 +665,7 @@ const ZoikoOrbitPage = () => {
                   <span className="text-xl text-gray-400 dark:text-white">{openFaq === i ? "−" : "›"}</span>
                 </button>
                 {openFaq === i && (
-                  <div className="pb-5 text-gray-500 dark:text-white text-sm">
-                    {q.answer}
-                  </div>
+                  <div className="pb-5 text-gray-500 dark:text-white text-sm">{q.answer}</div>
                 )}
               </div>
             ))}
