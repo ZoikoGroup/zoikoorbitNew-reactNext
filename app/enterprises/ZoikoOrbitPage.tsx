@@ -534,7 +534,7 @@ const ZoikoOrbitPage = () => {
                       >
                         {countryCodes.map((c) => (
                           <option key={c.code} value={c.code}>
-                            {c.flag} {c.code}
+                            {c.label} {c.code}
                           </option>
                         ))}
                       </select>
