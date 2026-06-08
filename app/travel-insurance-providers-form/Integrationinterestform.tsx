@@ -16,7 +16,6 @@ interface FormData {
   distributionChannels: string[];
   businessObjective: string;
   agreed: boolean;
-  // isRobot: boolean;
 }
 
 interface Toast {
@@ -39,15 +38,14 @@ export default function IntegrationInterestForm() {
     distributionChannels: [],
     businessObjective: "",
     agreed: false,
-    // isRobot: false,
   });
 
   const [toast, setToast] = useState<Toast | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [phoneError, setPhoneError] = useState<string>("");
 
   const showToast = (toastData: Toast) => {
     setToast(toastData);
-    // Auto-dismiss after 5 seconds
     setTimeout(() => setToast(null), 5000);
   };
 
@@ -75,11 +73,7 @@ export default function IntegrationInterestForm() {
     "Americas",
   ];
 
-  const travelerVolumeOptions = [
-    "1K-5K",
-    "5K-20K",
-    "20K+",
-  ];
+  const travelerVolumeOptions = ["1K-5K", "5K-20K", "20K+"];
 
   const handleInputChange = (field: keyof FormData, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -98,6 +92,17 @@ export default function IntegrationInterestForm() {
     });
   };
 
+  const validatePhone = (value: string) => {
+    const cleaned = value.replace(/\s+/g, "");
+    if (!cleaned) {
+      setPhoneError("Phone number is required.");
+    } else if (!/^\+?[1-9]\d{6,14}$/.test(cleaned)) {
+      setPhoneError("Enter a valid international number (e.g. +44 7911 123456).");
+    } else {
+      setPhoneError("");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -110,41 +115,38 @@ export default function IntegrationInterestForm() {
       return;
     }
 
-    // if (!formData.isRobot) {
-    //   showToast({
-    //     type: "warning",
-    //     title: "Verification Required",
-    //     message: "Please confirm you are not a robot to continue.",
-    //   });
-      // return;
-    // }
+    if (phoneError || !formData.phoneNumber) {
+      showToast({
+        type: "warning",
+        title: "Invalid Phone Number",
+        message: "Please enter a valid international phone number.",
+      });
+      return;
+    }
 
     setIsSubmitting(true);
-    const integration_interest_url  = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/integration-interest/`;
+    const integration_interest_url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/integration-interest/`;
     try {
-      const response = await fetch(
-        integration_interest_url,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            full_name: formData.fullName,
-            job_title: formData.jobTitle,
-            company_name: formData.companyName,
-            business_email: formData.businessEmail,
-            phone_number: formData.phoneNumber,
-            business_website: formData.businessWebsite,
-            integration_interests: formData.integrationInterests,
-            operating_regions: formData.operatingRegions,
-            traveler_volume: formData.travelerVolume,
-            distribution_channels: formData.distributionChannels,
-            business_objective: formData.businessObjective,
-            agreed: formData.agreed,
-          }),
-        }
-      );
+      const response = await fetch(integration_interest_url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          full_name: formData.fullName,
+          job_title: formData.jobTitle,
+          company_name: formData.companyName,
+          business_email: formData.businessEmail,
+          phone_number: formData.phoneNumber,
+          business_website: formData.businessWebsite,
+          integration_interests: formData.integrationInterests,
+          operating_regions: formData.operatingRegions,
+          traveler_volume: formData.travelerVolume,
+          distribution_channels: formData.distributionChannels,
+          business_objective: formData.businessObjective,
+          agreed: formData.agreed,
+        }),
+      });
 
       const data = await response.json();
 
@@ -155,8 +157,6 @@ export default function IntegrationInterestForm() {
           message: "Thank you for your interest. Our team will reach out to you within 24 hours.",
         });
         console.log(data);
-
-        // Reset form
         setFormData({
           fullName: "",
           jobTitle: "",
@@ -170,8 +170,8 @@ export default function IntegrationInterestForm() {
           distributionChannels: [],
           businessObjective: "",
           agreed: false,
-          // isRobot: false,
         });
+        setPhoneError("");
       } else {
         console.error(data);
         showToast({
@@ -192,7 +192,6 @@ export default function IntegrationInterestForm() {
     }
   };
 
-  // Toast styling helper
   const getToastStyles = (type: Toast["type"]) => {
     switch (type) {
       case "success":
@@ -234,14 +233,20 @@ export default function IntegrationInterestForm() {
             className={`flex items-start gap-3 max-w-md p-4 rounded-xl border ${getToastStyles(toast.type).bg} ${getToastStyles(toast.type).border} shadow-2xl backdrop-blur-sm`}
             role="alert"
           >
-            <div className={`flex-shrink-0 w-9 h-9 rounded-lg ${getToastStyles(toast.type).iconBg} flex items-center justify-center shadow-md`}>
+            <div
+              className={`flex-shrink-0 w-9 h-9 rounded-lg ${getToastStyles(toast.type).iconBg} flex items-center justify-center shadow-md`}
+            >
               {getToastStyles(toast.type).icon}
             </div>
             <div className="flex-1 min-w-0 pt-0.5">
-              <h4 className={`font-semibold text-sm ${getToastStyles(toast.type).titleColor} mb-0.5`}>
+              <h4
+                className={`font-semibold text-sm ${getToastStyles(toast.type).titleColor} mb-0.5`}
+              >
                 {toast.title}
               </h4>
-              <p className={`text-xs ${getToastStyles(toast.type).messageColor} leading-relaxed`}>
+              <p
+                className={`text-xs ${getToastStyles(toast.type).messageColor} leading-relaxed`}
+              >
                 {toast.message}
               </p>
             </div>
@@ -256,7 +261,6 @@ export default function IntegrationInterestForm() {
         </div>
       )}
 
-      {/* Inline animation keyframes */}
       <style jsx>{`
         @keyframes slide-in-right {
           from {
@@ -274,7 +278,6 @@ export default function IntegrationInterestForm() {
       `}</style>
 
       <section className="max-w-5xl mx-auto px-6 lg:px-12 py-4 md:py-8">
-        {/* Heading */}
         <div className="text-center mb-12 max-w-3xl mx-auto">
           <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4 leading-tight">
             Let&apos;s Co-Create the Future of{" "}
@@ -287,7 +290,6 @@ export default function IntegrationInterestForm() {
           <div className="w-20 h-1 bg-teal-500 mx-auto rounded-full mt-5" />
         </div>
 
-        {/* Form */}
         <form
           onSubmit={handleSubmit}
           className="bg-white dark:bg-gray-800/50 rounded-2xl md:p-10 p-6 md:shadow-sm md:border md:border-gray-100 md:dark:border-gray-700"
@@ -367,15 +369,26 @@ export default function IntegrationInterestForm() {
                   type="tel"
                   required
                   value={formData.phoneNumber}
-                  onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
+                  onChange={(e) => {
+                    handleInputChange("phoneNumber", e.target.value);
+                    validatePhone(e.target.value);
+                  }}
                   placeholder="Enter Phone Number"
-                  className="flex-1 px-4 py-3 rounded-r-lg bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                  className={`flex-1 px-4 py-3 rounded-r-lg bg-gray-50 dark:bg-gray-900 border text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:border-transparent transition-all ${
+                    phoneError
+                      ? "border-red-400 focus:ring-red-400"
+                      : "border-gray-200 dark:border-gray-700 focus:ring-teal-500"
+                  }`}
                 />
               </div>
+              {phoneError && (
+                <p className="mt-1.5 text-xs text-red-500">{phoneError}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                Business Website <span className="text-gray-400 font-normal">(if any)</span>
+                Business Website{" "}
+                <span className="text-gray-400 font-normal">(if any)</span>
               </label>
               <input
                 type="url"
@@ -397,10 +410,7 @@ export default function IntegrationInterestForm() {
             </h3>
             <div className="grid md:grid-cols-2 gap-x-8 gap-y-3 max-w-3xl mx-auto">
               {integrationInterestOptions.map((option) => (
-                <label
-                  key={option}
-                  className="flex items-center gap-3 cursor-pointer group"
-                >
+                <label key={option} className="flex items-center gap-3 cursor-pointer group">
                   <input
                     type="checkbox"
                     checked={formData.integrationInterests.includes(option)}
@@ -472,10 +482,7 @@ export default function IntegrationInterestForm() {
             </h3>
             <div className="flex flex-wrap justify-center gap-x-8 gap-y-3">
               {distributionChannelOptions.map((channel) => (
-                <label
-                  key={channel}
-                  className="flex items-center gap-2.5 cursor-pointer group"
-                >
+                <label key={channel} className="flex items-center gap-2.5 cursor-pointer group">
                   <input
                     type="checkbox"
                     checked={formData.distributionChannels.includes(channel)}
@@ -504,27 +511,6 @@ export default function IntegrationInterestForm() {
             />
           </div>
 
-          {/* reCAPTCHA placeholder */}
-          {/* <div className="mb-5">
-            <label className="inline-flex items-center gap-3 px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer w-full max-w-xs">
-              <input
-                type="checkbox"
-                checked={formData.isRobot}
-                onChange={(e) => handleInputChange("isRobot", e.target.checked)}
-                className="w-6 h-6 rounded border-gray-300 dark:border-gray-600 text-teal-600 focus:ring-2 focus:ring-teal-500 cursor-pointer accent-teal-600"
-              />
-              <span className="text-sm text-gray-700 dark:text-gray-200 flex-1">I&apos;m not a robot</span>
-              <div className="flex flex-col items-center text-[8px] text-gray-400 leading-tight">
-                <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="#4285F4"/>
-                  <path d="M12 6v6l4 2" stroke="#4285F4" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-                <span>reCAPTCHA</span>
-                <span>Privacy - Terms</span>
-              </div>
-            </label>
-          </div> */}
-
           {/* Consent checkbox */}
           <div className="mb-7">
             <label className="flex items-start gap-3 cursor-pointer">
@@ -550,8 +536,19 @@ export default function IntegrationInterestForm() {
             {isSubmitting ? (
               <>
                 <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
                 </svg>
                 Submitting...
               </>
