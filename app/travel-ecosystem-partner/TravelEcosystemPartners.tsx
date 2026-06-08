@@ -28,27 +28,135 @@ const emptyForm = {
   consent: false,
 };
 
+type FormData = typeof emptyForm;
+type FormErrors = Partial<Record<keyof FormData, string>>;
+
+// ── VALIDATION ────────────────────────────────────────────────────────────────
+function validateForm(data: FormData): FormErrors {
+  const errors: FormErrors = {};
+
+  if (!data.first_name.trim())
+    errors.first_name = "First name is required.";
+
+  if (!data.last_name.trim())
+    errors.last_name = "Last name is required.";
+
+  if (!data.work_email.trim()) {
+    errors.work_email = "Work email is required.";
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.work_email.trim())) {
+    errors.work_email = "Enter a valid email address.";
+  }
+
+  if (!data.company_name.trim())
+    errors.company_name = "Company / organisation is required.";
+
+  if (data.website.trim()) {
+    try {
+      const url = data.website.trim();
+      // Accept with or without protocol
+      new URL(url.startsWith("http") ? url : `https://${url}`);
+    } catch {
+      errors.website = "Enter a valid URL (e.g. https://example.com).";
+    }
+  }
+
+  if (!data.country_region)
+    errors.country_region = "Please select a country / region.";
+
+  if (!data.consent)
+    errors.consent = "You must agree to be contacted before submitting.";
+
+  return errors;
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+const inputBase =
+  "h-11 w-full rounded-md border px-4 text-sm outline-none transition " +
+  "focus:bg-white dark:focus:bg-[#1f2937]";
+
+const inputNormal =
+  inputBase +
+  " border-gray-300 bg-[#f3f3f3] focus:border-[#007C91] " +
+  "dark:border-gray-700 dark:bg-[#1f2937] dark:text-white";
+
+const inputError =
+  inputBase +
+  " border-red-500 bg-red-50 focus:border-red-500 " +
+  "dark:border-red-500 dark:bg-[#1f2937] dark:text-white";
+
+const selectBase =
+  "h-11 w-full rounded-md border px-4 text-sm outline-none transition " +
+  "focus:bg-white dark:focus:bg-[#1f2937]";
+
+const selectNormal =
+  selectBase +
+  " border-gray-300 bg-[#f3f3f3] focus:border-[#007C91] " +
+  "dark:border-gray-700 dark:bg-[#1f2937] dark:text-white";
+
+const selectError =
+  selectBase +
+  " border-red-500 bg-red-50 focus:border-red-500 " +
+  "dark:border-red-500 dark:bg-[#1f2937] dark:text-white";
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return <p className="mt-1 text-xs text-red-500">{message}</p>;
+}
+
+function RequiredMark() {
+  return <span className="ml-0.5 text-red-500">*</span>;
+}
+
 export default function TravelEcosystemPartners() {
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState(emptyForm);
+  const [formData, setFormData] = useState<FormData>(emptyForm);
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState<Partial<Record<keyof FormData, boolean>>>({});
 
-  // ── HANDLE CHANGE ──────────────────────────────────────────────────────────
+  // ── HANDLE CHANGE ────────────────────────────────────────────────────────────
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value, type } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
-    }));
+    const key = name as keyof FormData;
+    const newValue = type === "checkbox" ? (e.target as HTMLInputElement).checked : value;
+
+    const updated = { ...formData, [key]: newValue } as FormData;
+    setFormData(updated);
+
+    // Re-validate the touched field on every change
+    if (touched[key]) {
+      const newErrors = validateForm(updated);
+      setErrors((prev) => ({ ...prev, [key]: newErrors[key] }));
+    }
   };
 
-  // ── HANDLE SUBMIT ──────────────────────────────────────────────────────────
+  // ── HANDLE BLUR ──────────────────────────────────────────────────────────────
+  const handleBlur = (
+    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const key = e.target.name as keyof FormData;
+    setTouched((prev) => ({ ...prev, [key]: true }));
+    const newErrors = validateForm(formData);
+    setErrors((prev) => ({ ...prev, [key]: newErrors[key] }));
+  };
+
+  // ── HANDLE SUBMIT ────────────────────────────────────────────────────────────
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!formData.consent) {
-      toast.error("Please agree to be contacted before submitting.");
+    // Mark all fields as touched and run full validation
+    const allTouched = Object.keys(emptyForm).reduce(
+      (acc, k) => ({ ...acc, [k]: true }),
+      {} as Record<keyof FormData, boolean>
+    );
+    setTouched(allTouched);
+
+    const validationErrors = validateForm(formData);
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) {
+      toast.error("Please fix the highlighted errors before submitting.");
       return;
     }
 
@@ -59,8 +167,8 @@ export default function TravelEcosystemPartners() {
         website: formData.website.trim() ? formData.website : null,
       };
 
-    const response = await fetch(
-  `${process.env.NEXT_PUBLIC_API_URL}/api/travel-ecosystem-partner/travel-ecosystem-inquiry/`,
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-ecosystem-partner/travel-ecosystem-inquiry/`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -73,8 +181,21 @@ export default function TravelEcosystemPartners() {
       if (response.ok) {
         toast.success("Form submitted successfully!");
         setFormData(emptyForm);
+        setErrors({});
+        setTouched({});
       } else {
         console.error("Backend Errors:", data);
+        // Map backend field errors into inline errors if available
+        if (data && typeof data === "object") {
+          const backendErrors: FormErrors = {};
+          for (const [field, messages] of Object.entries(data)) {
+            const key = field as keyof FormData;
+            backendErrors[key] = Array.isArray(messages)
+              ? (messages as string[]).join(" ")
+              : String(messages);
+          }
+          setErrors(backendErrors);
+        }
         toast.error("Validation failed. Please check your inputs.");
       }
     } catch (error) {
@@ -85,7 +206,7 @@ export default function TravelEcosystemPartners() {
     setLoading(false);
   };
 
-  // ── RENDER ─────────────────────────────────────────────────────────────────
+  // ── RENDER ───────────────────────────────────────────────────────────────────
   return (
     <div className="w-full font-sans dark:bg-gray-900 dark:text-white">
 
@@ -105,11 +226,7 @@ export default function TravelEcosystemPartners() {
           className="block md:hidden object-cover object-center"
           priority
         />
-
-        {/* Dark overlay */}
         <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/50 to-transparent" />
-
-        {/* Hero Content */}
         <div className="absolute inset-0 flex items-start justify-center md:items-center">
           <div className="mx-auto w-full max-w-7xl px-6 md:px-12">
             <div className="max-w-lg">
@@ -118,12 +235,10 @@ export default function TravelEcosystemPartners() {
                 <br className="hidden md:block" />
                 Global eSIM Connectivity
               </h1>
-
               <p className="mb-8 text-base leading-relaxed text-gray-200 md:text-lg">
                 Seamless eSIM solutions for travel agencies, OTAs, tour
                 operators, and distributors.
               </p>
-
               <a
                 href="/partner-with-us"
                 className="inline-block rounded-md bg-[#4260A5] px-7 md:px-12 py-3 text-sm md:text-base font-semibold text-white transition-colors hover:bg-blue-700"
@@ -148,8 +263,6 @@ export default function TravelEcosystemPartners() {
           </div>
 
           <div className="grid grid-cols-2 gap-y-10 md:grid-cols-4 md:gap-10">
-
-            {/* Card 1 */}
             <div className="flex flex-col items-center text-center">
               <div className="relative mb-5 h-20 w-20">
                 <Image src="/image/Group 1597883234.png" alt="Attractive Commissions" fill className="object-contain" />
@@ -162,7 +275,6 @@ export default function TravelEcosystemPartners() {
               </p>
             </div>
 
-            {/* Card 2 */}
             <div className="flex flex-col items-center text-center">
               <div className="relative mb-5 h-20 w-20">
                 <Image src="/image/Group 1597883235.png" alt="Tier-1 Global Data" fill className="object-contain" />
@@ -175,7 +287,6 @@ export default function TravelEcosystemPartners() {
               </p>
             </div>
 
-            {/* Card 3 */}
             <div className="flex flex-col items-center text-center">
               <div className="relative mb-5 h-20 w-20">
                 <Image src="/image/Group 1597883236.png" alt="White-Label & Co-Brand Ready" fill className="object-contain" />
@@ -188,7 +299,6 @@ export default function TravelEcosystemPartners() {
               </p>
             </div>
 
-            {/* Card 4 */}
             <div className="flex flex-col items-center text-center">
               <div className="relative mb-5 h-20 w-20">
                 <Image src="/image/Group 1597883237.png" alt="Fast Onboarding & Support" fill className="object-contain" />
@@ -200,7 +310,6 @@ export default function TravelEcosystemPartners() {
                 API plug-and-play, guided setup, partner enablement kits, dedicated success team.
               </p>
             </div>
-
           </div>
         </div>
       </section>
@@ -218,7 +327,6 @@ export default function TravelEcosystemPartners() {
           </div>
 
           <div className="grid items-center gap-12 md:grid-cols-2">
-            {/* Left Illustration */}
             <div className="relative flex min-h-[320px] items-center justify-center overflow-hidden rounded-2xl bg-teal-50 dark:bg-gray-800">
               <Image
                 src="/image/cuate.png"
@@ -228,52 +336,27 @@ export default function TravelEcosystemPartners() {
                 className="w-full object-contain"
               />
             </div>
-
-            {/* Right Content */}
             <div className="space-y-8">
               <div>
                 <h3 className="mb-3 text-lg font-bold text-zinc-900 dark:text-white md:text-xl">
                   API: Plug &amp; Play
                 </h3>
                 <ul className="space-y-2 text-base text-gray-600 dark:text-gray-300 md:text-lg">
-                  <li className="flex items-start gap-2">
-                    <span className="mt-0.5 text-teal-600">•</span>
-                    REST/GraphQL endpoints for offer retrieval, activation, balance, status.
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="mt-0.5 text-teal-600">•</span>
-                    Sandbox access in minutes.
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="mt-0.5 text-teal-600">•</span>
-                    Sample code in JS, PHP, Python.
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="mt-0.5 text-teal-600">•</span>
-                    Multi-currency &amp; localization support.
-                  </li>
+                  <li className="flex items-start gap-2"><span className="mt-0.5 text-teal-600">•</span>REST/GraphQL endpoints for offer retrieval, activation, balance, status.</li>
+                  <li className="flex items-start gap-2"><span className="mt-0.5 text-teal-600">•</span>Sandbox access in minutes.</li>
+                  <li className="flex items-start gap-2"><span className="mt-0.5 text-teal-600">•</span>Sample code in JS, PHP, Python.</li>
+                  <li className="flex items-start gap-2"><span className="mt-0.5 text-teal-600">•</span>Multi-currency &amp; localization support.</li>
                 </ul>
               </div>
-
               <hr className="border-gray-200 dark:border-gray-700" />
-
               <div>
                 <h3 className="mb-3 text-lg font-bold text-zinc-900 dark:text-white md:text-xl">
                   Co-Branded Storefronts &amp; Portals
                 </h3>
                 <ul className="space-y-2 text-base text-gray-600 dark:text-gray-300 md:text-lg">
-                  <li className="flex items-start gap-2">
-                    <span className="mt-0.5 text-teal-600">•</span>
-                    Ready-to-launch hosted storefront branded with your logo/colors.
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="mt-0.5 text-teal-600">•</span>
-                    Bundle eSIM into booking confirmations &amp; post-booking emails.
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="mt-0.5 text-teal-600">•</span>
-                    Analytics dashboard (attach rates, revenue per PNR).
-                  </li>
+                  <li className="flex items-start gap-2"><span className="mt-0.5 text-teal-600">•</span>Ready-to-launch hosted storefront branded with your logo/colors.</li>
+                  <li className="flex items-start gap-2"><span className="mt-0.5 text-teal-600">•</span>Bundle eSIM into booking confirmations &amp; post-booking emails.</li>
+                  <li className="flex items-start gap-2"><span className="mt-0.5 text-teal-600">•</span>Analytics dashboard (attach rates, revenue per PNR).</li>
                 </ul>
               </div>
             </div>
@@ -294,7 +377,6 @@ export default function TravelEcosystemPartners() {
             </p>
           </div>
 
-          {/* Case Study 1 */}
           <div className="mb-24 grid items-center gap-14 md:grid-cols-2">
             <div className="flex justify-center md:justify-start">
               <div className="relative h-[340px] w-full max-w-[520px] overflow-hidden">
@@ -310,14 +392,13 @@ export default function TravelEcosystemPartners() {
                 experience while simultaneously driving new ancillary revenue streams. By integrating
                 Zoiko Orbit's eSIM solutions directly into their booking and check-in flows, they
                 provided travelers with instant, seamless mobile connectivity from the moment they
-                booked their flight.This not only improved customer satisfaction by eliminating the hassle of sourcing
+                booked their flight. This not only improved customer satisfaction by eliminating the hassle of sourcing
                 local SIMs but also created a significant new revenue channel for the airline,
                 showcasing the power of integrated travel solutions.
               </p>
             </div>
           </div>
 
-          {/* Case Study 2 */}
           <div className="grid items-center gap-14 md:grid-cols-2">
             <div className="order-2 md:order-1">
               <h3 className="mb-4 text-lg font-bold leading-snug text-zinc-900 dark:text-white md:text-xl">
@@ -327,11 +408,10 @@ export default function TravelEcosystemPartners() {
                 A leading international hotel group aimed to deepen its relationship with guests and
                 boost loyalty program engagement. By partnering with Zoiko Orbit, they offered
                 exclusive, discounted eSIM plans to their loyalty members, providing unparalleled
-                global connectivity as a premium perk.This initiative differentiated their loyalty program, added tangible value for their
+                global connectivity as a premium perk. This initiative differentiated their loyalty program, added tangible value for their
                 most frequent travelers, and reinforced the hotel group's commitment to a truly
                 connected and compassionate travel experience, leading to increased member
                 satisfaction and repeat bookings.
-
               </p>
             </div>
             <div className="order-1 flex justify-center md:order-2 md:justify-end">
@@ -349,10 +429,7 @@ export default function TravelEcosystemPartners() {
           <h2 className="mb-12 text-3xl font-bold text-gray-900 dark:text-white">
             What Sets Us Apart
           </h2>
-
           <div className="grid gap-10 md:grid-cols-3">
-
-            {/* Card 1 */}
             <div className="flex flex-col items-center">
               <div className="mb-4 h-16 w-16 md:h-26 md:w-26">
                 <Image src="/image/icon1.png" width={104} height={104} alt="icon" />
@@ -362,12 +439,9 @@ export default function TravelEcosystemPartners() {
               </h3>
               <p className="max-w-xs text-sm text-gray-600 dark:text-gray-300 md:text-base">
                 Our advanced eSIM platform runs on Tier-1 carrier partnerships across 220+ countries,
-                safeguarded by PCI DSS, GDPR, and rigorous data privacy standards. You get local-quality
-                speeds and secure transactions wherever your journey takes you.
+                safeguarded by PCI DSS, GDPR, and rigorous data privacy standards.
               </p>
             </div>
-
-            {/* Card 2 */}
             <div className="flex flex-col items-center">
               <div className="mb-4 h-16 w-16 md:h-26 md:w-26">
                 <Image src="/image/icon2.png" width={104} height={104} alt="icon" />
@@ -376,14 +450,10 @@ export default function TravelEcosystemPartners() {
                 Built to Give Back
               </h3>
               <p className="max-w-xs text-sm text-gray-600 dark:text-gray-300 md:text-base">
-                Unlike typical travel SIM providers, we embed impact at the core of every connection.
                 Each Zoiko Orbit purchase actively supports animal rescue centers, wildlife rehabilitation
-                programs, and community conservation efforts — so your travels help sustain the beauty
-                you've come to explore.
+                programs, and community conservation efforts.
               </p>
             </div>
-
-            {/* Card 3 */}
             <div className="flex flex-col items-center">
               <div className="mb-4 h-16 w-16 md:h-26 md:w-26">
                 <Image src="/image/icon3.png" width={104} height={104} alt="icon" />
@@ -393,11 +463,9 @@ export default function TravelEcosystemPartners() {
               </h3>
               <p className="max-w-xs text-sm text-gray-600 dark:text-gray-300 md:text-base">
                 As a member of Zoiko Group, we uphold a legacy of operational excellence, cultural
-                intelligence, and meaningful innovation — dedicated to improving lives and safeguarding
-                the world we all share.
+                intelligence, and meaningful innovation.
               </p>
             </div>
-
           </div>
         </div>
       </section>
@@ -405,7 +473,6 @@ export default function TravelEcosystemPartners() {
       {/* ═══════════════════════ CTA / CONTACT FORM ═══════════════════════ */}
       <section className="relative overflow-hidden bg-[#f5f5f5] dark:bg-gray-900">
 
-        {/* Hero Image */}
         <div className="relative h-[260px] w-full sm:h-[320px] md:h-[580px]">
           <Image
             src="/image/Rectangle 19 (1).png"
@@ -416,7 +483,6 @@ export default function TravelEcosystemPartners() {
           />
         </div>
 
-        {/* Main Content */}
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="relative z-10 flex flex-col gap-10 lg:grid lg:grid-cols-2">
 
@@ -444,7 +510,6 @@ export default function TravelEcosystemPartners() {
               dark:border-gray-700
               dark:bg-gray-900
             ">
-              {/* Heading */}
               <div className="mb-6">
                 <h2 className="text-[24px] font-bold leading-tight text-[#1A1A1A] dark:text-white sm:text-[30px]">
                   Let's Build Your Connectivity Program
@@ -452,16 +517,18 @@ export default function TravelEcosystemPartners() {
                 <p className="mt-2 max-w-xl text-sm leading-relaxed text-gray-500 dark:text-gray-300">
                   Tell us a bit about your organization and we'll tailor the right partnership path.
                 </p>
+                <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                  Fields marked <span className="text-red-500">*</span> are required.
+                </p>
               </div>
 
-              {/* Form */}
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} noValidate className="space-y-5">
 
                 {/* Row 1 — First / Last Name */}
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
                     <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300">
-                      First Name
+                      First Name<RequiredMark />
                     </label>
                     <input
                       type="text"
@@ -469,13 +536,14 @@ export default function TravelEcosystemPartners() {
                       placeholder="Enter Your First Name"
                       value={formData.first_name}
                       onChange={handleChange}
-                      required
-                      className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:text-white dark:focus:bg-[#1f2937]"
+                      onBlur={handleBlur}
+                      className={errors.first_name ? inputError : inputNormal}
                     />
+                    <FieldError message={errors.first_name} />
                   </div>
                   <div>
                     <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300">
-                      Last Name
+                      Last Name<RequiredMark />
                     </label>
                     <input
                       type="text"
@@ -483,9 +551,10 @@ export default function TravelEcosystemPartners() {
                       placeholder="Enter Your Last Name"
                       value={formData.last_name}
                       onChange={handleChange}
-                      required
-                      className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:text-white dark:focus:bg-[#1f2937]"
+                      onBlur={handleBlur}
+                      className={errors.last_name ? inputError : inputNormal}
                     />
+                    <FieldError message={errors.last_name} />
                   </div>
                 </div>
 
@@ -493,7 +562,7 @@ export default function TravelEcosystemPartners() {
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
                     <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300">
-                      Work Email
+                      Work Email<RequiredMark />
                     </label>
                     <input
                       type="email"
@@ -501,13 +570,14 @@ export default function TravelEcosystemPartners() {
                       placeholder="Enter Work Email"
                       value={formData.work_email}
                       onChange={handleChange}
-                      required
-                      className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:text-white dark:focus:bg-[#1f2937]"
+                      onBlur={handleBlur}
+                      className={errors.work_email ? inputError : inputNormal}
                     />
+                    <FieldError message={errors.work_email} />
                   </div>
                   <div>
                     <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300">
-                      Company / Organization
+                      Company / Organization<RequiredMark />
                     </label>
                     <input
                       type="text"
@@ -515,9 +585,10 @@ export default function TravelEcosystemPartners() {
                       placeholder="Enter Company Name"
                       value={formData.company_name}
                       onChange={handleChange}
-                      required
-                      className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:text-white dark:focus:bg-[#1f2937]"
+                      onBlur={handleBlur}
+                      className={errors.company_name ? inputError : inputNormal}
                     />
+                    <FieldError message={errors.company_name} />
                   </div>
                 </div>
 
@@ -530,30 +601,31 @@ export default function TravelEcosystemPartners() {
                     <input
                       type="text"
                       name="website"
-                      placeholder="Enter Website URL"
+                      placeholder="https://example.com"
                       value={formData.website}
                       onChange={handleChange}
-                      className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:text-white dark:focus:bg-[#1f2937]"
+                      onBlur={handleBlur}
+                      className={errors.website ? inputError : inputNormal}
                     />
+                    <FieldError message={errors.website} />
                   </div>
                   <div>
                     <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300">
-                      Country / Region
+                      Country / Region<RequiredMark />
                     </label>
                     <select
                       name="country_region"
                       value={formData.country_region}
                       onChange={handleChange}
-                      required
-                      className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:text-white dark:focus:bg-[#1f2937]"
+                      onBlur={handleBlur}
+                      className={errors.country_region ? selectError : selectNormal}
                     >
                       <option value="">Select Option</option>
                       {countries.map((country) => (
-                        <option key={country} value={country}>
-                          {country}
-                        </option>
+                        <option key={country} value={country}>{country}</option>
                       ))}
                     </select>
+                    <FieldError message={errors.country_region} />
                   </div>
                 </div>
 
@@ -569,7 +641,8 @@ export default function TravelEcosystemPartners() {
                       placeholder="Travel Agency Owner..."
                       value={formData.role_function}
                       onChange={handleChange}
-                      className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:text-white dark:focus:bg-[#1f2937]"
+                      onBlur={handleBlur}
+                      className={inputNormal}
                     />
                   </div>
                   <div>
@@ -580,7 +653,8 @@ export default function TravelEcosystemPartners() {
                       name="monthly_traveler_volume"
                       value={formData.monthly_traveler_volume}
                       onChange={handleChange}
-                      className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:text-white dark:focus:bg-[#1f2937]"
+                      onBlur={handleBlur}
+                      className={selectNormal}
                     >
                       <option value="">Select Option</option>
                       <option value="0-1K">0–1K</option>
@@ -604,7 +678,8 @@ export default function TravelEcosystemPartners() {
                     placeholder="Reseller, API Integration..."
                     value={formData.partnership_interest}
                     onChange={handleChange}
-                    className="h-11 w-full rounded-md border border-gray-300 bg-[#f3f3f3] px-4 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:text-white dark:focus:bg-[#1f2937]"
+                    onBlur={handleBlur}
+                    className={inputNormal}
                   />
                 </div>
 
@@ -616,23 +691,28 @@ export default function TravelEcosystemPartners() {
                     placeholder="Enter your message..."
                     value={formData.message}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     className="w-full resize-none rounded-md border border-gray-300 bg-[#f3f3f3] px-4 py-3 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:text-white dark:focus:bg-[#1f2937]"
                   />
                 </div>
 
                 {/* Consent Checkbox */}
-                <div className="flex items-start gap-2">
-                  <input
-                    type="checkbox"
-                    id="consent"
-                    name="consent"
-                    checked={formData.consent}
-                    onChange={handleChange}
-                    className="mt-1 accent-[#007C91]"
-                  />
-                  <label htmlFor="consent" className="text-xs leading-relaxed text-gray-500 dark:text-gray-300">
-                    I agree to be contacted regarding partner opportunities.
-                  </label>
+                <div>
+                  <div className="flex items-start gap-2">
+                    <input
+                      type="checkbox"
+                      id="consent"
+                      name="consent"
+                      checked={formData.consent}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      className="mt-1 accent-[#007C91]"
+                    />
+                    <label htmlFor="consent" className="text-xs leading-relaxed text-gray-500 dark:text-gray-300">
+                      I agree to be contacted regarding partner opportunities.<RequiredMark />
+                    </label>
+                  </div>
+                  <FieldError message={errors.consent} />
                 </div>
 
                 {/* Submit Button */}
@@ -651,7 +731,6 @@ export default function TravelEcosystemPartners() {
           </div>
         </div>
 
-        {/* Bottom Border */}
         <div className="mt-12 h-[4px] w-full bg-[#007C91]" />
       </section>
     </div>
