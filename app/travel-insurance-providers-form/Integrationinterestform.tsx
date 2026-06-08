@@ -16,7 +16,6 @@ interface FormData {
   distributionChannels: string[];
   businessObjective: string;
   agreed: boolean;
-  isRobot: boolean;
 }
 
 interface Toast {
@@ -39,7 +38,6 @@ export default function IntegrationInterestForm() {
     distributionChannels: [],
     businessObjective: "",
     agreed: false,
-    isRobot: false,
   });
 
   const [toast, setToast] = useState<Toast | null>(null);
@@ -110,14 +108,7 @@ export default function IntegrationInterestForm() {
       return;
     }
 
-    if (!formData.isRobot) {
-      showToast({
-        type: "warning",
-        title: "Verification Required",
-        message: "Please confirm you are not a robot to continue.",
-      });
-      return;
-    }
+   
 
     setIsSubmitting(true);
     const integration_interest_url  = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/integration-interest/`;
@@ -170,7 +161,6 @@ export default function IntegrationInterestForm() {
           distributionChannels: [],
           businessObjective: "",
           agreed: false,
-          isRobot: false,
         });
       } else {
         console.error(data);
