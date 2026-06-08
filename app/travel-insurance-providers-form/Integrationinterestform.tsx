@@ -16,6 +16,7 @@ interface FormData {
   distributionChannels: string[];
   businessObjective: string;
   agreed: boolean;
+  // isRobot: boolean;
 }
 
 interface Toast {
@@ -38,6 +39,7 @@ export default function IntegrationInterestForm() {
     distributionChannels: [],
     businessObjective: "",
     agreed: false,
+    // isRobot: false,
   });
 
   const [toast, setToast] = useState<Toast | null>(null);
@@ -108,7 +110,14 @@ export default function IntegrationInterestForm() {
       return;
     }
 
-   
+    // if (!formData.isRobot) {
+    //   showToast({
+    //     type: "warning",
+    //     title: "Verification Required",
+    //     message: "Please confirm you are not a robot to continue.",
+    //   });
+      // return;
+    // }
 
     setIsSubmitting(true);
     const integration_interest_url  = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/integration-interest/`;
@@ -161,6 +170,7 @@ export default function IntegrationInterestForm() {
           distributionChannels: [],
           businessObjective: "",
           agreed: false,
+          // isRobot: false,
         });
       } else {
         console.error(data);
@@ -493,6 +503,27 @@ export default function IntegrationInterestForm() {
               className="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all resize-none"
             />
           </div>
+
+          {/* reCAPTCHA placeholder */}
+          {/* <div className="mb-5">
+            <label className="inline-flex items-center gap-3 px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer w-full max-w-xs">
+              <input
+                type="checkbox"
+                checked={formData.isRobot}
+                onChange={(e) => handleInputChange("isRobot", e.target.checked)}
+                className="w-6 h-6 rounded border-gray-300 dark:border-gray-600 text-teal-600 focus:ring-2 focus:ring-teal-500 cursor-pointer accent-teal-600"
+              />
+              <span className="text-sm text-gray-700 dark:text-gray-200 flex-1">I&apos;m not a robot</span>
+              <div className="flex flex-col items-center text-[8px] text-gray-400 leading-tight">
+                <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="#4285F4"/>
+                  <path d="M12 6v6l4 2" stroke="#4285F4" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+                <span>reCAPTCHA</span>
+                <span>Privacy - Terms</span>
+              </div>
+            </label>
+          </div> */}
 
           {/* Consent checkbox */}
           <div className="mb-7">
