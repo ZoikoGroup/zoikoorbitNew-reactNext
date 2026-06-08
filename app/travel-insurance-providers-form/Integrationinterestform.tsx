@@ -120,10 +120,10 @@ export default function IntegrationInterestForm() {
     }
 
     setIsSubmitting(true);
-
+    const integration_interest_url  = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/integration-interest/`;
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/api/integration-interest/",
+        integration_interest_url,
         {
           method: "POST",
           headers: {
