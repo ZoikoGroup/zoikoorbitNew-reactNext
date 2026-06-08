@@ -68,6 +68,9 @@ function validateForm(data: FormData): FormErrors {
   if (!data.partnership_interest.trim())
     errors.partnership_interest = "Partnership interest is required.";
 
+  if (!data.message.trim())
+    errors.message = "Message is required.";
+
   if (!data.consent)
     errors.consent = "You must agree to be contacted before submitting.";
 
@@ -689,6 +692,9 @@ export default function TravelEcosystemPartners() {
 
                 {/* Message */}
                 <div>
+                  <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300">
+                    Message<RequiredMark />
+                  </label>
                   <textarea
                     rows={5}
                     name="message"
@@ -696,8 +702,13 @@ export default function TravelEcosystemPartners() {
                     value={formData.message}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className="w-full resize-none rounded-md border border-gray-300 bg-[#f3f3f3] px-4 py-3 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:text-white dark:focus:bg-[#1f2937]"
+                    className={
+                      errors.message
+                        ? "w-full resize-none rounded-md border border-red-500 bg-red-50 px-4 py-3 text-sm outline-none transition focus:border-red-500 dark:border-red-500 dark:bg-[#1f2937] dark:text-white"
+                        : "w-full resize-none rounded-md border border-gray-300 bg-[#f3f3f3] px-4 py-3 text-sm outline-none transition focus:border-[#007C91] focus:bg-white dark:border-gray-700 dark:bg-[#1f2937] dark:text-white dark:focus:bg-[#1f2937]"
+                    }
                   />
+                  <FieldError message={errors.message} />
                 </div>
 
                 {/* Consent Checkbox */}
