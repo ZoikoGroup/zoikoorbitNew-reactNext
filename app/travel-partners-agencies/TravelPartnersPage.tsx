@@ -264,175 +264,179 @@ const TravelPartnersPage = () => {
       </section>
 
       {/* ===== START YOUR PARTNERSHIP JOURNEY ===== */}
+      {/* 
+        FIX: Removed fixed h-[600px] on the image div and changed the form wrapper
+        from "absolute inset-0 flex items-center" to "absolute inset-0 flex items-start
+        justify-end py-10" so the section height is now driven by the form card itself
+        via min-h, preventing the submit button from being cut off under the footer.
+      */}
       <section className="relative bg-[#f5f5f5] dark:bg-gray-900 overflow-hidden">
 
-        <div className="relative w-full h-[600px] md:h-[560px]">
+        <div className="absolute inset-0">
           <Image src="/image/fjgghjfghhj.png" alt="Partnership journey" fill className="object-cover" priority />
           <div className="absolute inset-0 bg-black/10"></div>
         </div>
 
-        <div className="absolute inset-0 flex items-center">
-          <div className="max-w-7xl mx-auto px-6 w-full">
-            <div className="md:ml-auto md:max-w-xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 md:p-10 border border-gray-100 dark:border-gray-700">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 py-10 flex justify-end">
+          <div className="w-full md:max-w-xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 md:p-10 border border-gray-100 dark:border-gray-700">
 
-              <div className="mb-6">
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white leading-tight mb-2">
-                  Start Your Partnership Journey.
-                </h2>
-                <p className="text-sm text-gray-600 dark:text-white">
-                  Fill in your details — our team will reach out within 48 hours.
-                </p>
-                <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-                  Fields marked <span className="text-red-500">*</span> are required.
-                </p>
-              </div>
+            <div className="mb-6">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white leading-tight mb-2">
+                Start Your Partnership Journey.
+              </h2>
+              <p className="text-sm text-gray-600 dark:text-white">
+                Fill in your details — our team will reach out within 48 hours.
+              </p>
+              <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                Fields marked <span className="text-red-500">*</span> are required.
+              </p>
+            </div>
 
-              <form className="space-y-4" onSubmit={handleSubmit} noValidate>
+            <form className="space-y-4" onSubmit={handleSubmit} noValidate>
 
-                {/* Row 1 */}
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs text-gray-700 dark:text-white mb-1 block">
-                      Full Name<RequiredMark />
-                    </label>
-                    <input
-                      type="text"
-                      name="full_name"
-                      value={formData.full_name}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      placeholder="Enter Full Name"
-                      className={errors.full_name ? inputError : inputNormal}
-                    />
-                    <FieldError message={errors.full_name} />
-                  </div>
-                  <div>
-                    <label className="text-xs text-gray-700 dark:text-white mb-1 block">
-                      Company / Organization<RequiredMark />
-                    </label>
-                    <input
-                      type="text"
-                      name="company_name"
-                      value={formData.company_name}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      placeholder="Enter Company/Organization Name"
-                      className={errors.company_name ? inputError : inputNormal}
-                    />
-                    <FieldError message={errors.company_name} />
-                  </div>
-                </div>
-
-                {/* Row 2 */}
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs text-gray-700 dark:text-white mb-1 block">
-                      Business Email<RequiredMark />
-                    </label>
-                    <input
-                      type="email"
-                      name="business_email"
-                      value={formData.business_email}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      placeholder="Enter Business Email"
-                      className={errors.business_email ? inputError : inputNormal}
-                    />
-                    <FieldError message={errors.business_email} />
-                  </div>
-                  <div>
-                    <label className="text-xs text-gray-700 dark:text-white mb-1 block">
-                      Role<RequiredMark />
-                    </label>
-                    <select
-                      name="role"
-                      value={formData.role}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      className={errors.role ? selectError : selectNormal}
-                    >
-                      <option value="">- Select Role -</option>
-                      <option value="Owner">Owner</option>
-                      <option value="Manager">Manager</option>
-                      <option value="Agent">Agent</option>
-                      <option value="Other">Other</option>
-                    </select>
-                    <FieldError message={errors.role} />
-                  </div>
-                </div>
-
-                {/* Row 3 — Website */}
+              {/* Row 1 */}
+              <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs text-gray-700 dark:text-white mb-1 block">
-                    Website (if any)
+                    Full Name<RequiredMark />
                   </label>
                   <input
                     type="text"
-                    name="website"
-                    value={formData.website}
+                    name="full_name"
+                    value={formData.full_name}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    placeholder="Enter Website URL"
-                    className={inputNormal}
+                    placeholder="Enter Full Name"
+                    className={errors.full_name ? inputError : inputNormal}
                   />
+                  <FieldError message={errors.full_name} />
                 </div>
-
-                {/* Message */}
                 <div>
                   <label className="text-xs text-gray-700 dark:text-white mb-1 block">
-                    Message<RequiredMark />
+                    Company / Organization<RequiredMark />
                   </label>
-                  <textarea
-                    rows={4}
-                    name="message"
-                    value={formData.message}
+                  <input
+                    type="text"
+                    name="company_name"
+                    value={formData.company_name}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    placeholder="Enter your message....."
-                    className={
-                      errors.message
-                        ? "w-full bg-red-50 dark:bg-gray-900 dark:text-white border border-red-500 rounded-md px-3 py-3 text-sm outline-none resize-none focus:ring-2 focus:ring-red-500"
-                        : "w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-3 py-3 text-sm outline-none resize-none focus:ring-2 focus:ring-teal-600"
-                    }
+                    placeholder="Enter Company/Organization Name"
+                    className={errors.company_name ? inputError : inputNormal}
                   />
-                  <FieldError message={errors.message} />
+                  <FieldError message={errors.company_name} />
                 </div>
+              </div>
 
-                {/* Checkbox */}
+              {/* Row 2 */}
+              <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <div className="flex items-start gap-2">
-                    <input
-                      id="consent"
-                      type="checkbox"
-                      name="consent"
-                      checked={formData.consent}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      className="mt-1 accent-teal-700"
-                    />
-                    <label htmlFor="consent" className="text-xs text-gray-600 dark:text-white">
-                      I agree to be contacted by Zoiko Orbit regarding partner opportunities.<RequiredMark />
-                    </label>
-                  </div>
-                  <FieldError message={errors.consent} />
+                  <label className="text-xs text-gray-700 dark:text-white mb-1 block">
+                    Business Email<RequiredMark />
+                  </label>
+                  <input
+                    type="email"
+                    name="business_email"
+                    value={formData.business_email}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder="Enter Business Email"
+                    className={errors.business_email ? inputError : inputNormal}
+                  />
+                  <FieldError message={errors.business_email} />
                 </div>
+                <div>
+                  <label className="text-xs text-gray-700 dark:text-white mb-1 block">
+                    Role<RequiredMark />
+                  </label>
+                  <select
+                    name="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className={errors.role ? selectError : selectNormal}
+                  >
+                    <option value="">- Select Role -</option>
+                    <option value="Owner">Owner</option>
+                    <option value="Manager">Manager</option>
+                    <option value="Agent">Agent</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  <FieldError message={errors.role} />
+                </div>
+              </div>
 
-                {/* Success Message */}
-                {successMessage && (
-                  <p className="text-sm font-medium text-green-600 dark:text-green-400">{successMessage}</p>
-                )}
+              {/* Row 3 — Website */}
+              <div>
+                <label className="text-xs text-gray-700 dark:text-white mb-1 block">
+                  Website (if any)
+                </label>
+                <input
+                  type="text"
+                  name="website"
+                  value={formData.website}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  placeholder="Enter Website URL"
+                  className={inputNormal}
+                />
+              </div>
 
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-teal-700 hover:bg-teal-800 transition text-white font-medium px-8 py-3 rounded-md shadow-md disabled:cursor-not-allowed disabled:opacity-70"
-                >
-                  {loading ? "Submitting..." : "Submit & Schedule Consultation"}
-                </button>
+              {/* Message */}
+              <div>
+                <label className="text-xs text-gray-700 dark:text-white mb-1 block">
+                  Message<RequiredMark />
+                </label>
+                <textarea
+                  rows={4}
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  placeholder="Enter your message....."
+                  className={
+                    errors.message
+                      ? "w-full bg-red-50 dark:bg-gray-900 dark:text-white border border-red-500 rounded-md px-3 py-3 text-sm outline-none resize-none focus:ring-2 focus:ring-red-500"
+                      : "w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-3 py-3 text-sm outline-none resize-none focus:ring-2 focus:ring-teal-600"
+                  }
+                />
+                <FieldError message={errors.message} />
+              </div>
 
-              </form>
-            </div>
+              {/* Checkbox */}
+              <div>
+                <div className="flex items-start gap-2">
+                  <input
+                    id="consent"
+                    type="checkbox"
+                    name="consent"
+                    checked={formData.consent}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className="mt-1 accent-teal-700"
+                  />
+                  <label htmlFor="consent" className="text-xs text-gray-600 dark:text-white">
+                    I agree to be contacted by Zoiko Orbit regarding partner opportunities.<RequiredMark />
+                  </label>
+                </div>
+                <FieldError message={errors.consent} />
+              </div>
+
+              {/* Success Message */}
+              {successMessage && (
+                <p className="text-sm font-medium text-green-600 dark:text-green-400">{successMessage}</p>
+              )}
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-teal-700 hover:bg-teal-800 transition text-white font-medium px-8 py-3 rounded-md shadow-md disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {loading ? "Submitting..." : "Submit & Schedule Consultation"}
+              </button>
+
+            </form>
           </div>
         </div>
       </section>
