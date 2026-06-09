@@ -19,7 +19,18 @@ interface FormData {
   agreed: boolean;
 }
 
-type FormErrors = Partial<Record<keyof FormData, string>>;
+interface FormErrors {
+  fullName?: string;
+  jobTitle?: string;
+  companyName?: string;
+  businessEmail?: string;
+  phoneNumber?: string;
+  businessWebsite?: string;
+  operatingRegions?: string;
+  businessObjective?: string;
+  agreed?: string;
+}
+
 type TouchedFields = Partial<Record<keyof FormData, boolean>>;
 
 interface Toast {
@@ -29,26 +40,26 @@ interface Toast {
 }
 
 const countryCodes = [
-  { code: "+1", flag: "🇺🇸", label: "US" },
-  { code: "+44", flag: "🇬🇧", label: "UK" },
-  { code: "+91", flag: "🇮🇳", label: "IN" },
-  { code: "+61", flag: "🇦🇺", label: "AU" },
-  { code: "+49", flag: "🇩🇪", label: "DE" },
-  { code: "+33", flag: "🇫🇷", label: "FR" },
+  { code: "+1",   flag: "🇺🇸", label: "US" },
+  { code: "+44",  flag: "🇬🇧", label: "UK" },
+  { code: "+91",  flag: "🇮🇳", label: "IN" },
+  { code: "+61",  flag: "🇦🇺", label: "AU" },
+  { code: "+49",  flag: "🇩🇪", label: "DE" },
+  { code: "+33",  flag: "🇫🇷", label: "FR" },
   { code: "+971", flag: "🇦🇪", label: "AE" },
-  { code: "+65", flag: "🇸🇬", label: "SG" },
-  { code: "+81", flag: "🇯🇵", label: "JP" },
-  { code: "+86", flag: "🇨🇳", label: "CN" },
-  { code: "+55", flag: "🇧🇷", label: "BR" },
-  { code: "+27", flag: "🇿🇦", label: "ZA" },
+  { code: "+65",  flag: "🇸🇬", label: "SG" },
+  { code: "+81",  flag: "🇯🇵", label: "JP" },
+  { code: "+86",  flag: "🇨🇳", label: "CN" },
+  { code: "+55",  flag: "🇧🇷", label: "BR" },
+  { code: "+27",  flag: "🇿🇦", label: "ZA" },
   { code: "+234", flag: "🇳🇬", label: "NG" },
   { code: "+254", flag: "🇰🇪", label: "KE" },
-  { code: "+92", flag: "🇵🇰", label: "PK" },
+  { code: "+92",  flag: "🇵🇰", label: "PK" },
   { code: "+880", flag: "🇧🇩", label: "BD" },
-  { code: "+7", flag: "🇷🇺", label: "RU" },
-  { code: "+82", flag: "🇰🇷", label: "KR" },
-  { code: "+39", flag: "🇮🇹", label: "IT" },
-  { code: "+34", flag: "🇪🇸", label: "ES" },
+  { code: "+7",   flag: "🇷🇺", label: "RU" },
+  { code: "+82",  flag: "🇰🇷", label: "KR" },
+  { code: "+39",  flag: "🇮🇹", label: "IT" },
+  { code: "+34",  flag: "🇪🇸", label: "ES" },
 ];
 
 const emptyForm: FormData = {
@@ -103,6 +114,9 @@ function validateForm(data: FormData): FormErrors {
 
   if (!data.operatingRegions)
     errors.operatingRegions = "Please select an operating region.";
+
+  if (!data.businessObjective.trim())
+    errors.businessObjective = "Business objective / note is required.";
 
   if (!data.agreed)
     errors.agreed = "You must agree to be contacted before submitting.";
@@ -169,31 +183,28 @@ export default function IntegrationInterestForm() {
 
   const travelerVolumeOptions = ["1K-5K", "5K-20K", "20K+"];
 
-  // ── HANDLE TEXT / SELECT / CHECKBOX INPUTS ────────────────────────────────
+  // ── HANDLE CHANGE ─────────────────────────────────────────────────────────
   const handleInputChange = (field: keyof FormData, value: string | boolean) => {
     const updated = { ...formData, [field]: value } as FormData;
     setFormData(updated);
-
     if (touched[field]) {
       const newErrors = validateForm(updated);
-      setErrors((prev) => ({ ...prev, [field]: newErrors[field] }));
+      setErrors(newErrors);
     }
   };
 
   const handleBlur = (field: keyof FormData) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
-    const newErrors = validateForm(formData);
-    setErrors((prev) => ({ ...prev, [field]: newErrors[field] }));
+    setErrors(validateForm(formData));
   };
 
-  // Phone number: digits-only enforced, validated live
+  // Phone: digits-only enforced
   const handlePhoneChange = (value: string) => {
     const digits = value.replace(/\D/g, "");
     const updated = { ...formData, phoneNumber: digits };
     setFormData(updated);
     if (touched.phoneNumber) {
-      const newErrors = validateForm(updated);
-      setErrors((prev) => ({ ...prev, phoneNumber: newErrors.phoneNumber }));
+      setErrors(validateForm(updated));
     }
   };
 
@@ -212,7 +223,6 @@ export default function IntegrationInterestForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Touch all fields and run full validation
     const allTouched = Object.keys(emptyForm).reduce(
       (acc, k) => ({ ...acc, [k]: true }),
       {} as TouchedFields
@@ -266,14 +276,26 @@ export default function IntegrationInterestForm() {
         setTouched({});
       } else {
         console.error(data);
-        // Map backend field errors into inline errors if available
         if (data && typeof data === "object") {
           const backendErrors: FormErrors = {};
+          const fieldMap: Record<string, keyof FormErrors> = {
+            full_name: "fullName",
+            job_title: "jobTitle",
+            company_name: "companyName",
+            business_email: "businessEmail",
+            phone_number: "phoneNumber",
+            business_website: "businessWebsite",
+            operating_regions: "operatingRegions",
+            business_objective: "businessObjective",
+            agreed: "agreed",
+          };
           for (const [field, messages] of Object.entries(data)) {
-            const key = field as keyof FormData;
-            backendErrors[key] = Array.isArray(messages)
-              ? (messages as string[]).join(" ")
-              : String(messages);
+            const key = fieldMap[field];
+            if (key) {
+              backendErrors[key] = Array.isArray(messages)
+                ? (messages as string[]).join(" ")
+                : String(messages);
+            }
           }
           setErrors(backendErrors);
         }
@@ -388,7 +410,6 @@ export default function IntegrationInterestForm() {
           noValidate
           className="bg-white dark:bg-gray-800/50 rounded-2xl md:p-10 p-6 md:shadow-sm md:border md:border-gray-100 md:dark:border-gray-700"
         >
-          {/* Required field legend */}
           <p className="text-xs text-gray-400 dark:text-gray-500 mb-6">
             Fields marked <span className="text-red-500">*</span> are required.
           </p>
@@ -468,7 +489,6 @@ export default function IntegrationInterestForm() {
                   ? "border-red-400 dark:border-red-500"
                   : "border-gray-200 dark:border-gray-700 focus-within:ring-2 focus-within:ring-teal-500 focus-within:border-transparent"
               }`}>
-                {/* Country code dropdown */}
                 <div className="relative flex-shrink-0">
                   <select
                     value={formData.countryCode}
@@ -483,7 +503,6 @@ export default function IntegrationInterestForm() {
                   </select>
                   <ChevronDown className="w-3.5 h-3.5 text-gray-400 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
-                {/* Number input */}
                 <input
                   type="tel"
                   value={formData.phoneNumber}
@@ -562,9 +581,10 @@ export default function IntegrationInterestForm() {
                   value={formData.operatingRegions}
                   onChange={(e) => handleInputChange("operatingRegions", e.target.value)}
                   onBlur={() => handleBlur("operatingRegions")}
-                  className={`${errors.operatingRegions
-                    ? "w-full px-4 py-3 pr-10 rounded-lg border bg-red-50 dark:bg-gray-900 border-red-400 dark:border-red-500 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-400 transition-all appearance-none cursor-pointer"
-                    : "w-full px-4 py-3 pr-10 rounded-lg border bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                  className={`w-full px-4 py-3 pr-10 rounded-lg border appearance-none cursor-pointer focus:outline-none focus:ring-2 transition-all text-gray-900 dark:text-white ${
+                    errors.operatingRegions
+                      ? "bg-red-50 dark:bg-gray-900 border-red-400 dark:border-red-500 focus:ring-red-400"
+                      : "bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:ring-teal-500 focus:border-transparent"
                   }`}
                 >
                   <option value="" disabled>Select Operating Regions</option>
@@ -624,7 +644,7 @@ export default function IntegrationInterestForm() {
           {/* Business Objective / Note */}
           <div className="mb-6">
             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-              Business Objective / Note
+              Business Objective / Note<RequiredMark />
             </label>
             <textarea
               rows={5}
@@ -632,8 +652,13 @@ export default function IntegrationInterestForm() {
               onChange={(e) => handleInputChange("businessObjective", e.target.value)}
               onBlur={() => handleBlur("businessObjective")}
               placeholder="describe what you're aiming to achieve with eSIM integration..."
-              className="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all resize-none"
+              className={`w-full px-4 py-3 rounded-lg border text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:border-transparent transition-all resize-none ${
+                errors.businessObjective
+                  ? "bg-red-50 dark:bg-gray-900 border-red-400 dark:border-red-500 focus:ring-red-400"
+                  : "bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:ring-teal-500"
+              }`}
             />
+            <FieldError message={errors.businessObjective} />
           </div>
 
           {/* Consent checkbox */}
@@ -643,14 +668,7 @@ export default function IntegrationInterestForm() {
                 type="checkbox"
                 id="agreed"
                 checked={formData.agreed}
-                onChange={(e) => {
-                  handleInputChange("agreed", e.target.checked);
-                  if (touched.agreed) {
-                    const updated = { ...formData, agreed: e.target.checked };
-                    const newErrors = validateForm(updated);
-                    setErrors((prev) => ({ ...prev, agreed: newErrors.agreed }));
-                  }
-                }}
+                onChange={(e) => handleInputChange("agreed", e.target.checked)}
                 onBlur={() => handleBlur("agreed")}
                 className="w-4 h-4 mt-0.5 rounded border-gray-300 dark:border-gray-600 text-teal-600 focus:ring-2 focus:ring-teal-500 cursor-pointer accent-teal-600"
               />
