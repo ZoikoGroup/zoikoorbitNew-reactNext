@@ -26,92 +26,169 @@ const countryCodes = [
   { code: "+34",  flag: "🇪🇸", label: "ES" },
 ];
 
+// ── TYPES ─────────────────────────────────────────────────────────────────────
+interface FormData {
+  first_name: string;
+  last_name: string;
+  business_email: string;
+  company_name: string;
+  country_code: string;
+  phone: string;
+  country: string;
+  inquiry_type: string;
+  message: string;
+  consent: boolean;
+}
+
+interface FormErrors {
+  first_name?: string;
+  last_name?: string;
+  business_email?: string;
+  company_name?: string;
+  phone?: string;
+  country?: string;
+  inquiry_type?: string;
+  message?: string;
+  consent?: string;
+}
+
+type TouchedFields = Partial<Record<keyof FormData, boolean>>;
+
+const emptyForm: FormData = {
+  first_name: "",
+  last_name: "",
+  business_email: "",
+  company_name: "",
+  country_code: "+44",
+  phone: "",
+  country: "",
+  inquiry_type: "",
+  message: "",
+  consent: false,
+};
+
+// ── VALIDATION ────────────────────────────────────────────────────────────────
+function validateForm(data: FormData): FormErrors {
+  const errors: FormErrors = {};
+
+  if (!data.first_name.trim())
+    errors.first_name = "First name is required.";
+
+  if (!data.last_name.trim())
+    errors.last_name = "Last name is required.";
+
+  if (!data.business_email.trim()) {
+    errors.business_email = "Business email is required.";
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.business_email.trim())) {
+    errors.business_email = "Enter a valid email address.";
+  }
+
+  if (!data.company_name.trim())
+    errors.company_name = "Company / organisation is required.";
+
+  // Phone is optional — only validate format if filled
+  if (data.phone.trim() && !/^\d{6,14}$/.test(data.phone.replace(/\s+/g, "")))
+    errors.phone = "Enter a valid number without country code (e.g. 7911123456).";
+
+  if (!data.country)
+    errors.country = "Please select a country / region.";
+
+  if (!data.inquiry_type.trim())
+    errors.inquiry_type = "Inquiry type is required.";
+
+  if (!data.message.trim())
+    errors.message = "Message is required.";
+
+  if (!data.consent)
+    errors.consent = "You must agree to be contacted before submitting.";
+
+  return errors;
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return <p className="mt-1 text-xs text-red-500">{message}</p>;
+}
+
+function RequiredMark() {
+  return <span className="text-red-500 ml-0.5">*</span>;
+}
+
+const inputNormal =
+  "w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600 transition";
+
+const inputError =
+  "w-full bg-red-50 dark:bg-gray-900 dark:text-white border border-red-500 dark:border-red-500 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-red-400 transition";
+
+const selectNormal =
+  "w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600 transition dark:[&>option]:bg-gray-800 dark:[&>option]:text-white";
+
+const selectError =
+  "w-full bg-red-50 dark:bg-gray-900 dark:text-white border border-red-500 dark:border-red-500 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-red-400 transition dark:[&>option]:bg-gray-800 dark:[&>option]:text-white";
+
+// ── COMPONENT ─────────────────────────────────────────────────────────────────
 const ZoikoOrbitPage = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-
-  const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
-    business_email: "",
-    company_name: "",
-    country_code: "+44",
-    phone: "",
-    country: "",
-    inquiry_type: "",
-    message: "",
-    consent: false,
-  });
-
-  const [phoneError, setPhoneError] = useState("");
+  const [formData, setFormData] = useState<FormData>(emptyForm);
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState<TouchedFields>({});
   const [showMore, setShowMore] = useState(false);
   const [showMore2, setShowMore2] = useState(false);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  // ── HANDLE CHANGE ────────────────────────────────────────────────────────────
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value, type } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
-    }));
+    const key = name as keyof FormData;
+    const newValue = type === "checkbox" ? (e.target as HTMLInputElement).checked : value;
+    const updated = { ...formData, [key]: newValue } as FormData;
+    setFormData(updated);
+    if (touched[key]) {
+      setErrors(validateForm(updated));
+    }
   };
 
+  // ── HANDLE BLUR ──────────────────────────────────────────────────────────────
+  const handleBlur = (field: keyof FormData) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    setErrors(validateForm(formData));
+  };
+
+  // Phone: digits-only enforced
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const digits = e.target.value.replace(/\D/g, "");
-    setFormData((prev) => ({ ...prev, phone: digits }));
-    if (!digits) {
-      setPhoneError("");
-    } else if (!/^\d{6,14}$/.test(digits)) {
-      setPhoneError("Enter a valid number without country code (e.g. 7911123456).");
-    } else {
-      setPhoneError("");
+    const updated = { ...formData, phone: digits };
+    setFormData(updated);
+    if (touched.phone) {
+      setErrors(validateForm(updated));
     }
   };
 
+  // ── HANDLE SUBMIT ────────────────────────────────────────────────────────────
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     setSuccessMessage("");
-    setErrorMessage("");
 
-    if (!formData.consent) {
-      setErrorMessage("Please agree to be contacted before submitting.");
-      return;
-    }
+    const allTouched = Object.keys(emptyForm).reduce(
+      (acc, k) => ({ ...acc, [k]: true }),
+      {} as TouchedFields
+    );
+    setTouched(allTouched);
 
-    if (
-      !formData.first_name.trim() ||
-      !formData.last_name.trim() ||
-      !formData.business_email.trim() ||
-      !formData.company_name.trim() ||
-      !formData.country.trim() ||
-      !formData.inquiry_type.trim() ||
-      !formData.message.trim()
-    ) {
-      setErrorMessage("Please fill in all required fields.");
-      return;
-    }
+    const validationErrors = validateForm(formData);
+    setErrors(validationErrors);
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.business_email)) {
-      setErrorMessage("Please enter a valid business email address.");
-      return;
-    }
-
-    if (formData.phone && phoneError) {
-      setErrorMessage("Please enter a valid phone number.");
-      return;
-    }
+    if (Object.keys(validationErrors).length > 0) return;
 
     setLoading(true);
-
     try {
       const payload = {
         ...formData,
-        phone: formData.phone.trim()
-          ? `${formData.country_code}${formData.phone}`
-          : null,
+        phone: formData.phone.trim() ? `${formData.country_code}${formData.phone}` : null,
         country_code: undefined,
       };
 
@@ -128,32 +205,37 @@ const ZoikoOrbitPage = () => {
 
       if (response.ok) {
         setSuccessMessage("Form submitted successfully! Our specialists will respond within 24 hours.");
-        setFormData({
-          first_name: "",
-          last_name: "",
-          business_email: "",
-          company_name: "",
-          country_code: "+44",
-          phone: "",
-          country: "",
-          inquiry_type: "",
-          message: "",
-          consent: false,
-        });
-        setPhoneError("");
+        setFormData(emptyForm);
+        setErrors({});
+        setTouched({});
       } else {
-        if (typeof data === "object" && data !== null) {
-          const firstError = Object.values(data)[0];
-          setErrorMessage(
-            Array.isArray(firstError) ? String(firstError[0]) : String(firstError)
-          );
-        } else {
-          setErrorMessage("Something went wrong. Please try again.");
+        if (data && typeof data === "object") {
+          const fieldMap: Record<string, keyof FormErrors> = {
+            first_name: "first_name",
+            last_name: "last_name",
+            business_email: "business_email",
+            company_name: "company_name",
+            phone: "phone",
+            country: "country",
+            inquiry_type: "inquiry_type",
+            message: "message",
+            consent: "consent",
+          };
+          const backendErrors: FormErrors = {};
+          for (const [field, messages] of Object.entries(data)) {
+            const key = fieldMap[field];
+            if (key) {
+              backendErrors[key] = Array.isArray(messages)
+                ? (messages as string[]).join(" ")
+                : String(messages);
+            }
+          }
+          setErrors(backendErrors);
         }
       }
     } catch (error) {
-      console.log(error);
-      setErrorMessage("Server error. Please check your connection and try again.");
+      console.error(error);
+      setErrors({ message: "Server error. Please check your connection and try again." });
     }
 
     setLoading(false);
@@ -168,27 +250,19 @@ const ZoikoOrbitPage = () => {
         style={{ background: "linear-gradient(90deg, #0a2540 60%, #1a4a7a 100%)" }}
       >
         <div className="absolute inset-0 overflow-hidden">
-          <img
-            src="/image/Rectangle 4 (7).png"
-            alt="Travel background"
-            className="hidden md:block w-full h-full object-cover object-center opacity-90"
-          />
-          <img
-            src="/image/Rectangle893(2).jpg"
-            alt="Travel background"
-            className="block md:hidden w-full h-full object-cover object-center opacity-90"
-          />
+          <img src="/image/Rectangle 4 (7).png" alt="Travel background" className="hidden md:block w-full h-full object-cover object-center opacity-90" />
+          <img src="/image/Rectangle893(2).jpg" alt="Travel background" className="block md:hidden w-full h-full object-cover object-center opacity-90" />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
           <div>
-            <h1 className="text-4xl md:text-5xl font-extrabold text-white dark:text-white leading-tight mb-4">
+            <h1 className="text-4xl md:text-5xl font-extrabold text-white leading-tight mb-4">
               Empower Your Teams<br />with Global Connectivity
             </h1>
-            <p className="text-white dark:text-white text-lg mb-8 max-w-md">
+            <p className="text-white text-lg mb-8 max-w-md">
               Enterprise eSIM solutions for corporate travel, remote teams, and global device deployments
             </p>
             <a href="/plans">
-              <button className="bg-[#0B7285] text-white hover:bg-[#0B7285] text-gray-900 font-bold px-8 md:px-10 py-2.5 md:py-3 rounded-lg text-base transition-all shadow-lg">
+              <button className="bg-[#0B7285] text-white font-bold px-8 md:px-10 py-2.5 md:py-3 rounded-lg text-base transition-all shadow-lg hover:bg-[#0a6577]">
                 Get Your eSIM
               </button>
             </a>
@@ -203,25 +277,12 @@ const ZoikoOrbitPage = () => {
             Why leading enterprises standardize on Zoiko Orbit™
           </h2>
           <p className="text-gray-500 dark:text-white mb-12">Unlock new revenue and delight travelers with ready-to-activate global data.</p>
-
           <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-8 md:p-12">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:divide-x md:divide-gray-200 dark:md:divide-gray-700">
               {[
-                {
-                  icon: "/image/Group 1597883246.png",
-                  title: "Predictable Costs",
-                  desc: "Consolidated global data spend. Pooled plans, volume pricing, cost center tagging.",
-                },
-                {
-                  icon: "/image/Group 1597883256.png",
-                  title: "Tier-1 Security & Compliance",
-                  desc: "GDPR, SOC 2, PCI — enterprise data handling standards baked in.",
-                },
-                {
-                  icon: "/image/Group 1597883257.png",
-                  title: "Easy Central Admin",
-                  desc: "Provision, reassign, and report on usage across teams in one dashboard.",
-                },
+                { icon: "/image/Group 1597883246.png", title: "Predictable Costs", desc: "Consolidated global data spend. Pooled plans, volume pricing, cost center tagging." },
+                { icon: "/image/Group 1597883256.png", title: "Tier-1 Security & Compliance", desc: "GDPR, SOC 2, PCI — enterprise data handling standards baked in." },
+                { icon: "/image/Group 1597883257.png", title: "Easy Central Admin", desc: "Provision, reassign, and report on usage across teams in one dashboard." },
               ].map((item, i) => (
                 <div key={i} className="flex flex-col items-start text-left px-2 md:px-6">
                   <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-teal-600/10 dark:bg-gray-900">
@@ -237,7 +298,7 @@ const ZoikoOrbitPage = () => {
       </section>
 
       {/* CONNECTIVITY BUILT AROUND */}
-      <section className="py-4 dark:bg-gray-900 dark:text-white bg-white dark:bg-gray-900">
+      <section className="py-4 bg-white dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             Connectivity Built Around<br />How Your Organization Operates
@@ -245,21 +306,9 @@ const ZoikoOrbitPage = () => {
           <p className="text-gray-500 dark:text-white mb-12">Scale from a few travelers to global workforce coverage — mix &amp; match programs</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              {
-                img: "/image/Rectangle 908 (2).png",
-                title: "Corporate Travel Plans",
-                desc: "Pre-trip provisioning tied to bookings; regional or global data pools; expense integration.",
-              },
-              {
-                img: "/image/Rectangle 909 (2).png",
-                title: "Remote & Hybrid Team Data",
-                desc: "Always-on data for distributed teams; monthly top-ups; device-agnostic eSIM delivery.",
-              },
-              {
-                img: "/image/Rectangle 910 (2).png",
-                title: "Bespoke Global Programs",
-                desc: "Custom coverage bundles for project deployments, maritime/energy crews, events, or high-security missions.",
-              },
+              { img: "/image/Rectangle 908 (2).png", title: "Corporate Travel Plans", desc: "Pre-trip provisioning tied to bookings; regional or global data pools; expense integration." },
+              { img: "/image/Rectangle 909 (2).png", title: "Remote & Hybrid Team Data", desc: "Always-on data for distributed teams; monthly top-ups; device-agnostic eSIM delivery." },
+              { img: "/image/Rectangle 910 (2).png", title: "Bespoke Global Programs", desc: "Custom coverage bundles for project deployments, maritime/energy crews, events, or high-security missions." },
             ].map((item, i) => (
               <div key={i} className="text-left">
                 <div className="relative w-full h-44 rounded-2xl overflow-hidden mb-4">
@@ -430,7 +479,7 @@ const ZoikoOrbitPage = () => {
 
         <div className="relative w-full h-[320px] md:h-[420px]">
           <Image src="/image/Rectangle 19.png" alt="travel" fill className="object-cover" priority />
-          <div className="absolute inset-0 bg-black/10"></div>
+          <div className="absolute inset-0 bg-black/10" />
         </div>
 
         <div className="absolute left-0 bottom-10 w-[320px] md:w-[500px] opacity-20 pointer-events-none">
@@ -449,37 +498,44 @@ const ZoikoOrbitPage = () => {
               <p className="text-gray-600 dark:text-white mt-3">
                 Share a few details and our specialists will respond within 24 hours
               </p>
+              <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                Fields marked <span className="text-red-500">*</span> are required.
+              </p>
             </div>
 
-            <form className="space-y-5" onSubmit={handleSubmit}>
+            <form className="space-y-5" onSubmit={handleSubmit} noValidate>
 
               {/* Row 1 */}
               <div className="grid md:grid-cols-2 gap-5">
                 <div>
                   <label className="text-sm text-gray-700 dark:text-white mb-2 block">
-                    First Name <span className="text-red-500">*</span>
+                    First Name<RequiredMark />
                   </label>
                   <input
                     type="text"
                     name="first_name"
                     value={formData.first_name}
                     onChange={handleChange}
+                    onBlur={() => handleBlur("first_name")}
                     placeholder="Enter First Name"
-                    className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
+                    className={errors.first_name ? inputError : inputNormal}
                   />
+                  <FieldError message={errors.first_name} />
                 </div>
                 <div>
                   <label className="text-sm text-gray-700 dark:text-white mb-2 block">
-                    Last Name <span className="text-red-500">*</span>
+                    Last Name<RequiredMark />
                   </label>
                   <input
                     type="text"
                     name="last_name"
                     value={formData.last_name}
                     onChange={handleChange}
+                    onBlur={() => handleBlur("last_name")}
                     placeholder="Enter Last Name"
-                    className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
+                    className={errors.last_name ? inputError : inputNormal}
                   />
+                  <FieldError message={errors.last_name} />
                 </div>
               </div>
 
@@ -487,29 +543,33 @@ const ZoikoOrbitPage = () => {
               <div className="grid md:grid-cols-2 gap-5">
                 <div>
                   <label className="text-sm text-gray-700 dark:text-white mb-2 block">
-                    Business Email <span className="text-red-500">*</span>
+                    Business Email<RequiredMark />
                   </label>
                   <input
                     type="email"
                     name="business_email"
                     value={formData.business_email}
                     onChange={handleChange}
+                    onBlur={() => handleBlur("business_email")}
                     placeholder="Enter Work Email"
-                    className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
+                    className={errors.business_email ? inputError : inputNormal}
                   />
+                  <FieldError message={errors.business_email} />
                 </div>
                 <div>
                   <label className="text-sm text-gray-700 dark:text-white mb-2 block">
-                    Company / Organization <span className="text-red-500">*</span>
+                    Company / Organization<RequiredMark />
                   </label>
                   <input
                     type="text"
                     name="company_name"
                     value={formData.company_name}
                     onChange={handleChange}
+                    onBlur={() => handleBlur("company_name")}
                     placeholder="Enter Company/Organization Name"
-                    className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
+                    className={errors.company_name ? inputError : inputNormal}
                   />
+                  <FieldError message={errors.company_name} />
                 </div>
               </div>
 
@@ -520,11 +580,10 @@ const ZoikoOrbitPage = () => {
                     Phone (If Needed)
                   </label>
                   <div className={`flex rounded-md border overflow-hidden transition ${
-                    phoneError
-                      ? "border-red-500"
+                    errors.phone
+                      ? "border-red-500 dark:border-red-500"
                       : "border-gray-200 dark:border-gray-700 focus-within:ring-2 focus-within:ring-teal-600"
                   }`}>
-                    {/* Country code dropdown */}
                     <div className="relative flex-shrink-0">
                       <select
                         name="country_code"
@@ -540,19 +599,23 @@ const ZoikoOrbitPage = () => {
                       </select>
                       <ChevronDown className="w-3 h-3 text-gray-500 absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none" />
                     </div>
-                    {/* Number input */}
                     <input
                       type="tel"
                       name="phone"
                       value={formData.phone}
                       onChange={handlePhoneChange}
+                      onBlur={() => handleBlur("phone")}
                       placeholder="7911 123456"
-                      className="h-12 flex-1 px-3 text-sm bg-gray-100 dark:bg-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
+                      className={`h-12 flex-1 px-3 text-sm focus:outline-none ${
+                        errors.phone
+                          ? "bg-red-50 dark:bg-gray-900 dark:text-white"
+                          : "bg-gray-100 dark:bg-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                      }`}
                     />
                   </div>
-                  {phoneError ? (
-                    <p className="mt-1 text-xs text-red-500">{phoneError}</p>
-                  ) : formData.phone && !phoneError ? (
+                  {errors.phone ? (
+                    <FieldError message={errors.phone} />
+                  ) : formData.phone && !errors.phone ? (
                     <p className="mt-1 text-xs text-teal-600 dark:text-teal-400">
                       Full number: {formData.country_code} {formData.phone}
                     </p>
@@ -564,72 +627,82 @@ const ZoikoOrbitPage = () => {
                 </div>
                 <div>
                   <label className="text-sm text-gray-700 dark:text-white mb-2 block">
-                    Country / Region <span className="text-red-500">*</span>
+                    Country / Region<RequiredMark />
                   </label>
                   <select
                     name="country"
                     value={formData.country}
                     onChange={handleChange}
-                    className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600 text-gray-600 dark:[&>option]:bg-gray-800 dark:[&>option]:text-white"
+                    onBlur={() => handleBlur("country")}
+                    className={errors.country ? selectError : selectNormal}
                   >
                     <option value="">Select Option</option>
                     <option value="India">India</option>
                     <option value="United States">United States</option>
                     <option value="United Kingdom">United Kingdom</option>
                   </select>
+                  <FieldError message={errors.country} />
                 </div>
               </div>
 
               {/* Inquiry */}
               <div>
                 <label className="text-sm text-gray-700 dark:text-white mb-2 block">
-                  Inquiry Type <span className="text-red-500">*</span>
+                  Inquiry Type<RequiredMark />
                 </label>
                 <input
                   type="text"
                   name="inquiry_type"
                   value={formData.inquiry_type}
                   onChange={handleChange}
+                  onBlur={() => handleBlur("inquiry_type")}
                   placeholder="Corporate Travel, Remote Workforce, Bulk Deployment, Security Review, Integration Other"
-                  className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
+                  className={errors.inquiry_type ? inputError : inputNormal}
                 />
+                <FieldError message={errors.inquiry_type} />
               </div>
 
               {/* Message */}
               <div>
                 <label className="text-sm text-gray-700 dark:text-white mb-2 block">
-                  Message <span className="text-red-500">*</span>
+                  Message<RequiredMark />
                 </label>
                 <textarea
                   rows={5}
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
+                  onBlur={() => handleBlur("message")}
                   placeholder="Enter your message..."
-                  className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-4 outline-none resize-none focus:ring-2 focus:ring-teal-600"
+                  className={`resize-none ${errors.message
+                    ? "w-full bg-red-50 dark:bg-gray-900 dark:text-white border border-red-500 dark:border-red-500 rounded-md px-4 py-4 outline-none focus:ring-2 focus:ring-red-400 transition"
+                    : "w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-4 outline-none focus:ring-2 focus:ring-teal-600 transition"
+                  }`}
                 />
+                <FieldError message={errors.message} />
               </div>
 
-              {/* Checkbox */}
-              <div className="flex items-start gap-3">
-                <input
-                  id="consent"
-                  type="checkbox"
-                  name="consent"
-                  checked={formData.consent}
-                  onChange={handleChange}
-                  className="mt-1 accent-teal-700"
-                />
-                <label htmlFor="consent" className="text-sm text-gray-600 dark:text-white">
-                  I agree to be contacted by Zoiko Orbit regarding partner opportunities.
-                </label>
+              {/* Consent Checkbox */}
+              <div>
+                <div className="flex items-start gap-3">
+                  <input
+                    id="consent"
+                    type="checkbox"
+                    name="consent"
+                    checked={formData.consent}
+                    onChange={handleChange}
+                    onBlur={() => handleBlur("consent")}
+                    className="mt-1 accent-teal-700"
+                  />
+                  <label htmlFor="consent" className="text-sm text-gray-600 dark:text-white cursor-pointer">
+                    I agree to be contacted by Zoiko Orbit regarding partner opportunities.<RequiredMark />
+                  </label>
+                </div>
+                <FieldError message={errors.consent} />
               </div>
 
               {successMessage && (
                 <p className="text-sm font-medium text-green-600 dark:text-green-400">{successMessage}</p>
-              )}
-              {errorMessage && (
-                <p className="text-sm font-medium text-red-600 dark:text-red-400">{errorMessage}</p>
               )}
 
               <button
