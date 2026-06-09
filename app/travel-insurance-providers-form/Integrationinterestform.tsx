@@ -19,6 +19,9 @@ interface FormData {
   agreed: boolean;
 }
 
+type FormErrors = Partial<Record<keyof FormData, string>>;
+type TouchedFields = Partial<Record<keyof FormData, boolean>>;
+
 interface Toast {
   type: "success" | "error" | "warning";
   title: string;
@@ -48,26 +51,92 @@ const countryCodes = [
   { code: "+34", flag: "🇪🇸", label: "ES" },
 ];
 
-export default function IntegrationInterestForm() {
-  const [formData, setFormData] = useState<FormData>({
-    fullName: "",
-    jobTitle: "",
-    companyName: "",
-    businessEmail: "",
-    countryCode: "+44",
-    phoneNumber: "",
-    businessWebsite: "",
-    integrationInterests: [],
-    operatingRegions: "",
-    travelerVolume: "1K-5K",
-    distributionChannels: [],
-    businessObjective: "",
-    agreed: false,
-  });
+const emptyForm: FormData = {
+  fullName: "",
+  jobTitle: "",
+  companyName: "",
+  businessEmail: "",
+  countryCode: "+44",
+  phoneNumber: "",
+  businessWebsite: "",
+  integrationInterests: [],
+  operatingRegions: "",
+  travelerVolume: "1K-5K",
+  distributionChannels: [],
+  businessObjective: "",
+  agreed: false,
+};
 
+// ── VALIDATION ────────────────────────────────────────────────────────────────
+function validateForm(data: FormData): FormErrors {
+  const errors: FormErrors = {};
+
+  if (!data.fullName.trim())
+    errors.fullName = "Full name is required.";
+
+  if (!data.jobTitle.trim())
+    errors.jobTitle = "Job title is required.";
+
+  if (!data.companyName.trim())
+    errors.companyName = "Company / insurer name is required.";
+
+  if (!data.businessEmail.trim()) {
+    errors.businessEmail = "Business email is required.";
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.businessEmail.trim())) {
+    errors.businessEmail = "Enter a valid email address.";
+  }
+
+  if (!data.phoneNumber.trim()) {
+    errors.phoneNumber = "Phone number is required.";
+  } else if (!/^\d{6,14}$/.test(data.phoneNumber.replace(/\s+/g, ""))) {
+    errors.phoneNumber = "Enter a valid number without country code (e.g. 7911123456).";
+  }
+
+  if (data.businessWebsite.trim()) {
+    try {
+      const url = data.businessWebsite.trim();
+      new URL(url.startsWith("http") ? url : `https://${url}`);
+    } catch {
+      errors.businessWebsite = "Enter a valid URL (e.g. https://example.com).";
+    }
+  }
+
+  if (!data.operatingRegions)
+    errors.operatingRegions = "Please select an operating region.";
+
+  if (!data.agreed)
+    errors.agreed = "You must agree to be contacted before submitting.";
+
+  return errors;
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return <p className="mt-1.5 text-xs text-red-500">{message}</p>;
+}
+
+function RequiredMark() {
+  return <span className="text-red-500 ml-0.5">*</span>;
+}
+
+const inputBase =
+  "w-full px-4 py-3 rounded-lg border text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none transition-all";
+
+const inputNormal =
+  inputBase +
+  " bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-teal-500 focus:border-transparent";
+
+const inputError =
+  inputBase +
+  " bg-red-50 dark:bg-gray-900 border-red-400 dark:border-red-500 focus:ring-2 focus:ring-red-400 focus:border-transparent";
+
+export default function IntegrationInterestForm() {
+  const [formData, setFormData] = useState<FormData>(emptyForm);
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState<TouchedFields>({});
   const [toast, setToast] = useState<Toast | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [phoneError, setPhoneError] = useState<string>("");
 
   const showToast = (toastData: Toast) => {
     setToast(toastData);
@@ -100,51 +169,64 @@ export default function IntegrationInterestForm() {
 
   const travelerVolumeOptions = ["1K-5K", "5K-20K", "20K+"];
 
+  // ── HANDLE TEXT / SELECT / CHECKBOX INPUTS ────────────────────────────────
   const handleInputChange = (field: keyof FormData, value: string | boolean) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    const updated = { ...formData, [field]: value } as FormData;
+    setFormData(updated);
+
+    if (touched[field]) {
+      const newErrors = validateForm(updated);
+      setErrors((prev) => ({ ...prev, [field]: newErrors[field] }));
+    }
+  };
+
+  const handleBlur = (field: keyof FormData) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    const newErrors = validateForm(formData);
+    setErrors((prev) => ({ ...prev, [field]: newErrors[field] }));
+  };
+
+  // Phone number: digits-only enforced, validated live
+  const handlePhoneChange = (value: string) => {
+    const digits = value.replace(/\D/g, "");
+    const updated = { ...formData, phoneNumber: digits };
+    setFormData(updated);
+    if (touched.phoneNumber) {
+      const newErrors = validateForm(updated);
+      setErrors((prev) => ({ ...prev, phoneNumber: newErrors.phoneNumber }));
+    }
   };
 
   const handleCheckboxToggle = (
     field: "integrationInterests" | "distributionChannels",
     value: string
   ) => {
-    setFormData((prev) => {
-      const current = prev[field];
-      const updated = current.includes(value)
-        ? current.filter((item) => item !== value)
-        : [...current, value];
-      return { ...prev, [field]: updated };
-    });
+    const current = formData[field];
+    const updated = current.includes(value)
+      ? current.filter((item) => item !== value)
+      : [...current, value];
+    setFormData((prev) => ({ ...prev, [field]: updated }));
   };
 
-  const validatePhone = (value: string) => {
-    const cleaned = value.replace(/\s+/g, "");
-    if (!cleaned) {
-      setPhoneError("Phone number is required.");
-    } else if (!/^\d{6,14}$/.test(cleaned)) {
-      setPhoneError("Enter a valid number without country code (e.g. 7911123456).");
-    } else {
-      setPhoneError("");
-    }
-  };
-
+  // ── HANDLE SUBMIT ─────────────────────────────────────────────────────────
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.agreed) {
-      showToast({
-        type: "warning",
-        title: "Consent Required",
-        message: "Please agree to be contacted by Zoiko Orbit before submitting.",
-      });
-      return;
-    }
+    // Touch all fields and run full validation
+    const allTouched = Object.keys(emptyForm).reduce(
+      (acc, k) => ({ ...acc, [k]: true }),
+      {} as TouchedFields
+    );
+    setTouched(allTouched);
 
-    if (phoneError || !formData.phoneNumber) {
+    const validationErrors = validateForm(formData);
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) {
       showToast({
         type: "warning",
-        title: "Invalid Phone Number",
-        message: "Please enter a valid phone number.",
+        title: "Fix Errors",
+        message: "Please fix the highlighted errors before submitting.",
       });
       return;
     }
@@ -161,7 +243,7 @@ export default function IntegrationInterestForm() {
           company_name: formData.companyName,
           business_email: formData.businessEmail,
           phone_number: `${formData.countryCode}${formData.phoneNumber}`,
-          business_website: formData.businessWebsite,
+          business_website: formData.businessWebsite.trim() || null,
           integration_interests: formData.integrationInterests,
           operating_regions: formData.operatingRegions,
           traveler_volume: formData.travelerVolume,
@@ -179,25 +261,22 @@ export default function IntegrationInterestForm() {
           title: "Request Submitted Successfully!",
           message: "Thank you for your interest. Our team will reach out to you within 24 hours.",
         });
-        console.log(data);
-        setFormData({
-          fullName: "",
-          jobTitle: "",
-          companyName: "",
-          businessEmail: "",
-          countryCode: "+44",
-          phoneNumber: "",
-          businessWebsite: "",
-          integrationInterests: [],
-          operatingRegions: "",
-          travelerVolume: "1K-5K",
-          distributionChannels: [],
-          businessObjective: "",
-          agreed: false,
-        });
-        setPhoneError("");
+        setFormData(emptyForm);
+        setErrors({});
+        setTouched({});
       } else {
         console.error(data);
+        // Map backend field errors into inline errors if available
+        if (data && typeof data === "object") {
+          const backendErrors: FormErrors = {};
+          for (const [field, messages] of Object.entries(data)) {
+            const key = field as keyof FormData;
+            backendErrors[key] = Array.isArray(messages)
+              ? (messages as string[]).join(" ")
+              : String(messages);
+          }
+          setErrors(backendErrors);
+        }
         showToast({
           type: "error",
           title: "Submission Failed",
@@ -247,8 +326,6 @@ export default function IntegrationInterestForm() {
         };
     }
   };
-
-  const selectedCountry = countryCodes.find((c) => c.code === formData.countryCode);
 
   return (
     <main className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300 min-h-screen">
@@ -308,35 +385,43 @@ export default function IntegrationInterestForm() {
 
         <form
           onSubmit={handleSubmit}
+          noValidate
           className="bg-white dark:bg-gray-800/50 rounded-2xl md:p-10 p-6 md:shadow-sm md:border md:border-gray-100 md:dark:border-gray-700"
         >
+          {/* Required field legend */}
+          <p className="text-xs text-gray-400 dark:text-gray-500 mb-6">
+            Fields marked <span className="text-red-500">*</span> are required.
+          </p>
+
           {/* Row 1: Full Name + Job Title */}
           <div className="grid md:grid-cols-2 gap-5 mb-5">
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                Full Name<span className="text-red-500 ml-0.5">*</span>
+                Full Name<RequiredMark />
               </label>
               <input
                 type="text"
-                required
                 value={formData.fullName}
                 onChange={(e) => handleInputChange("fullName", e.target.value)}
+                onBlur={() => handleBlur("fullName")}
                 placeholder="Enter Full Name"
-                className="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                className={errors.fullName ? inputError : inputNormal}
               />
+              <FieldError message={errors.fullName} />
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                Job Title<span className="text-red-500 ml-0.5">*</span>
+                Job Title<RequiredMark />
               </label>
               <input
                 type="text"
-                required
                 value={formData.jobTitle}
                 onChange={(e) => handleInputChange("jobTitle", e.target.value)}
+                onBlur={() => handleBlur("jobTitle")}
                 placeholder="Enter Your Job Title"
-                className="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                className={errors.jobTitle ? inputError : inputNormal}
               />
+              <FieldError message={errors.jobTitle} />
             </div>
           </div>
 
@@ -344,29 +429,31 @@ export default function IntegrationInterestForm() {
           <div className="grid md:grid-cols-2 gap-5 mb-5">
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                Company / Insurer Name<span className="text-red-500 ml-0.5">*</span>
+                Company / Insurer Name<RequiredMark />
               </label>
               <input
                 type="text"
-                required
                 value={formData.companyName}
                 onChange={(e) => handleInputChange("companyName", e.target.value)}
+                onBlur={() => handleBlur("companyName")}
                 placeholder="Enter Company / Insurer Name"
-                className="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                className={errors.companyName ? inputError : inputNormal}
               />
+              <FieldError message={errors.companyName} />
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                Business Email Address<span className="text-red-500 ml-0.5">*</span>
+                Business Email Address<RequiredMark />
               </label>
               <input
                 type="email"
-                required
                 value={formData.businessEmail}
                 onChange={(e) => handleInputChange("businessEmail", e.target.value)}
+                onBlur={() => handleBlur("businessEmail")}
                 placeholder="Enter Business Email Address"
-                className="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                className={errors.businessEmail ? inputError : inputNormal}
               />
+              <FieldError message={errors.businessEmail} />
             </div>
           </div>
 
@@ -374,11 +461,11 @@ export default function IntegrationInterestForm() {
           <div className="grid md:grid-cols-2 gap-5 mb-8">
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                Phone Number<span className="text-red-500 ml-0.5">*</span>
+                Phone Number<RequiredMark />
               </label>
               <div className={`flex rounded-lg border overflow-hidden transition-all ${
-                phoneError
-                  ? "border-red-400"
+                errors.phoneNumber
+                  ? "border-red-400 dark:border-red-500"
                   : "border-gray-200 dark:border-gray-700 focus-within:ring-2 focus-within:ring-teal-500 focus-within:border-transparent"
               }`}>
                 {/* Country code dropdown */}
@@ -399,21 +486,20 @@ export default function IntegrationInterestForm() {
                 {/* Number input */}
                 <input
                   type="tel"
-                  required
                   value={formData.phoneNumber}
-                  onChange={(e) => {
-                    // digits only
-                    const val = e.target.value.replace(/\D/g, "");
-                    handleInputChange("phoneNumber", val);
-                    validatePhone(val);
-                  }}
+                  onChange={(e) => handlePhoneChange(e.target.value)}
+                  onBlur={() => handleBlur("phoneNumber")}
                   placeholder="7911 123456"
-                  className="flex-1 px-4 py-3 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
+                  className={`flex-1 px-4 py-3 focus:outline-none ${
+                    errors.phoneNumber
+                      ? "bg-red-50 dark:bg-gray-900 text-gray-900 dark:text-white"
+                      : "bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                  }`}
                 />
               </div>
-              {phoneError ? (
-                <p className="mt-1.5 text-xs text-red-500">{phoneError}</p>
-              ) : formData.phoneNumber && !phoneError ? (
+              {errors.phoneNumber ? (
+                <FieldError message={errors.phoneNumber} />
+              ) : formData.phoneNumber && !errors.phoneNumber ? (
                 <p className="mt-1.5 text-xs text-teal-600 dark:text-teal-400">
                   Full number: {formData.countryCode} {formData.phoneNumber}
                 </p>
@@ -429,12 +515,14 @@ export default function IntegrationInterestForm() {
                 <span className="text-gray-400 font-normal">(if any)</span>
               </label>
               <input
-                type="url"
+                type="text"
                 value={formData.businessWebsite}
                 onChange={(e) => handleInputChange("businessWebsite", e.target.value)}
-                placeholder="Enter Business Website"
-                className="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                onBlur={() => handleBlur("businessWebsite")}
+                placeholder="https://example.com"
+                className={errors.businessWebsite ? inputError : inputNormal}
               />
+              <FieldError message={errors.businessWebsite} />
             </div>
           </div>
 
@@ -467,14 +555,17 @@ export default function IntegrationInterestForm() {
           <div className="grid md:grid-cols-2 gap-5 mb-8">
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                Operating Regions<span className="text-red-500 ml-0.5">*</span>
+                Operating Regions<RequiredMark />
               </label>
               <div className="relative">
                 <select
-                  required
                   value={formData.operatingRegions}
                   onChange={(e) => handleInputChange("operatingRegions", e.target.value)}
-                  className="w-full px-4 py-3 pr-10 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                  onBlur={() => handleBlur("operatingRegions")}
+                  className={`${errors.operatingRegions
+                    ? "w-full px-4 py-3 pr-10 rounded-lg border bg-red-50 dark:bg-gray-900 border-red-400 dark:border-red-500 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-400 transition-all appearance-none cursor-pointer"
+                    : "w-full px-4 py-3 pr-10 rounded-lg border bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                  }`}
                 >
                   <option value="" disabled>Select Operating Regions</option>
                   {operatingRegionOptions.map((region) => (
@@ -483,16 +574,17 @@ export default function IntegrationInterestForm() {
                 </select>
                 <ChevronDown className="w-4 h-4 text-gray-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
+              <FieldError message={errors.operatingRegions} />
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                Typical Traveler Volume per Month<span className="text-red-500 ml-0.5">*</span>
+                Typical Traveler Volume per Month<RequiredMark />
               </label>
               <div className="relative">
                 <select
-                  required
                   value={formData.travelerVolume}
                   onChange={(e) => handleInputChange("travelerVolume", e.target.value)}
+                  onBlur={() => handleBlur("travelerVolume")}
                   className="w-full px-4 py-3 pr-10 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all appearance-none cursor-pointer"
                 >
                   {travelerVolumeOptions.map((volume) => (
@@ -538,6 +630,7 @@ export default function IntegrationInterestForm() {
               rows={5}
               value={formData.businessObjective}
               onChange={(e) => handleInputChange("businessObjective", e.target.value)}
+              onBlur={() => handleBlur("businessObjective")}
               placeholder="describe what you're aiming to achieve with eSIM integration..."
               className="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all resize-none"
             />
@@ -545,18 +638,27 @@ export default function IntegrationInterestForm() {
 
           {/* Consent checkbox */}
           <div className="mb-7">
-            <label className="flex items-start gap-3 cursor-pointer">
+            <div className="flex items-start gap-3">
               <input
                 type="checkbox"
-                required
+                id="agreed"
                 checked={formData.agreed}
-                onChange={(e) => handleInputChange("agreed", e.target.checked)}
+                onChange={(e) => {
+                  handleInputChange("agreed", e.target.checked);
+                  if (touched.agreed) {
+                    const updated = { ...formData, agreed: e.target.checked };
+                    const newErrors = validateForm(updated);
+                    setErrors((prev) => ({ ...prev, agreed: newErrors.agreed }));
+                  }
+                }}
+                onBlur={() => handleBlur("agreed")}
                 className="w-4 h-4 mt-0.5 rounded border-gray-300 dark:border-gray-600 text-teal-600 focus:ring-2 focus:ring-teal-500 cursor-pointer accent-teal-600"
               />
-              <span className="text-sm text-gray-600 dark:text-gray-300">
-                I agree to be contacted by Zoiko Orbit regarding integration opportunities.
-              </span>
-            </label>
+              <label htmlFor="agreed" className="text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
+                I agree to be contacted by Zoiko Orbit regarding integration opportunities.<RequiredMark />
+              </label>
+            </div>
+            <FieldError message={errors.agreed} />
           </div>
 
           {/* Submit button */}
