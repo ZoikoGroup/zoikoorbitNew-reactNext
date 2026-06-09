@@ -627,7 +627,7 @@ export default function IntegrationInterestForm() {
           {/* Business Objective / Note */}
           <div className="mb-6">
             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-              Business Objective / Note
+              Business Objective / Note<RequiredMark />
             </label>
             <textarea
               rows={5}
@@ -635,8 +635,13 @@ export default function IntegrationInterestForm() {
               onChange={(e) => handleInputChange("businessObjective", e.target.value)}
               onBlur={() => handleBlur("businessObjective")}
               placeholder="describe what you're aiming to achieve with eSIM integration..."
-              className="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all resize-none"
+              className={`w-full px-4 py-3 rounded-lg border text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:border-transparent transition-all resize-none ${
+                errors.businessObjective
+                  ? "bg-red-50 dark:bg-gray-900 border-red-400 dark:border-red-500 focus:ring-red-400"
+                  : "bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:ring-teal-500"
+              }`}
             />
+            <FieldError message={errors.businessObjective} />
           </div>
 
           {/* Consent checkbox */}
