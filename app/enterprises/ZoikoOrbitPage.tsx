@@ -19,7 +19,7 @@ interface FormData {
   agreed: boolean;
 }
 
-type FormErrors = Partial<Record<keyof FormData, string>>;
+type FormErrors = Partial<Record<"fullName" | "jobTitle" | "companyName" | "businessEmail" | "countryCode" | "phoneNumber" | "businessWebsite" | "operatingRegions" | "travelerVolume" | "businessObjective" | "agreed", string>>;
 type TouchedFields = Partial<Record<keyof FormData, boolean>>;
 
 interface Toast {
@@ -273,7 +273,7 @@ export default function IntegrationInterestForm() {
         if (data && typeof data === "object") {
           const backendErrors: FormErrors = {};
           for (const [field, messages] of Object.entries(data)) {
-            const key = field as keyof FormData;
+            const key = field as keyof typeof backendErrors;
             backendErrors[key] = Array.isArray(messages)
               ? (messages as string[]).join(" ")
               : String(messages);
