@@ -179,14 +179,16 @@ export default function IntegrationInterestForm() {
 
     if (touched[field]) {
       const newErrors = validateForm(updated);
-      setErrors((prev) => ({ ...prev, [field]: newErrors[field] }));
+      const errorKey = field as keyof FormErrors;
+      setErrors((prev) => ({ ...prev, [errorKey]: newErrors[errorKey] }));
     }
   };
 
   const handleBlur = (field: keyof FormData) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
     const newErrors = validateForm(formData);
-    setErrors((prev) => ({ ...prev, [field]: newErrors[field] }));
+    const errorKey = field as keyof FormErrors;
+    setErrors((prev) => ({ ...prev, [errorKey]: newErrors[errorKey] }));
   };
 
   // Phone number: digits-only enforced, validated live
