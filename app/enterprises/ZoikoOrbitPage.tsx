@@ -1,701 +1,680 @@
 "use client";
-
-import { useState } from "react";
-import { ChevronDown, CheckCircle2, AlertCircle, X } from "lucide-react";
-
-interface FormData {
-  fullName: string;
-  jobTitle: string;
-  companyName: string;
-  businessEmail: string;
-  countryCode: string;
-  phoneNumber: string;
-  businessWebsite: string;
-  integrationInterests: string[];
-  operatingRegions: string;
-  travelerVolume: string;
-  distributionChannels: string[];
-  businessObjective: string;
-  agreed: boolean;
-}
-
-type FormErrors = Partial<Record<"fullName" | "jobTitle" | "companyName" | "businessEmail" | "countryCode" | "phoneNumber" | "businessWebsite" | "operatingRegions" | "travelerVolume" | "businessObjective" | "agreed", string>>;
-type TouchedFields = Partial<Record<keyof FormData, boolean>>;
-
-interface Toast {
-  type: "success" | "error" | "warning";
-  title: string;
-  message: string;
-}
+import Image from "next/image";
+import React, { useState } from "react";
+import { ChevronDown } from "lucide-react";
 
 const countryCodes = [
-  { code: "+1", flag: "🇺🇸", label: "US" },
-  { code: "+44", flag: "🇬🇧", label: "UK" },
-  { code: "+91", flag: "🇮🇳", label: "IN" },
-  { code: "+61", flag: "🇦🇺", label: "AU" },
-  { code: "+49", flag: "🇩🇪", label: "DE" },
-  { code: "+33", flag: "🇫🇷", label: "FR" },
+  { code: "+1",   flag: "🇺🇸", label: "US" },
+  { code: "+44",  flag: "🇬🇧", label: "UK" },
+  { code: "+91",  flag: "🇮🇳", label: "IN" },
+  { code: "+61",  flag: "🇦🇺", label: "AU" },
+  { code: "+49",  flag: "🇩🇪", label: "DE" },
+  { code: "+33",  flag: "🇫🇷", label: "FR" },
   { code: "+971", flag: "🇦🇪", label: "AE" },
-  { code: "+65", flag: "🇸🇬", label: "SG" },
-  { code: "+81", flag: "🇯🇵", label: "JP" },
-  { code: "+86", flag: "🇨🇳", label: "CN" },
-  { code: "+55", flag: "🇧🇷", label: "BR" },
-  { code: "+27", flag: "🇿🇦", label: "ZA" },
+  { code: "+65",  flag: "🇸🇬", label: "SG" },
+  { code: "+81",  flag: "🇯🇵", label: "JP" },
+  { code: "+86",  flag: "🇨🇳", label: "CN" },
+  { code: "+55",  flag: "🇧🇷", label: "BR" },
+  { code: "+27",  flag: "🇿🇦", label: "ZA" },
   { code: "+234", flag: "🇳🇬", label: "NG" },
   { code: "+254", flag: "🇰🇪", label: "KE" },
-  { code: "+92", flag: "🇵🇰", label: "PK" },
+  { code: "+92",  flag: "🇵🇰", label: "PK" },
   { code: "+880", flag: "🇧🇩", label: "BD" },
-  { code: "+7", flag: "🇷🇺", label: "RU" },
-  { code: "+82", flag: "🇰🇷", label: "KR" },
-  { code: "+39", flag: "🇮🇹", label: "IT" },
-  { code: "+34", flag: "🇪🇸", label: "ES" },
+  { code: "+7",   flag: "🇷🇺", label: "RU" },
+  { code: "+82",  flag: "🇰🇷", label: "KR" },
+  { code: "+39",  flag: "🇮🇹", label: "IT" },
+  { code: "+34",  flag: "🇪🇸", label: "ES" },
 ];
 
-const emptyForm: FormData = {
-  fullName: "",
-  jobTitle: "",
-  companyName: "",
-  businessEmail: "",
-  countryCode: "+44",
-  phoneNumber: "",
-  businessWebsite: "",
-  integrationInterests: [],
-  operatingRegions: "",
-  travelerVolume: "1K-5K",
-  distributionChannels: [],
-  businessObjective: "",
-  agreed: false,
-};
+const ZoikoOrbitPage = () => {
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-// ── VALIDATION ────────────────────────────────────────────────────────────────
-function validateForm(data: FormData): FormErrors {
-  const errors: FormErrors = {};
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    business_email: "",
+    company_name: "",
+    country_code: "+44",
+    phone: "",
+    country: "",
+    inquiry_type: "",
+    message: "",
+    consent: false,
+  });
 
-  if (!data.fullName.trim())
-    errors.fullName = "Full name is required.";
+  const [phoneError, setPhoneError] = useState("");
+  const [showMore, setShowMore] = useState(false);
+  const [showMore2, setShowMore2] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  if (!data.jobTitle.trim())
-    errors.jobTitle = "Job title is required.";
-
-  if (!data.companyName.trim())
-    errors.companyName = "Company / insurer name is required.";
-
-  if (!data.businessEmail.trim()) {
-    errors.businessEmail = "Business email is required.";
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.businessEmail.trim())) {
-    errors.businessEmail = "Enter a valid email address.";
-  }
-
-  if (!data.phoneNumber.trim()) {
-    errors.phoneNumber = "Phone number is required.";
-  } else if (!/^\d{6,14}$/.test(data.phoneNumber.replace(/\s+/g, ""))) {
-    errors.phoneNumber = "Enter a valid number without country code (e.g. 7911123456).";
-  }
-
-  if (data.businessWebsite.trim()) {
-    try {
-      const url = data.businessWebsite.trim();
-      new URL(url.startsWith("http") ? url : `https://${url}`);
-    } catch {
-      errors.businessWebsite = "Enter a valid URL (e.g. https://example.com).";
-    }
-  }
-
-  if (!data.operatingRegions)
-    errors.operatingRegions = "Please select an operating region.";
-
-  if (!data.businessObjective.trim())
-    errors.businessObjective = "Business objective / note is required.";
-
-  if (!data.agreed)
-    errors.agreed = "You must agree to be contacted before submitting.";
-
-  return errors;
-}
-
-// ── HELPERS ───────────────────────────────────────────────────────────────────
-function FieldError({ message }: { message?: string }) {
-  if (!message) return null;
-  return <p className="mt-1.5 text-xs text-red-500">{message}</p>;
-}
-
-function RequiredMark() {
-  return <span className="text-red-500 ml-0.5">*</span>;
-}
-
-const inputBase =
-  "w-full px-4 py-3 rounded-lg border text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none transition-all";
-
-const inputNormal =
-  inputBase +
-  " bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-teal-500 focus:border-transparent";
-
-const inputError =
-  inputBase +
-  " bg-red-50 dark:bg-gray-900 border-red-400 dark:border-red-500 focus:ring-2 focus:ring-red-400 focus:border-transparent";
-
-export default function IntegrationInterestForm() {
-  const [formData, setFormData] = useState<FormData>(emptyForm);
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [touched, setTouched] = useState<TouchedFields>({});
-  const [toast, setToast] = useState<Toast | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const showToast = (toastData: Toast) => {
-    setToast(toastData);
-    setTimeout(() => setToast(null), 5000);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
+    }));
   };
 
-  const integrationInterestOptions = [
-    "Embed eSIM with digital travel policies",
-    "One-click activation integration",
-    "Dashboard for activations & performance",
-    "Embedded REST APIs + Webhooks",
-    "White-label activation journeys",
-    "Tiered billing & usage tracking",
-    "Partnership strategy call request",
-  ];
-
-  const distributionChannelOptions = [
-    "Mobile App",
-    "Website",
-    "Agent Network",
-    "Travel Agency Partnerships",
-  ];
-
-  const operatingRegionOptions = [
-    "Europe",
-    "Asia Pacific",
-    "Middle East & Africa",
-    "Americas",
-  ];
-
-  const travelerVolumeOptions = ["1K-5K", "5K-20K", "20K+"];
-
-  // ── HANDLE TEXT / SELECT / CHECKBOX INPUTS ────────────────────────────────
-  const handleInputChange = (field: keyof FormData, value: string | boolean) => {
-    const updated = { ...formData, [field]: value } as FormData;
-    setFormData(updated);
-
-    if (touched[field]) {
-      const newErrors = validateForm(updated);
-      const errorKey = field as keyof FormErrors;
-      setErrors((prev) => ({ ...prev, [errorKey]: newErrors[errorKey] }));
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, "");
+    setFormData((prev) => ({ ...prev, phone: digits }));
+    if (!digits) {
+      setPhoneError("");
+    } else if (!/^\d{6,14}$/.test(digits)) {
+      setPhoneError("Enter a valid number without country code (e.g. 7911123456).");
+    } else {
+      setPhoneError("");
     }
   };
 
-  const handleBlur = (field: keyof FormData) => {
-    setTouched((prev) => ({ ...prev, [field]: true }));
-    const newErrors = validateForm(formData);
-    const errorKey = field as keyof FormErrors;
-    setErrors((prev) => ({ ...prev, [errorKey]: newErrors[errorKey] }));
-  };
-
-  // Phone number: digits-only enforced, validated live
-  const handlePhoneChange = (value: string) => {
-    const digits = value.replace(/\D/g, "");
-    const updated = { ...formData, phoneNumber: digits };
-    setFormData(updated);
-    if (touched.phoneNumber) {
-      const newErrors = validateForm(updated);
-      setErrors((prev) => ({ ...prev, phoneNumber: newErrors.phoneNumber }));
-    }
-  };
-
-  const handleCheckboxToggle = (
-    field: "integrationInterests" | "distributionChannels",
-    value: string
-  ) => {
-    const current = formData[field];
-    const updated = current.includes(value)
-      ? current.filter((item) => item !== value)
-      : [...current, value];
-    setFormData((prev) => ({ ...prev, [field]: updated }));
-  };
-
-  // ── HANDLE SUBMIT ─────────────────────────────────────────────────────────
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Touch all fields and run full validation
-    const allTouched = Object.keys(emptyForm).reduce(
-      (acc, k) => ({ ...acc, [k]: true }),
-      {} as TouchedFields
-    );
-    setTouched(allTouched);
+    setSuccessMessage("");
+    setErrorMessage("");
 
-    const validationErrors = validateForm(formData);
-    setErrors(validationErrors);
-
-    if (Object.keys(validationErrors).length > 0) {
-      showToast({
-        type: "warning",
-        title: "Fix Errors",
-        message: "Please fix the highlighted errors before submitting.",
-      });
+    if (!formData.consent) {
+      setErrorMessage("Please agree to be contacted before submitting.");
       return;
     }
 
-    setIsSubmitting(true);
-    const integration_interest_url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/integration-interest/`;
+    if (
+      !formData.first_name.trim() ||
+      !formData.last_name.trim() ||
+      !formData.business_email.trim() ||
+      !formData.company_name.trim() ||
+      !formData.country.trim() ||
+      !formData.inquiry_type.trim() ||
+      !formData.message.trim()
+    ) {
+      setErrorMessage("Please fill in all required fields.");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.business_email)) {
+      setErrorMessage("Please enter a valid business email address.");
+      return;
+    }
+
+    if (formData.phone && phoneError) {
+      setErrorMessage("Please enter a valid phone number.");
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      const response = await fetch(integration_interest_url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          full_name: formData.fullName,
-          job_title: formData.jobTitle,
-          company_name: formData.companyName,
-          business_email: formData.businessEmail,
-          phone_number: `${formData.countryCode}${formData.phoneNumber}`,
-          business_website: formData.businessWebsite.trim() || null,
-          integration_interests: formData.integrationInterests,
-          operating_regions: formData.operatingRegions,
-          traveler_volume: formData.travelerVolume,
-          distribution_channels: formData.distributionChannels,
-          business_objective: formData.businessObjective,
-          agreed: formData.agreed,
-        }),
-      });
+      const payload = {
+        ...formData,
+        phone: formData.phone.trim()
+          ? `${formData.country_code}${formData.phone}`
+          : null,
+        country_code: undefined,
+      };
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/enterprise-inquiry/`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
 
       const data = await response.json();
 
       if (response.ok) {
-        showToast({
-          type: "success",
-          title: "Request Submitted Successfully!",
-          message: "Thank you for your interest. Our team will reach out to you within 24 hours.",
+        setSuccessMessage("Form submitted successfully! Our specialists will respond within 24 hours.");
+        setFormData({
+          first_name: "",
+          last_name: "",
+          business_email: "",
+          company_name: "",
+          country_code: "+44",
+          phone: "",
+          country: "",
+          inquiry_type: "",
+          message: "",
+          consent: false,
         });
-        setFormData(emptyForm);
-        setErrors({});
-        setTouched({});
+        setPhoneError("");
       } else {
-        console.error(data);
-        // Map backend field errors into inline errors if available
-        if (data && typeof data === "object") {
-          const backendErrors: FormErrors = {};
-          for (const [field, messages] of Object.entries(data)) {
-            const key = field as keyof typeof backendErrors;
-            backendErrors[key] = Array.isArray(messages)
-              ? (messages as string[]).join(" ")
-              : String(messages);
-          }
-          setErrors(backendErrors);
+        if (typeof data === "object" && data !== null) {
+          const firstError = Object.values(data)[0];
+          setErrorMessage(
+            Array.isArray(firstError) ? String(firstError[0]) : String(firstError)
+          );
+        } else {
+          setErrorMessage("Something went wrong. Please try again.");
         }
-        showToast({
-          type: "error",
-          title: "Submission Failed",
-          message: "We couldn't process your request. Please verify your details and try again.",
-        });
       }
     } catch (error) {
-      console.error(error);
-      showToast({
-        type: "error",
-        title: "Connection Error",
-        message: "Unable to reach our servers. Please check your connection and try again.",
-      });
-    } finally {
-      setIsSubmitting(false);
+      console.log(error);
+      setErrorMessage("Server error. Please check your connection and try again.");
     }
-  };
 
-  const getToastStyles = (type: Toast["type"]) => {
-    switch (type) {
-      case "success":
-        return {
-          bg: "bg-emerald-50 dark:bg-emerald-950/40",
-          border: "border-emerald-200 dark:border-emerald-800",
-          iconBg: "bg-emerald-500",
-          icon: <CheckCircle2 className="w-5 h-5 text-white" />,
-          titleColor: "text-emerald-900 dark:text-emerald-100",
-          messageColor: "text-emerald-700 dark:text-emerald-300",
-        };
-      case "error":
-        return {
-          bg: "bg-red-50 dark:bg-red-950/40",
-          border: "border-red-200 dark:border-red-800",
-          iconBg: "bg-red-500",
-          icon: <AlertCircle className="w-5 h-5 text-white" />,
-          titleColor: "text-red-900 dark:text-red-100",
-          messageColor: "text-red-700 dark:text-red-300",
-        };
-      case "warning":
-        return {
-          bg: "bg-amber-50 dark:bg-amber-950/40",
-          border: "border-amber-200 dark:border-amber-800",
-          iconBg: "bg-amber-500",
-          icon: <AlertCircle className="w-5 h-5 text-white" />,
-          titleColor: "text-amber-900 dark:text-amber-100",
-          messageColor: "text-amber-700 dark:text-amber-300",
-        };
-    }
+    setLoading(false);
   };
 
   return (
-    <main className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300 min-h-screen">
-      {/* Toast Notification */}
-      {toast && (
-        <div className="fixed top-6 right-6 z-50 animate-slide-in-right">
-          <div
-            className={`flex items-start gap-3 max-w-md p-4 rounded-xl border ${getToastStyles(toast.type).bg} ${getToastStyles(toast.type).border} shadow-2xl backdrop-blur-sm`}
-            role="alert"
-          >
-            <div
-              className={`flex-shrink-0 w-9 h-9 rounded-lg ${getToastStyles(toast.type).iconBg} flex items-center justify-center shadow-md`}
-            >
-              {getToastStyles(toast.type).icon}
+    <div className="font-sans text-gray-800 bg-white dark:bg-gray-900 dark:text-white">
+
+      {/* HERO SECTION */}
+      <section
+        className="relative min-h-[420px] flex items-center"
+        style={{ background: "linear-gradient(90deg, #0a2540 60%, #1a4a7a 100%)" }}
+      >
+        <div className="absolute inset-0 overflow-hidden">
+          <img
+            src="/image/Rectangle 4 (7).png"
+            alt="Travel background"
+            className="hidden md:block w-full h-full object-cover object-center opacity-90"
+          />
+          <img
+            src="/image/Rectangle893(2).jpg"
+            alt="Travel background"
+            className="block md:hidden w-full h-full object-cover object-center opacity-90"
+          />
+        </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-extrabold text-white dark:text-white leading-tight mb-4">
+              Empower Your Teams<br />with Global Connectivity
+            </h1>
+            <p className="text-white dark:text-white text-lg mb-8 max-w-md">
+              Enterprise eSIM solutions for corporate travel, remote teams, and global device deployments
+            </p>
+            <a href="/plans">
+              <button className="bg-[#0B7285] text-white hover:bg-[#0B7285] text-gray-900 font-bold px-8 md:px-10 py-2.5 md:py-3 rounded-lg text-base transition-all shadow-lg">
+                Get Your eSIM
+              </button>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* WHY LEADING ENTERPRISES */}
+      <section className="py-16 bg-white dark:bg-gray-900">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            Why leading enterprises standardize on Zoiko Orbit™
+          </h2>
+          <p className="text-gray-500 dark:text-white mb-12">Unlock new revenue and delight travelers with ready-to-activate global data.</p>
+
+          <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-8 md:p-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:divide-x md:divide-gray-200 dark:md:divide-gray-700">
+              {[
+                {
+                  icon: "/image/Group 1597883246.png",
+                  title: "Predictable Costs",
+                  desc: "Consolidated global data spend. Pooled plans, volume pricing, cost center tagging.",
+                },
+                {
+                  icon: "/image/Group 1597883256.png",
+                  title: "Tier-1 Security & Compliance",
+                  desc: "GDPR, SOC 2, PCI — enterprise data handling standards baked in.",
+                },
+                {
+                  icon: "/image/Group 1597883257.png",
+                  title: "Easy Central Admin",
+                  desc: "Provision, reassign, and report on usage across teams in one dashboard.",
+                },
+              ].map((item, i) => (
+                <div key={i} className="flex flex-col items-start text-left px-2 md:px-6">
+                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-teal-600/10 dark:bg-gray-900">
+                    <Image src={item.icon} alt={item.title} width={80} height={80} className="object-contain" />
+                  </div>
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">{item.title}</h3>
+                  <p className="text-gray-500 dark:text-white text-sm">{item.desc}</p>
+                </div>
+              ))}
             </div>
-            <div className="flex-1 min-w-0 pt-0.5">
-              <h4 className={`font-semibold text-sm ${getToastStyles(toast.type).titleColor} mb-0.5`}>
-                {toast.title}
-              </h4>
-              <p className={`text-xs ${getToastStyles(toast.type).messageColor} leading-relaxed`}>
-                {toast.message}
+          </div>
+        </div>
+      </section>
+
+      {/* CONNECTIVITY BUILT AROUND */}
+      <section className="py-4 dark:bg-gray-900 dark:text-white bg-white dark:bg-gray-900">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            Connectivity Built Around<br />How Your Organization Operates
+          </h2>
+          <p className="text-gray-500 dark:text-white mb-12">Scale from a few travelers to global workforce coverage — mix &amp; match programs</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                img: "/image/Rectangle 908 (2).png",
+                title: "Corporate Travel Plans",
+                desc: "Pre-trip provisioning tied to bookings; regional or global data pools; expense integration.",
+              },
+              {
+                img: "/image/Rectangle 909 (2).png",
+                title: "Remote & Hybrid Team Data",
+                desc: "Always-on data for distributed teams; monthly top-ups; device-agnostic eSIM delivery.",
+              },
+              {
+                img: "/image/Rectangle 910 (2).png",
+                title: "Bespoke Global Programs",
+                desc: "Custom coverage bundles for project deployments, maritime/energy crews, events, or high-security missions.",
+              },
+            ].map((item, i) => (
+              <div key={i} className="text-left">
+                <div className="relative w-full h-44 rounded-2xl overflow-hidden mb-4">
+                  <Image src={item.img} alt={item.title} fill className="object-cover" />
+                </div>
+                <h3 className="font-bold text-gray-900 dark:text-white mb-2">{item.title}</h3>
+                <p className="text-gray-500 dark:text-white text-sm mb-3">{item.desc}</p>
+                <a href="/plans" className="text-teal-700 dark:text-teal-400 text-sm font-semibold hover:underline">Learn More →</a>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* PLUG INTO SYSTEMS */}
+      <section className="py-16 bg-[#eaf3fb] dark:bg-gray-900">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 text-center">
+            Plug Zoiko Orbit into the Systems You Already Use
+          </h2>
+          <p className="text-gray-500 dark:text-white text-center mb-12">APIs, SSO, reporting feeds, and travel platform connectors accelerate rollout</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+            <div className="relative w-full h-72 rounded-2xl overflow-hidden shadow">
+              <Image src="/image/multiracial-business-team-smiling-together-in-a-co-2025-02-22-04-24-03-utc 1.png" alt="Team integration" fill className="object-cover" />
+            </div>
+            <div>
+              <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-4">Key Capability</h3>
+              <ul className="space-y-3 text-gray-600 dark:text-white text-sm">
+                {[
+                  "REST + Webhook Events (activation, usage, thresholds)",
+                  "SSO (SAML / OAuth) for admin portal",
+                  "Multi-currency billing + cost center mapping",
+                  "Usage exports (CSV / API) to ERP & expense tools",
+                  "Policy-based auto provisioning via booking data",
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <span className="text-teal-700 dark:text-teal-400 mt-0.5">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PROVEN AT GLOBAL SCALE */}
+      <section className="py-16 bg-white dark:bg-gray-900">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 text-center">Proven at Global Scale.</h2>
+          <p className="text-gray-500 dark:text-white text-center mb-12">Enterprises reduce roaming spend and improve traveler experience with Zoiko Orbit™</p>
+
+          {/* Case Study 1 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center mb-16">
+            <div className="relative w-full max-w-[520px] h-80">
+              <Image src="/image/image-11.png" alt="Legal case study" fill className="object-contain" />
+            </div>
+            <div>
+              <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">
+                Empowering Global Legal Excellence: How a Multinational Law Firm Reduced Roaming Costs by 62% While Enhancing Executive Mobility
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-white font-semibold mb-2">Client Overview</p>
+              <p className="text-sm text-gray-600 dark:text-white mb-3">
+                One of the world's leading cross-border law firms, with over 3,400 partners and senior counsel operating in 20+ countries across North America, Europe, the Middle East, and Asia.
+              </p>
+              <p className="text-xs text-gray-500 dark:text-white mb-4">
+                Industry: Legal Services, International Arbitration, Corporate Law<br />
+                Use Case Focus: Executive Airport Mobility & Real-Time Connectivity
+              </p>
+              {showMore && (
+                <div className="mt-5">
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">The Challenge</h3>
+                  <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+                    <li>Excessive roaming charges across international transit hubs.</li>
+                    <li>Inconsistent network access during executive travel.</li>
+                    <li>Unreliable video-call quality during urgent legal proceedings.</li>
+                    <li>Fragmented IT controls for global mobile device usage.</li>
+                  </ul>
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">The Zoiko Orbit™ Solution</h3>
+                  <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+                    <li>Enterprise-grade eSIM deployment across 20+ countries.</li>
+                    <li>Smart regional network routing for low latency connectivity.</li>
+                    <li>Centralized policy-driven authentication and billing controls.</li>
+                    <li>SLA-backed roaming plans with geo-fencing support.</li>
+                    <li>Automated onboarding with GDPR & ISO 27001 compliance.</li>
+                  </ul>
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">The Results</h3>
+                  <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+                    <li>62% reduction in roaming costs.</li>
+                    <li>89% improvement in HD video-call stability.</li>
+                    <li>Zero downtime during urgent legal transactions.</li>
+                    <li>Full deployment completed in less than 2 weeks.</li>
+                  </ul>
+                  <p className="italic text-sm text-gray-600 dark:text-white mb-5">
+                    "Zoiko Orbit redefined how our partners connect globally — seamless, compliant, and always-on."
+                  </p>
+                </div>
+              )}
+              <button onClick={() => setShowMore(!showMore)} className="text-teal-700 dark:text-teal-400 text-sm font-semibold hover:underline">
+                {showMore ? "Read less →" : "Read More →"}
+              </button>
+            </div>
+          </div>
+
+          {/* Case Study 2 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+            <div>
+              <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">
+                Luxury Reimagined: How a Global Hospitality Group Delivered Always-On VIP Connectivity Across 17 Countries
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-white font-semibold mb-2">Client Overview</p>
+              <p className="text-sm text-gray-600 dark:text-white mb-3">
+                A premier hospitality chain operating over 200 properties across the Caribbean, LATAM, Europe, and Southeast Asia, catering to elite travellers and high-net-worth clientele.
+              </p>
+              <p className="text-xs text-gray-500 dark:text-white mb-4">
+                Industry: Travel, Leisure & Hospitality<br />
+                Use Case Focus: Guest eSIM Integration & Staff Mobility
+              </p>
+              {showMore2 && (
+                <>
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">The Challenge</h3>
+                  <p className="text-sm text-gray-600 dark:text-white mb-3">Guests arriving from international markets faced:</p>
+                  <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+                    <li>Costly and complex SIM-swapping</li>
+                    <li>Unreliable roaming with inconsistent speeds</li>
+                    <li>Delayed concierge communications and check-in friction</li>
+                  </ul>
+                  <p className="text-sm text-gray-600 dark:text-white mb-3">Internal staff relied on local SIM cards that led to:</p>
+                  <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+                    <li>Frequent disconnections</li>
+                    <li>Missed VIP engagements</li>
+                    <li>Lack of visibility into staff communication uptime</li>
+                  </ul>
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">The Zoiko Orbit™ Solution</h3>
+                  <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+                    <li>Instant eSIM activation via QR codes at check-in</li>
+                    <li>Dedicated VIP mobile plans with high-speed roaming in 190+ countries</li>
+                    <li>Regional management dashboards to track usage per property</li>
+                    <li>eSIM-based roaming for guest services teams with failover protection</li>
+                    <li>Multi-language setup interface for global guest accessibility</li>
+                  </ul>
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-3">The Results</h3>
+                  <ul className="list-disc pl-5 text-sm text-gray-600 dark:text-white space-y-2 mb-5">
+                    <li>41% boost in VIP satisfaction metrics across SEA and the Caribbean</li>
+                    <li>96% reduction in guest mobile complaints</li>
+                    <li>30% increase in staff response time efficiency</li>
+                    <li>Introduced new $29.99 revenue stream per eSIM at flagship properties</li>
+                    <li>100% guest services staff fully migrated in under 4 weeks</li>
+                  </ul>
+                  <p className="italic text-sm text-gray-600 dark:text-white mb-5">
+                    "Zoiko Orbit gave our brand a connectivity edge — guests feel the luxury from the moment they land, and our teams never miss a beat."
+                  </p>
+                </>
+              )}
+              <button onClick={() => setShowMore2(!showMore2)} className="text-teal-700 dark:text-teal-400 text-sm font-semibold hover:underline">
+                {showMore2 ? "Read Less →" : "Read More →"}
+              </button>
+            </div>
+            <div className="relative w-full max-w-[520px] h-80">
+              <Image src="/image/image-12.png" alt="Hospitality case study" fill className="object-contain" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CONTACT / CONSULTATION SECTION */}
+      <section className="relative bg-[#f5f5f5] dark:bg-gray-900 overflow-hidden pb-24">
+
+        <div className="relative w-full h-[320px] md:h-[420px]">
+          <Image src="/image/Rectangle 19.png" alt="travel" fill className="object-cover" priority />
+          <div className="absolute inset-0 bg-black/10"></div>
+        </div>
+
+        <div className="absolute left-0 bottom-10 w-[320px] md:w-[500px] opacity-20 pointer-events-none">
+          <Image src="/image/map.png" alt="world map" width={500} height={500} className="object-contain" />
+        </div>
+
+        {/* Form Card */}
+        <div className="relative max-w-7xl mx-auto px-6">
+          <div className="bg-white dark:bg-gray-900 max-w-4xl ml-auto -mt-32 rounded-2xl shadow-xl p-8 md:p-10 border border-gray-100 dark:border-gray-700">
+
+            <div className="mb-8">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight">
+                Let's Transform Your <br />
+                Global Travel & Mobility Program.
+              </h2>
+              <p className="text-gray-600 dark:text-white mt-3">
+                Share a few details and our specialists will respond within 24 hours
               </p>
             </div>
-            <button
-              onClick={() => setToast(null)}
-              className={`flex-shrink-0 ${getToastStyles(toast.type).titleColor} hover:opacity-70 transition-opacity`}
-              aria-label="Close notification"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
 
-      <style jsx>{`
-        @keyframes slide-in-right {
-          from { opacity: 0; transform: translateX(100%); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-        .animate-slide-in-right {
-          animation: slide-in-right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-      `}</style>
+            <form className="space-y-5" onSubmit={handleSubmit}>
 
-      <section className="max-w-5xl mx-auto px-6 lg:px-12 py-4 md:py-8">
-        <div className="text-center mb-12 max-w-3xl mx-auto">
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4 leading-tight">
-            Let&apos;s Co-Create the Future of{" "}
-            <span className="text-teal-600 dark:text-teal-400">Connected Travel Insurance</span>
-          </h1>
-          <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-            Apply today to Discover how Zoiko Orbit can boost policy engagement, reduce claims
-            friction, and deliver real-time traveler protection.
-          </p>
-          <div className="w-20 h-1 bg-teal-500 mx-auto rounded-full mt-5" />
-        </div>
-
-        <form
-          onSubmit={handleSubmit}
-          noValidate
-          className="bg-white dark:bg-gray-800/50 rounded-2xl md:p-10 p-6 md:shadow-sm md:border md:border-gray-100 md:dark:border-gray-700"
-        >
-          {/* Required field legend */}
-          <p className="text-xs text-gray-400 dark:text-gray-500 mb-6">
-            Fields marked <span className="text-red-500">*</span> are required.
-          </p>
-
-          {/* Row 1: Full Name + Job Title */}
-          <div className="grid md:grid-cols-2 gap-5 mb-5">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                Full Name<RequiredMark />
-              </label>
-              <input
-                type="text"
-                value={formData.fullName}
-                onChange={(e) => handleInputChange("fullName", e.target.value)}
-                onBlur={() => handleBlur("fullName")}
-                placeholder="Enter Full Name"
-                className={errors.fullName ? inputError : inputNormal}
-              />
-              <FieldError message={errors.fullName} />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                Job Title<RequiredMark />
-              </label>
-              <input
-                type="text"
-                value={formData.jobTitle}
-                onChange={(e) => handleInputChange("jobTitle", e.target.value)}
-                onBlur={() => handleBlur("jobTitle")}
-                placeholder="Enter Your Job Title"
-                className={errors.jobTitle ? inputError : inputNormal}
-              />
-              <FieldError message={errors.jobTitle} />
-            </div>
-          </div>
-
-          {/* Row 2: Company + Business Email */}
-          <div className="grid md:grid-cols-2 gap-5 mb-5">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                Company / Insurer Name<RequiredMark />
-              </label>
-              <input
-                type="text"
-                value={formData.companyName}
-                onChange={(e) => handleInputChange("companyName", e.target.value)}
-                onBlur={() => handleBlur("companyName")}
-                placeholder="Enter Company / Insurer Name"
-                className={errors.companyName ? inputError : inputNormal}
-              />
-              <FieldError message={errors.companyName} />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                Business Email Address<RequiredMark />
-              </label>
-              <input
-                type="email"
-                value={formData.businessEmail}
-                onChange={(e) => handleInputChange("businessEmail", e.target.value)}
-                onBlur={() => handleBlur("businessEmail")}
-                placeholder="Enter Business Email Address"
-                className={errors.businessEmail ? inputError : inputNormal}
-              />
-              <FieldError message={errors.businessEmail} />
-            </div>
-          </div>
-
-          {/* Row 3: Phone + Website */}
-          <div className="grid md:grid-cols-2 gap-5 mb-8">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                Phone Number<RequiredMark />
-              </label>
-              <div className={`flex rounded-lg border overflow-hidden transition-all ${
-                errors.phoneNumber
-                  ? "border-red-400 dark:border-red-500"
-                  : "border-gray-200 dark:border-gray-700 focus-within:ring-2 focus-within:ring-teal-500 focus-within:border-transparent"
-              }`}>
-                {/* Country code dropdown */}
-                <div className="relative flex-shrink-0">
-                  <select
-                    value={formData.countryCode}
-                    onChange={(e) => handleInputChange("countryCode", e.target.value)}
-                    className="h-full pl-3 pr-7 py-3 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white text-sm border-r border-gray-200 dark:border-gray-700 focus:outline-none appearance-none cursor-pointer"
-                  >
-                    {countryCodes.map((c) => (
-                      <option key={c.code} value={c.code}>
-                        {c.label} {c.code}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-gray-400 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              {/* Row 1 */}
+              <div className="grid md:grid-cols-2 gap-5">
+                <div>
+                  <label className="text-sm text-gray-700 dark:text-white mb-2 block">
+                    First Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="first_name"
+                    value={formData.first_name}
+                    onChange={handleChange}
+                    placeholder="Enter First Name"
+                    className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
+                  />
                 </div>
-                {/* Number input */}
+                <div>
+                  <label className="text-sm text-gray-700 dark:text-white mb-2 block">
+                    Last Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="last_name"
+                    value={formData.last_name}
+                    onChange={handleChange}
+                    placeholder="Enter Last Name"
+                    className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
+                  />
+                </div>
+              </div>
+
+              {/* Row 2 */}
+              <div className="grid md:grid-cols-2 gap-5">
+                <div>
+                  <label className="text-sm text-gray-700 dark:text-white mb-2 block">
+                    Business Email <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    name="business_email"
+                    value={formData.business_email}
+                    onChange={handleChange}
+                    placeholder="Enter Work Email"
+                    className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-gray-700 dark:text-white mb-2 block">
+                    Company / Organization <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="company_name"
+                    value={formData.company_name}
+                    onChange={handleChange}
+                    placeholder="Enter Company/Organization Name"
+                    className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
+                  />
+                </div>
+              </div>
+
+              {/* Row 3 — Phone + Country */}
+              <div className="grid md:grid-cols-2 gap-5">
+                <div>
+                  <label className="text-sm text-gray-700 dark:text-white mb-2 block">
+                    Phone (If Needed)
+                  </label>
+                  <div className={`flex rounded-md border overflow-hidden transition ${
+                    phoneError
+                      ? "border-red-500"
+                      : "border-gray-200 dark:border-gray-700 focus-within:ring-2 focus-within:ring-teal-600"
+                  }`}>
+                    {/* Country code dropdown */}
+                    <div className="relative flex-shrink-0">
+                      <select
+                        name="country_code"
+                        value={formData.country_code}
+                        onChange={handleChange}
+                        className="h-12 pl-2 pr-6 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white text-xs border-r border-gray-300 dark:border-gray-600 focus:outline-none appearance-none cursor-pointer"
+                      >
+                        {countryCodes.map((c) => (
+                          <option key={c.code} value={c.code}>
+                            {c.label} {c.code}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="w-3 h-3 text-gray-500 absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
+                    {/* Number input */}
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handlePhoneChange}
+                      placeholder="7911 123456"
+                      className="h-12 flex-1 px-3 text-sm bg-gray-100 dark:bg-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
+                    />
+                  </div>
+                  {phoneError ? (
+                    <p className="mt-1 text-xs text-red-500">{phoneError}</p>
+                  ) : formData.phone && !phoneError ? (
+                    <p className="mt-1 text-xs text-teal-600 dark:text-teal-400">
+                      Full number: {formData.country_code} {formData.phone}
+                    </p>
+                  ) : (
+                    <p className="mt-1 text-xs text-gray-400">
+                      Select country code, then enter number without it.
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="text-sm text-gray-700 dark:text-white mb-2 block">
+                    Country / Region <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="country"
+                    value={formData.country}
+                    onChange={handleChange}
+                    className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600 text-gray-600 dark:[&>option]:bg-gray-800 dark:[&>option]:text-white"
+                  >
+                    <option value="">Select Option</option>
+                    <option value="India">India</option>
+                    <option value="United States">United States</option>
+                    <option value="United Kingdom">United Kingdom</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Inquiry */}
+              <div>
+                <label className="text-sm text-gray-700 dark:text-white mb-2 block">
+                  Inquiry Type <span className="text-red-500">*</span>
+                </label>
                 <input
-                  type="tel"
-                  value={formData.phoneNumber}
-                  onChange={(e) => handlePhoneChange(e.target.value)}
-                  onBlur={() => handleBlur("phoneNumber")}
-                  placeholder="7911 123456"
-                  className={`flex-1 px-4 py-3 focus:outline-none ${
-                    errors.phoneNumber
-                      ? "bg-red-50 dark:bg-gray-900 text-gray-900 dark:text-white"
-                      : "bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
-                  }`}
+                  type="text"
+                  name="inquiry_type"
+                  value={formData.inquiry_type}
+                  onChange={handleChange}
+                  placeholder="Corporate Travel, Remote Workforce, Bulk Deployment, Security Review, Integration Other"
+                  className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-teal-600"
                 />
               </div>
-              {errors.phoneNumber ? (
-                <FieldError message={errors.phoneNumber} />
-              ) : formData.phoneNumber && !errors.phoneNumber ? (
-                <p className="mt-1.5 text-xs text-teal-600 dark:text-teal-400">
-                  Full number: {formData.countryCode} {formData.phoneNumber}
-                </p>
-              ) : (
-                <p className="mt-1.5 text-xs text-gray-400">
-                  Select country code, then enter number without it.
-                </p>
+
+              {/* Message */}
+              <div>
+                <label className="text-sm text-gray-700 dark:text-white mb-2 block">
+                  Message <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  rows={5}
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  placeholder="Enter your message..."
+                  className="w-full bg-gray-100 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-md px-4 py-4 outline-none resize-none focus:ring-2 focus:ring-teal-600"
+                />
+              </div>
+
+              {/* Checkbox */}
+              <div className="flex items-start gap-3">
+                <input
+                  id="consent"
+                  type="checkbox"
+                  name="consent"
+                  checked={formData.consent}
+                  onChange={handleChange}
+                  className="mt-1 accent-teal-700"
+                />
+                <label htmlFor="consent" className="text-sm text-gray-600 dark:text-white">
+                  I agree to be contacted by Zoiko Orbit regarding partner opportunities.
+                </label>
+              </div>
+
+              {successMessage && (
+                <p className="text-sm font-medium text-green-600 dark:text-green-400">{successMessage}</p>
               )}
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                Business Website{" "}
-                <span className="text-gray-400 font-normal">(if any)</span>
-              </label>
-              <input
-                type="text"
-                value={formData.businessWebsite}
-                onChange={(e) => handleInputChange("businessWebsite", e.target.value)}
-                onBlur={() => handleBlur("businessWebsite")}
-                placeholder="https://example.com"
-                className={errors.businessWebsite ? inputError : inputNormal}
-              />
-              <FieldError message={errors.businessWebsite} />
-            </div>
-          </div>
+              {errorMessage && (
+                <p className="text-sm font-medium text-red-600 dark:text-red-400">{errorMessage}</p>
+              )}
 
-          {/* Integration Interests */}
-          <div className="mb-8">
-            <h3 className="text-center text-base font-semibold text-gray-900 dark:text-white mb-5">
-              Integration Interests{" "}
-              <span className="font-normal text-gray-500 dark:text-gray-400">
-                (Select all that apply):
-              </span>
-            </h3>
-            <div className="grid md:grid-cols-2 gap-x-8 gap-y-3 max-w-3xl mx-auto">
-              {integrationInterestOptions.map((option) => (
-                <label key={option} className="flex items-center gap-3 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    checked={formData.integrationInterests.includes(option)}
-                    onChange={() => handleCheckboxToggle("integrationInterests", option)}
-                    className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-teal-600 focus:ring-2 focus:ring-teal-500 cursor-pointer accent-teal-600"
-                  />
-                  <span className="text-sm text-gray-700 dark:text-gray-200 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
-                    {option}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="bg-teal-700 hover:bg-teal-800 transition text-white font-medium px-8 py-3 rounded-lg shadow-md disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {loading ? "Submitting..." : "Submit & Schedule a Consultation"}
+              </button>
 
-          {/* Row 4: Operating Regions + Traveler Volume */}
-          <div className="grid md:grid-cols-2 gap-5 mb-8">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                Operating Regions<RequiredMark />
-              </label>
-              <div className="relative">
-                <select
-                  value={formData.operatingRegions}
-                  onChange={(e) => handleInputChange("operatingRegions", e.target.value)}
-                  onBlur={() => handleBlur("operatingRegions")}
-                  className={`${errors.operatingRegions
-                    ? "w-full px-4 py-3 pr-10 rounded-lg border bg-red-50 dark:bg-gray-900 border-red-400 dark:border-red-500 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-400 transition-all appearance-none cursor-pointer"
-                    : "w-full px-4 py-3 pr-10 rounded-lg border bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all appearance-none cursor-pointer"
-                  }`}
-                >
-                  <option value="" disabled>Select Operating Regions</option>
-                  {operatingRegionOptions.map((region) => (
-                    <option key={region} value={region}>{region}</option>
-                  ))}
-                </select>
-                <ChevronDown className="w-4 h-4 text-gray-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
-              <FieldError message={errors.operatingRegions} />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                Typical Traveler Volume per Month<RequiredMark />
-              </label>
-              <div className="relative">
-                <select
-                  value={formData.travelerVolume}
-                  onChange={(e) => handleInputChange("travelerVolume", e.target.value)}
-                  onBlur={() => handleBlur("travelerVolume")}
-                  className="w-full px-4 py-3 pr-10 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all appearance-none cursor-pointer"
-                >
-                  {travelerVolumeOptions.map((volume) => (
-                    <option key={volume} value={volume}>{volume}</option>
-                  ))}
-                </select>
-                <ChevronDown className="w-4 h-4 text-gray-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
-            </div>
+            </form>
           </div>
-
-          {/* Current Distribution Channels */}
-          <div className="mb-8">
-            <h3 className="text-center text-base font-semibold text-gray-900 dark:text-white mb-5">
-              Current Distribution Channels{" "}
-              <span className="font-normal text-gray-500 dark:text-gray-400">
-                (Select all that apply):
-              </span>
-            </h3>
-            <div className="flex flex-wrap justify-center gap-x-8 gap-y-3">
-              {distributionChannelOptions.map((channel) => (
-                <label key={channel} className="flex items-center gap-2.5 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    checked={formData.distributionChannels.includes(channel)}
-                    onChange={() => handleCheckboxToggle("distributionChannels", channel)}
-                    className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-teal-600 focus:ring-2 focus:ring-teal-500 cursor-pointer accent-teal-600"
-                  />
-                  <span className="text-sm text-gray-700 dark:text-gray-200 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
-                    {channel}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* Business Objective / Note */}
-          <div className="mb-6">
-            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-              Business Objective / Note<RequiredMark />
-            </label>
-            <textarea
-              rows={5}
-              value={formData.businessObjective}
-              onChange={(e) => handleInputChange("businessObjective", e.target.value)}
-              onBlur={() => handleBlur("businessObjective")}
-              placeholder="describe what you're aiming to achieve with eSIM integration..."
-              className={`w-full px-4 py-3 rounded-lg border text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:border-transparent transition-all resize-none ${
-                errors.businessObjective
-                  ? "bg-red-50 dark:bg-gray-900 border-red-400 dark:border-red-500 focus:ring-red-400"
-                  : "bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:ring-teal-500"
-              }`}
-            />
-            <FieldError message={errors.businessObjective} />
-          </div>
-
-          {/* Consent checkbox */}
-          <div className="mb-7">
-            <div className="flex items-start gap-3">
-              <input
-                type="checkbox"
-                id="agreed"
-                checked={formData.agreed}
-                onChange={(e) => {
-                  handleInputChange("agreed", e.target.checked);
-                  if (touched.agreed) {
-                    const updated = { ...formData, agreed: e.target.checked };
-                    const newErrors = validateForm(updated);
-                    setErrors((prev) => ({ ...prev, agreed: newErrors.agreed }));
-                  }
-                }}
-                onBlur={() => handleBlur("agreed")}
-                className="w-4 h-4 mt-0.5 rounded border-gray-300 dark:border-gray-600 text-teal-600 focus:ring-2 focus:ring-teal-500 cursor-pointer accent-teal-600"
-              />
-              <label htmlFor="agreed" className="text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
-                I agree to be contacted by Zoiko Orbit regarding integration opportunities.<RequiredMark />
-              </label>
-            </div>
-            <FieldError message={errors.agreed} />
-          </div>
-
-          {/* Submit button */}
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="group inline-flex items-center gap-2 px-7 py-3.5 bg-teal-500 hover:bg-teal-400 disabled:bg-teal-400 disabled:cursor-not-allowed text-white font-semibold rounded-lg shadow-lg shadow-teal-500/30 hover:shadow-teal-400/40 transition-all duration-300 hover:-translate-y-0.5 disabled:hover:translate-y-0"
-          >
-            {isSubmitting ? (
-              <>
-                <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                </svg>
-                Submitting...
-              </>
-            ) : (
-              <>
-                Request Integration Demo
-                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-              </>
-            )}
-          </button>
-        </form>
+        </div>
       </section>
-    </main>
+
+      {/* FAQ SECTION */}
+      <section className="py-16 bg-white dark:bg-gray-900">
+        <div className="max-w-3xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-10 text-center">Got Questions? We've Got Answers</h2>
+          <div className="divide-y divide-gray-200 dark:divide-gray-700 border-t border-b border-gray-200 dark:border-gray-700">
+            {[
+              { id: 1, question: "Can we centrally manage data for all our travelers?", answer: "Contact our enterprise team to learn more about this feature and how Zoiko Orbit can be tailored to your organization's needs." },
+              { id: 2, question: "Do you integrate with our travel booking tool?", answer: "Yes, Zoiko Orbit is designed to seamlessly integrate with popular travel booking platforms." },
+              { id: 3, question: "How secure is traveler data?", answer: "We prioritize the security and privacy of traveler data, implementing industry-standard measures to protect it." },
+              { id: 4, question: "How quickly can we roll out globally?", answer: "Our global infrastructure allows for rapid deployment across multiple markets." },
+            ].map((q, i) => (
+              <div key={i}>
+                <button
+                  className="w-full flex justify-between items-center py-5 text-left text-gray-800 dark:text-white font-medium hover:text-blue-700 transition-colors"
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                >
+                  <span>{q.question}</span>
+                  <span className="text-xl text-gray-400 dark:text-white">{openFaq === i ? "−" : "›"}</span>
+                </button>
+                {openFaq === i && (
+                  <div className="pb-5 text-gray-500 dark:text-white text-sm">{q.answer}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+    </div>
   );
-}
+};
+
+export default ZoikoOrbitPage;
