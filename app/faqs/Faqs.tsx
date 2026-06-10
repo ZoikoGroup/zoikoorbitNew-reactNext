@@ -395,10 +395,11 @@ export default function Faqs() {
                       Watch quick-start video tutorials and browse our
                       self-service library.
                     </p>
-
+                     <a href="https://www.youtube.com/@ZoikoOrbit">
                     <button className="text-[#007b95] dark:text-[#22D3EE] font-semibold hover:underline">
                       Watch Now →
                     </button>
+                    </a>
                   </div>
                 </div>
               </div>
