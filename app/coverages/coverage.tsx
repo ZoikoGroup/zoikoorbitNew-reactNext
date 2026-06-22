@@ -266,17 +266,9 @@ function CoverageChecker() {
   const [status, setStatus] = useState<CheckStatus>("idle");
   const [result, setResult] = useState<CoverageResult | null>(null);
 
-  const isValidZip = /^\d{5}(-\d{4})?$/.test(zipCode.trim());
-
   async function handleCheck() {
     const trimmed = zipCode.trim();
     if (!trimmed) return;
-
-    if (!isValidZip) {
-      setStatus("error");
-      setResult({ success: false, available: false, message: "Please enter a valid 5-digit ZIP code." });
-      return;
-    }
 
     setStatus("loading");
     setResult(null);
@@ -326,17 +318,14 @@ function CoverageChecker() {
         <div className="mx-auto mt-6 flex max-w-2xl flex-col gap-3 sm:flex-row sm:gap-0">
           <input
             type="text"
-            inputMode="numeric"
-            pattern="\d{5}"
-            maxLength={10}
             value={zipCode}
             onChange={(e) => {
               setZipCode(e.target.value);
               if (status !== "idle") { setStatus("idle"); setResult(null); }
             }}
             onKeyDown={handleKeyDown}
-            placeholder="Enter ZIP code (e.g. 98104)"
-            aria-label="ZIP code"
+            placeholder="Enter your ZIP or postal code"
+            aria-label="ZIP or postal code"
             className="w-full rounded-lg border border-teal-500/60 bg-white dark:bg-gray-900 px-4 py-3 text-sm text-gray-700 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 sm:rounded-r-none"
           />
           <button

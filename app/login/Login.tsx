@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense, type SyntheticEvent } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
+import SocialButtons from "./SocialButtons";
 
 function LoginPageContent() {
   const [showPassword, setShowPassword] = useState(false);
@@ -172,6 +173,12 @@ if (!emailRegex.test(email)) {
                 Sign Up
               </Link>
             </p>
+
+            {/* Social login (Google + Facebook) */}
+            <SocialButtons
+              redirectTo={redirect || callbackUrl}
+              onError={setError}
+            />
 
           </form>
         </div>
