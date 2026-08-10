@@ -101,7 +101,14 @@ export default function PressMedia() {
         <p>
           Media Contact:
           <br />
-          press@zoikoorbit.com
+
+         <a href="mailto:press@zoikoorbit.com" 
+   class="text-purple-600 hover:text-purple-800 underline">
+   press@zoikoorbit.com
+</a>
+
+
+          
         </p>
 
         <p>

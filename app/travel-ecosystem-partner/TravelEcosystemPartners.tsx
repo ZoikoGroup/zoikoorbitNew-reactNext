@@ -3,6 +3,13 @@ import Image from "next/image";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
+const RAW_API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://127.0.0.1:8000";
+const API_BASE = RAW_API_BASE.replace(/\/+$/, "");
+const INQUIRY_URL = `${API_BASE}/api/travel-ecosystem-partner/travel-ecosystem-inquiry/`;
+
 const countries = [
   "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Argentina",
   "Armenia", "Australia", "Austria", "Bahrain", "Bangladesh", "Belgium",
@@ -173,35 +180,46 @@ export default function TravelEcosystemPartners() {
         website: formData.website.trim() ? formData.website : null,
       };
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-ecosystem-partner/travel-ecosystem-inquiry/`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
+      const response = await fetch(INQUIRY_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        // Absolute URL to Django + no redirect-following surprises: if a
+        // redirect ever happens, surface it instead of silently 404-ing.
+        redirect: "follow",
+      });
 
-      const data = await response.json();
+      // Read text first so a non-JSON page (404/redirect HTML) doesn't crash JSON.parse.
+      const raw = await response.text();
+      let data: unknown = null;
+      try {
+        data = raw ? JSON.parse(raw) : null;
+      } catch {
+        data = null;
+      }
 
       if (response.ok) {
         toast.success("Form submitted successfully!");
         setFormData(emptyForm);
         setErrors({});
         setTouched({});
-      } else {
+      } else if (data && typeof data === "object") {
         console.error("Backend Errors:", data);
-        if (data && typeof data === "object") {
-          const backendErrors: FormErrors = {};
-          for (const [field, messages] of Object.entries(data)) {
-            const key = field as keyof FormData;
-            backendErrors[key] = Array.isArray(messages)
-              ? (messages as string[]).join(" ")
-              : String(messages);
-          }
-          setErrors(backendErrors);
+        const backendErrors: FormErrors = {};
+        for (const [field, messages] of Object.entries(data as Record<string, unknown>)) {
+          const key = field as keyof FormData;
+          backendErrors[key] = Array.isArray(messages)
+            ? (messages as string[]).join(" ")
+            : String(messages);
         }
+        setErrors(backendErrors);
         toast.error("Validation failed. Please check your inputs.");
+      } else {
+        // Non-JSON response — usually a wrong URL (404) or a redirect landing page.
+        console.error(`HTTP ${response.status} from ${INQUIRY_URL}`, raw.slice(0, 200));
+        toast.error(
+          `Submission failed (HTTP ${response.status}). Check the API URL / trailing slash.`
+        );
       }
     } catch (error) {
       console.error(error);

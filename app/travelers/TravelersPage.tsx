@@ -2,9 +2,6 @@
 
 import { useState } from "react";
 
-// ─────────────────────────────────────────────────────────
-// Data
-// ─────────────────────────────────────────────────────────
 
 const steps = [
   {
@@ -429,20 +426,7 @@ export default function TravelersPage() {
                 Don&apos;t take our word for it. Trust our customers
               </p>
             </div>
-            <div className="flex gap-2">
-              <button
-                onClick={prevTestimonial}
-                className="px-5 py-2 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors text-sm font-medium"
-              >
-                &lsaquo; Previous
-              </button>
-              <button
-                onClick={nextTestimonial}
-                className="px-5 py-2 bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors text-sm font-medium"
-              >
-                Next &rsaquo;
-              </button>
-            </div>
+        
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
