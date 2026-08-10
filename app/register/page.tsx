@@ -145,7 +145,7 @@ export default function RegisterPage() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-3"
               >
-                {showPassword ? "🙈" : "👁"}
+                {showPassword ? "" : "👁"}
               </button>
               {fieldErrors.password && <p className="text-red-500 text-xs">{fieldErrors.password}</p>}
             </div>
@@ -157,7 +157,12 @@ export default function RegisterPage() {
                 checked={agreedToTerms}
                 onChange={(e) => setAgreedToTerms(e.target.checked)}
               />
-              <span className="text-sm">Agree to terms</span>
+              <span className="text-sm"> I Agree to  <a href="/terms-of-service" class="text-blue-500">terms and service</a>
+
+
+             
+              </span>
+             
             </div>
 
             {/* Messages */}

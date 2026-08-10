@@ -2,6 +2,17 @@
 import Image from "next/image";
 import React, { useState } from "react";
 
+// ── API BASE ─────────────────────────────────────────────────────────────────
+// Resolve backend origin from either env-var name, fall back to local Django,
+// strip trailing slash. Absolute url straight to Django keeps the trailing slash
+// intact (an empty base goes same-origin through Next, which 308-strips it → 404).
+const RAW_API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://127.0.0.1:8000";
+const API_BASE = RAW_API_BASE.replace(/\/+$/, "");
+const INQUIRY_URL = `${API_BASE}/api/travel-partners/`;
+
 // ── TYPES ─────────────────────────────────────────────────────────────────────
 type FormData = {
   full_name: string;
@@ -44,6 +55,15 @@ function validateForm(data: FormData): FormErrors {
   if (!data.role)
     errors.role = "Please select a role.";
 
+  if (data.website.trim()) {
+    try {
+      const url = data.website.trim();
+      new URL(url.startsWith("http") ? url : `https://${url}`);
+    } catch {
+      errors.website = "Enter a valid URL (e.g. https://example.com).";
+    }
+  }
+
   if (!data.message.trim())
     errors.message = "Message is required.";
 
@@ -82,6 +102,7 @@ const TravelPartnersPage = () => {
   const [touched, setTouched] = useState<Partial<Record<keyof FormData, boolean>>>({});
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -92,6 +113,10 @@ const TravelPartnersPage = () => {
 
     const updated = { ...formData, [key]: newValue } as FormData;
     setFormData(updated);
+
+    // clear the top-level banners as soon as the user starts fixing things
+    if (errorMessage) setErrorMessage("");
+    if (successMessage) setSuccessMessage("");
 
     if (touched[key]) {
       const newErrors = validateForm(updated);
@@ -110,6 +135,8 @@ const TravelPartnersPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSuccessMessage("");
+    setErrorMessage("");
 
     const allTouched = Object.keys(emptyForm).reduce(
       (acc, k) => ({ ...acc, [k]: true }),
@@ -120,10 +147,12 @@ const TravelPartnersPage = () => {
     const validationErrors = validateForm(formData);
     setErrors(validationErrors);
 
-    if (Object.keys(validationErrors).length > 0) return;
+    if (Object.keys(validationErrors).length > 0) {
+      setErrorMessage("Please fix the highlighted fields before submitting.");
+      return;
+    }
 
     setLoading(true);
-    setSuccessMessage("");
 
     try {
       const payload = {
@@ -131,36 +160,48 @@ const TravelPartnersPage = () => {
         website: formData.website.trim() ? formData.website : null,
       };
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-partners/`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
+      const response = await fetch(INQUIRY_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-      const data = await response.json();
+      // Read text first so a non-JSON page (404 / redirect HTML) doesn't crash JSON.parse.
+      const raw = await response.text();
+      let data: unknown = null;
+      try {
+        data = raw ? JSON.parse(raw) : null;
+      } catch {
+        data = null;
+      }
 
       if (response.ok) {
         setSuccessMessage("Form submitted successfully! Our team will reach out within 48 hours.");
         setFormData(emptyForm);
         setErrors({});
         setTouched({});
-      } else {
-        if (data && typeof data === "object") {
-          const backendErrors: FormErrors = {};
-          for (const [field, messages] of Object.entries(data)) {
-            const key = field as keyof FormData;
-            backendErrors[key] = Array.isArray(messages)
-              ? (messages as string[]).join(" ")
-              : String(messages);
-          }
-          setErrors(backendErrors);
+      } else if (data && typeof data === "object") {
+        // Map backend field errors onto the form and show a summary banner.
+        const backendErrors: FormErrors = {};
+        for (const [field, messages] of Object.entries(data as Record<string, unknown>)) {
+          const key = field as keyof FormData;
+          backendErrors[key] = Array.isArray(messages)
+            ? (messages as string[]).join(" ")
+            : String(messages);
         }
+        setErrors(backendErrors);
+        setErrorMessage("Please check the highlighted fields and try again.");
+      } else {
+        // Non-JSON response — wrong URL (404) or a redirect landing page.
+        console.error(`HTTP ${response.status} from ${INQUIRY_URL}`, raw.slice(0, 200));
+        setErrorMessage(
+          `Submission failed (HTTP ${response.status}). Please try again or contact support.`
+        );
       }
     } catch (error) {
-      console.log(error);
+      // Network-level failure (server down, DNS, CORS).
+      console.error(error);
+      setErrorMessage("Server error. Please check your connection and try again later.");
     }
 
     setLoading(false);
@@ -264,12 +305,6 @@ const TravelPartnersPage = () => {
       </section>
 
       {/* ===== START YOUR PARTNERSHIP JOURNEY ===== */}
-      {/* 
-        FIX: Removed fixed h-[600px] on the image div and changed the form wrapper
-        from "absolute inset-0 flex items-center" to "absolute inset-0 flex items-start
-        justify-end py-10" so the section height is now driven by the form card itself
-        via min-h, preventing the submit button from being cut off under the footer.
-      */}
       <section className="relative bg-[#f5f5f5] dark:bg-gray-900 overflow-hidden">
 
         <div className="absolute inset-0">
@@ -378,8 +413,9 @@ const TravelPartnersPage = () => {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   placeholder="Enter Website URL"
-                  className={inputNormal}
+                  className={errors.website ? inputError : inputNormal}
                 />
+                <FieldError message={errors.website} />
               </div>
 
               {/* Message */}
@@ -422,9 +458,16 @@ const TravelPartnersPage = () => {
                 <FieldError message={errors.consent} />
               </div>
 
-              {/* Success Message */}
+              {/* Success / Error banners */}
               {successMessage && (
-                <p className="text-sm font-medium text-green-600 dark:text-green-400">{successMessage}</p>
+                <div className="rounded-md border border-green-300 bg-green-50 px-4 py-3 text-sm font-medium text-green-700 dark:border-green-700 dark:bg-green-900/20 dark:text-green-400">
+                  {successMessage}
+                </div>
+              )}
+              {errorMessage && (
+                <div className="rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:border-red-700 dark:bg-red-900/20 dark:text-red-400">
+                  {errorMessage}
+                </div>
               )}
 
               {/* Submit Button */}

@@ -34,7 +34,7 @@ const ecosystemPartners = [
       "Staff training & marketing toolkits",
     ],
     cta: "Become an Authorized Dealer",
-     link: "#"
+     link: "/retailers-dealers"
   },
   {
     title: "Travel Agencies & OTAs",

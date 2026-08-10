@@ -3,6 +3,14 @@
 import { useState } from "react";
 import { ChevronDown, CheckCircle2, AlertCircle, X } from "lucide-react";
 
+
+const RAW_API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://127.0.0.1:8000";
+const API_BASE = RAW_API_BASE.replace(/\/+$/, "");
+const INTEGRATION_INTEREST_URL = `${API_BASE}/api/integration-interest/`;
+
 interface FormData {
   fullName: string;
   jobTitle: string;
@@ -242,9 +250,8 @@ export default function IntegrationInterestForm() {
     }
 
     setIsSubmitting(true);
-    const integration_interest_url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/integration-interest/`;
     try {
-      const response = await fetch(integration_interest_url, {
+      const response = await fetch(INTEGRATION_INTEREST_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -263,7 +270,14 @@ export default function IntegrationInterestForm() {
         }),
       });
 
-      const data = await response.json();
+      // Read text first so a non-JSON page (404 / redirect HTML) doesn't crash JSON.parse.
+      const raw = await response.text();
+      let data: unknown = null;
+      try {
+        data = raw ? JSON.parse(raw) : null;
+      } catch {
+        data = null;
+      }
 
       if (response.ok) {
         showToast({
@@ -274,35 +288,41 @@ export default function IntegrationInterestForm() {
         setFormData(emptyForm);
         setErrors({});
         setTouched({});
-      } else {
+      } else if (data && typeof data === "object") {
         console.error(data);
-        if (data && typeof data === "object") {
-          const backendErrors: FormErrors = {};
-          const fieldMap: Record<string, keyof FormErrors> = {
-            full_name: "fullName",
-            job_title: "jobTitle",
-            company_name: "companyName",
-            business_email: "businessEmail",
-            phone_number: "phoneNumber",
-            business_website: "businessWebsite",
-            operating_regions: "operatingRegions",
-            business_objective: "businessObjective",
-            agreed: "agreed",
-          };
-          for (const [field, messages] of Object.entries(data)) {
-            const key = fieldMap[field];
-            if (key) {
-              backendErrors[key] = Array.isArray(messages)
-                ? (messages as string[]).join(" ")
-                : String(messages);
-            }
+        const backendErrors: FormErrors = {};
+        const fieldMap: Record<string, keyof FormErrors> = {
+          full_name: "fullName",
+          job_title: "jobTitle",
+          company_name: "companyName",
+          business_email: "businessEmail",
+          phone_number: "phoneNumber",
+          business_website: "businessWebsite",
+          operating_regions: "operatingRegions",
+          business_objective: "businessObjective",
+          agreed: "agreed",
+        };
+        for (const [field, messages] of Object.entries(data as Record<string, unknown>)) {
+          const key = fieldMap[field];
+          if (key) {
+            backendErrors[key] = Array.isArray(messages)
+              ? (messages as string[]).join(" ")
+              : String(messages);
           }
-          setErrors(backendErrors);
         }
+        setErrors(backendErrors);
         showToast({
           type: "error",
           title: "Submission Failed",
           message: "We couldn't process your request. Please verify your details and try again.",
+        });
+      } else {
+        // Non-JSON response — wrong URL (404) or a redirect landing page.
+        console.error(`HTTP ${response.status} from ${INTEGRATION_INTEREST_URL}`, raw.slice(0, 200));
+        showToast({
+          type: "error",
+          title: "Submission Failed",
+          message: `Server returned HTTP ${response.status}. Please try again or contact support.`,
         });
       }
     } catch (error) {

@@ -4,6 +4,18 @@ import Image from 'next/image'
 import { ChevronDown } from 'lucide-react'
 import toast from "react-hot-toast";
 
+// ── API BASE ────────────────────────────────────────────────────────────────
+// Resolve the backend origin from either env-var name, falling back to local
+// Django. Strip trailing slash so joins can't produce "//". Posting an ABSOLUTE
+// url straight to Django keeps the trailing slash intact — an empty base makes
+// the request go same-origin through Next, which 308-strips the slash → 404.
+const RAW_API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://127.0.0.1:8000";
+const API_BASE = RAW_API_BASE.replace(/\/+$/, "");
+const INQUIRY_URL = `${API_BASE}/api/business-enterprise/enterprise-inquiry/`;
+
 const enterpriseFeatures = [
     {
         id: 1,
@@ -235,16 +247,20 @@ export default function BusinessesEnterprises() {
       const { country_code, ...rest } = payload;
       void country_code;
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/business-enterprise/enterprise-inquiry/`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(rest),
-        }
-      );
+      const response = await fetch(INQUIRY_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(rest),
+      });
 
-      const data = await response.json();
+      // Read text first so a non-JSON page (404/redirect HTML) doesn't crash JSON.parse.
+      const raw = await response.text();
+      let data: unknown = null;
+      try {
+        data = raw ? JSON.parse(raw) : null;
+      } catch {
+        data = null;
+      }
 
       if (response.ok) {
         toast.success("Inquiry submitted successfully");
@@ -252,19 +268,21 @@ export default function BusinessesEnterprises() {
         setFormData(emptyForm);
         setErrors({});
         setTouched({});
-      } else {
+      } else if (data && typeof data === "object") {
         console.log("Backend error:", data);
-        if (data && typeof data === "object") {
-          const backendErrors: FormErrors = {};
-          for (const [field, messages] of Object.entries(data)) {
-            const key = field as keyof FormData;
-            backendErrors[key] = Array.isArray(messages)
-              ? (messages as string[]).join(" ")
-              : String(messages);
-          }
-          setErrors(backendErrors);
+        const backendErrors: FormErrors = {};
+        for (const [field, messages] of Object.entries(data as Record<string, unknown>)) {
+          const key = field as keyof FormData;
+          backendErrors[key] = Array.isArray(messages)
+            ? (messages as string[]).join(" ")
+            : String(messages);
         }
+        setErrors(backendErrors);
         toast.error("Something went wrong");
+      } else {
+        // Non-JSON response — usually a wrong URL (404) or a redirect landing page.
+        console.error(`HTTP ${response.status} from ${INQUIRY_URL}`, raw.slice(0, 200));
+        toast.error(`Submission failed (HTTP ${response.status}). Check the API URL / trailing slash.`);
       }
     } catch (error) {
       console.error(error);
