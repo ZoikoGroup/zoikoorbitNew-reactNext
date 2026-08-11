@@ -104,15 +104,21 @@ export default function Footer() {
                 1401 21st Street, Suite R, Sacramento, CA 95811
               </p>
 
-              <p className="flex items-center gap-2">
-                <FiPhone />
-                +1 800-484-5574
-              </p>
+             <p className="flex items-center gap-2">
+  <FiPhone />
+  <a href="tel:+18004845574" className=" hover:text-blue-800 underline">
+    +1 800-484-5574
+  </a>
+</p>
+
 
               <p className="flex items-center gap-2">
-                <HiOutlineMail />
-                info@zoikoorbit.com
-              </p>
+  <HiOutlineMail />
+  <a href="mailto:info@zoikoorbit.com" className=" hover:text-purple-800 underline">
+    info@zoikoorbit.com
+  </a>
+</p>
+
             </div>
           </div>
 
