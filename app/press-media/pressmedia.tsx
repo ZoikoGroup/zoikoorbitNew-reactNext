@@ -1,0 +1,121 @@
+"use client";
+
+import Image from "next/image";
+import { Check } from "lucide-react";
+
+
+function Bullet({ text }: { text: string }) {
+  return (
+    <div className="flex items-start gap-3">
+      <span className="mt-0 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-green-500">
+        <Check className="h-3 w-3 text-white" strokeWidth={3} />
+      </span>
+    </div>
+  );
+}
+export default function PressMedia() {
+  return (
+    <div className="w-full bg-white">
+      {/* HERO SECTION */}
+      <div className="relative w-full h-[600px] md:h-[420px]">
+        <Image
+          src="/image/Rectangle 41582.png"
+          alt="press"
+          fill
+          className="object-cover"
+        />
+        <Image
+              src="/image/press-mobile.png"
+              alt="press"
+              fill
+              priority
+              className="block md:hidden object-cover object-center"
+            />
+
+        {/* overlay */}
+        <div className="absolute inset-0 bg-linear-to-r from-black/70 to-black/20" />
+
+        {/* text */}
+        <div className="absolute top-10 left-6 md:right-55 md:left-auto md:top-1/2 md:-translate-y-1/2 text-white max-w-md">          
+        <h1 className="text-[42px] md:text-4xl lg:text-5xl font-bold mb-4 leading-tight">
+            Press & Media
+          </h1>
+          <p className="text-base md:text-lg leading-8 text-gray-200 max-w-[320px]">
+            Stay informed with the latest developments from Zoiko Orbit —
+            including product innovations, global rollouts, strategic alliances,
+            sustainability initiatives, and thought leadership from our executive team.
+          </p>
+        </div>
+      </div>
+
+      {/* CONTENT SECTION */}
+      <div className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-10 items-center">
+        {/* Left Image */}
+        <div className="w-full">
+          <Image
+            src="/image/press-mediadesktop.png"
+            alt="news"
+            width={500}
+            height={400}
+            className="rounded-md object-cover w-full"
+          />
+          
+        </div>
+
+        {/* Right Content */}
+        <div>
+          <p className="text-gray-600 text-sm leading-relaxed mb-6">
+            Our dedicated Press & Media Center provides accredited journalists,
+            editors, and analysts with access to official press releases,
+            multimedia assets, leadership profiles, and high-resolution imagery
+            across our global operations.
+          </p>
+
+          <p className="text-gray-600 text-sm mb-4">
+            We welcome media inquiries for:
+          </p>
+
+          <ul className="space-y-3 text-sm text-gray-700">
+            {[
+              "Interviews with executives and technical leads",
+              "Industry commentary on eSIM, travel connectivity, and telecom evolution",
+              "Press briefings and event coverage",
+              "Feature articles and trend analysis",
+            ].map((item, i) => (
+              <li key={i} className="flex items-start gap-3">
+                <span><Bullet key={i} text={item} /></span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* BOTTOM TEXT */}
+      <div className="max-w-6xl mx-auto px-6 pb-16 text-gray-600 text-sm leading-relaxed space-y-6">
+        <p>
+          Our team offers timely responses, factual verification, and on-the-record
+          perspectives to support high-quality reporting and global syndication
+        </p>
+
+        <p>
+          Media Contact:
+          <br />
+
+         <a href="mailto:press@zoikoorbit.com" 
+   className="text-purple-600 hover:text-purple-800 underline">
+   press@zoikoorbit.com
+</a>
+
+
+          
+        </p>
+
+        <p>
+          For brand guidelines, logos, approved photography, and editorial assets,
+          please visit our Brand Resources page.
+        </p>
+      </div>
+    </div>
+  );
+} 
