@@ -103,7 +103,7 @@ export default function PressMedia() {
           <br />
 
          <a href="mailto:press@zoikoorbit.com" 
-   class="text-purple-600 hover:text-purple-800 underline">
+   className="text-purple-600 hover:text-purple-800 underline">
    press@zoikoorbit.com
 </a>
 

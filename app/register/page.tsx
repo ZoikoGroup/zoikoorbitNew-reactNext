@@ -157,7 +157,7 @@ export default function RegisterPage() {
                 checked={agreedToTerms}
                 onChange={(e) => setAgreedToTerms(e.target.checked)}
               />
-              <span className="text-sm"> I Agree to  <a href="/terms-of-service" class="text-blue-500">terms and service</a>
+              <span className="text-sm"> I Agree to  <a href="/terms-of-service" className="text-blue-500">terms and service</a>
 
 
              
