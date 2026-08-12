@@ -268,7 +268,7 @@ export default function PartnerWithUs() {
               commercial engine, and trusted reputation that scales with you.
             </p>
             <a
-              href="#"
+              href="/travel-insurance-providers-form"
               className="inline-flex items-center gap-2 text-sm font-semibold underline underline-offset-2 hover:opacity-80 transition-opacity"
             >
               Let&apos;s connect — and go global together
