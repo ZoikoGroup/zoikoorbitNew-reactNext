@@ -17,22 +17,32 @@ import { useSearchParams } from "next/navigation";
 export default function PlansPage() {
   const searchParams = useSearchParams();
 
-  const selectedCountry =
-    searchParams.get("country");
+  const selectedCountry = searchParams.get("country");
+  const selectedDuration = searchParams.get("duration");
 
-  const selectedDuration =
-    searchParams.get("duration");
-    const [data, setData] = useState<VariationsFile | null>(null);
-    const [error, setError] = useState<string | null>(null);
-    const [page, setPage] = useState(1);
-    const PAGE_SIZE = 6;
-    const [filters, setFilters] = useState<Filters>({
-                                                        region: "europe-uk",
-                                                        dataBucket: null,
-                                                        duration: null,
-                                                    });
-    const [sortKey, setSortKey] = useState<SortKey>("price-asc");
-    const [buyPlan, setBuyPlan] = useState<Plan | null>(null);
+  const [data, setData] = useState<VariationsFile | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 6;
+  const [filters, setFilters] = useState<Filters>(() => ({
+    region: selectedCountry || "europe-uk",
+    dataBucket: null,
+    duration: selectedDuration || null,
+  }));
+  const [sortKey, setSortKey] = useState<SortKey>("price-asc");
+  const [buyPlan, setBuyPlan] = useState<Plan | null>(null);
+
+  // Sync state when URL searchParams change
+  useEffect(() => {
+    if (selectedCountry || selectedDuration) {
+      setFilters((prev) => ({
+        ...prev,
+        region: selectedCountry || prev.region,
+        duration: selectedDuration || prev.duration,
+      }));
+    }
+  }, [selectedCountry, selectedDuration]);
+
   // Load variations data
   useEffect(() => {
     let cancelled = false;
@@ -64,50 +74,42 @@ export default function PlansPage() {
   );
 
   // Compute matching variations + group + sort
-const cards = useMemo(() => {
-  if (!data) return [];
+  const cards = useMemo(() => {
+    if (!data) return [];
 
-const updatedFilters = {
-    ...filters,
-    region: filters.region || selectedCountry,
-    duration: filters.duration || selectedDuration,
-  };
+    // Apply filters
+    let matching = applyFilters(
+      data.variations,
+      filters
+    );
 
-  // Apply filters
-  let matching = applyFilters(
-    data.variations,
-    updatedFilters
-  );
+    // Deduplicate: when multiple variations share the same plan name, data,
+    // duration and price (same plan sold across different country regions),
+    // keep only the first occurrence so each plan appears once in the list.
+    const seen = new Set<string>();
+    matching = matching.filter((v) => {
+      const attrs = v.attributes as Record<string, { slug: string }>;
+      const key = [
+        v.parent_name,
+        attrs?.data_allowance?.slug ?? "",
+        attrs?.duration?.slug ?? "",
+        String(v.price),
+      ].join("|");
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
 
-  // Deduplicate: when multiple variations share the same plan name, data,
-  // duration and price (same plan sold across different country regions),
-  // keep only the first occurrence so each plan appears once in the list.
-  const seen = new Set<string>();
-  matching = matching.filter((v) => {
-    const attrs = v.attributes as Record<string, { slug: string }>;
-    const key = [
-      v.parent_name,
-      attrs?.data_allowance?.slug ?? "",
-      attrs?.duration?.slug ?? "",
-      String(v.price),
-    ].join("|");
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-
-  // Sort plans
-  return sortVariations(
-    matching,
-    sortKey
-  );
-}, [
-  data,
-  filters,
-  sortKey,
-  selectedCountry,
-  selectedDuration,
-]);
+    // Sort plans
+    return sortVariations(
+      matching,
+      sortKey
+    );
+  }, [
+    data,
+    filters,
+    sortKey,
+  ]);
 // Reset to page 1 whenever filters or sort change
 useEffect(() => {
   setPage(1);

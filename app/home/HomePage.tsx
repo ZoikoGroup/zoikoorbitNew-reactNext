@@ -1,10 +1,11 @@
 "use client";
 import Link from "next/link";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import variations from "../../public/data/variations.json";
+import { buildRegionsForData } from "../lib/regions";
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
 const stats = [
@@ -174,7 +175,7 @@ function HeroSection() {
           <a href="/plans"><button className="font-semibold text-xs sm:text-sm px-6 sm:px-8 py-2.5 rounded-full text-white transition-all hover:brightness-110 hover:-translate-y-0.5 bg-[#584edc]/95 shadow-[0_6px_18px_rgba(60,50,200,0.35)] border-none">
             Get Your eSIM
           </button></a>
-         <a href="/partner-with-us"> <button className="font-semibold text-xs sm:text-sm px-6 sm:px-8 py-2.5 rounded-full text-white transition-all hover:bg-white/10 hover:-translate-y-0.5 bg-transparent border border-white/60">
+         <a href="/partner-with-us"> <button className="font-semibold text-xs sm:text-sm px-6 sm:px-8 py-2.5 rounded-full text-white transition-all hover:bg-white/10 hover:-translate-y-0.5 bg-[#584edc]/95 shadow-[0_6px_18px_rgba(60,50,200,0.35)] border-none">
             Partner with Us
           </button></a>
         </div>
@@ -239,160 +240,95 @@ function HeroSection() {
 function TravelPlanChooser() {
   const [destination, setDestination] = useState("");
   const [duration, setDuration] = useState("");
- const router = useRouter();
+  const router = useRouter();
 
-const handleSearch = () => {
-  if (!destination || !duration) {
-    alert("Please enter destination and duration");
-    return;
-  }
+  const regions = useMemo(
+    () => buildRegionsForData(variations.filter_options.countries),
+    []
+  );
 
-  const matchedCountry =
-    variations.filter_options.countries.find(
-      (country) =>
-        country.label
-          .toLowerCase()
-          .includes(destination.toLowerCase())
-    );
+  const handleSearch = () => {
+    if (!destination && !duration) {
+      alert("Please select a destination or duration");
+      return;
+    }
 
-  if (!matchedCountry) {
-    alert("Country not found");
-    return;
-  }
+    const params = new URLSearchParams();
+    if (destination) params.set("country", destination);
+    if (duration) params.set("duration", duration);
 
-  const matchedDuration =
-    variations.filter_options.duration.find(
-      (d) =>
-        d.label.toLowerCase() ===
-        duration.toLowerCase()
-    );
-
-  if (!matchedDuration) {
-    alert("Duration not found");
-    return;
-  }
-const countryToRegionMap: Record<string, string> = {
-  "asia-main": "asia",
-  "premium-asia": "rest-of-asia",
-
-  "africa-main": "africa",
-  "premium-africa": "rest-of-africa",
-
-  "middle-east-cis-main": "middle-east-cis",
-  "premium-middle-east": "rest-of-middle-east",
-
-  "north-america-usa-canada-mexico": "north-america",
-
-  "south-america-main": "south-america",
-  "south-america-rest": "south-america",
-
-  "central-america-caribbean-main": "central-america-caribbean",
-  "central-america-caribbean-premium-rest": "central-america-caribbean",
-
-  "europe-uk": "europe-uk",
-  "rest-of-europe-switzerland-andorra": "rest-of-europe",
-
-  "australia-new-zealand": "australia-new-zealand",
-  "pacific-islands": "pacific-islands",
-};
-const regionSlug =
-  countryToRegionMap[matchedCountry.slug] ??
-  matchedCountry.slug;
-
-router.push(
-  `/plans?country=${regionSlug}&duration=${matchedDuration.slug}`
-);
- 
-};
+    router.push(`/plans?${params.toString()}`);
+  };
 
   return (
-    <section className="bg-gray-50   dark:bg-gray-900 dark:text-white   pt-16 pb-10 px-4 md:px-16">
+    <section className="bg-gray-50 dark:bg-gray-900 dark:text-white pt-16 pb-10 px-4 md:px-16">
       <div className="max-w-5xl mx-auto">
-        <h2 className="text-2xl md:text-3xl font-extrabold  dark:bg-gray-900 dark:text-white  text-gray-900 text-center mb-2">
+        <h2 className="text-2xl md:text-3xl font-extrabold dark:bg-gray-900 dark:text-white text-gray-900 text-center mb-2">
           Choose Your Perfect Travel Plan
         </h2>
         <p className="text-gray-500 text-center text-sm mb-8">
-          Connect all Our SIM and eSIM packages. "Yes" is the only tool for your destination so stay
+          Connect all Our SIM and eSIM packages. &quot;Yes&quot; is the only tool for your destination so stay
           connected worldwide
         </p>
 
         {/* AI Plan Finder card */}
-        <div className="bg-white border  dark:bg-gray-900 dark:text-white  border-gray-200 rounded-2xl shadow-sm p-6">
+        <div className="bg-white border dark:bg-gray-900 dark:text-white border-gray-200 rounded-2xl shadow-sm p-6">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center text-white text-sm font-bold">
               AI
             </div>
             <div>
-              <p className="font-bold  dark:bg-gray-900 dark:text-white  text-gray-800 text-sm">AI Plan Finder</p>
-              <p className="text-gray-400  dark:bg-gray-900 dark:text-white  text-xs">Let AI suggest the perfect plan for your trip.</p>
+              <p className="font-bold dark:bg-gray-900 dark:text-white text-gray-800 text-sm">AI Plan Finder</p>
+              <p className="text-gray-400 dark:bg-gray-900 dark:text-white text-xs">Let AI suggest the perfect plan for your trip.</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
             <div>
-              <label className="block text-xs font-semibold  dark:bg-gray-900 dark:text-white  text-gray-600 mb-1">
+              <label className="block text-xs font-semibold dark:text-gray-300 text-gray-600 mb-1">
                 Where are you traveling?
               </label>
-             {/* <input
-                type="text"
-                placeholder="Enter destination or country"
+              <select
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-              />*/}
-              <select
-  value={destination}
-  onChange={(e) => setDestination(e.target.value)}
-                className=" dark:text-black w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
->
-  <option value="">Select Country</option>
-
-  {variations.filter_options.countries.map((country) => (
-    <option
-      key={country.slug}
-      value={country.label}
-      className="text-black"
-    >
-      {country.label}
-    </option>
-  ))}
-</select>
+                className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+              >
+                <option value="" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
+                  Select Country / Region
+                </option>
+                {regions.map((r) => (
+                  <option key={r.slug} value={r.slug} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
+                    {r.label}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold  dark:bg-gray-900 dark:text-white  text-gray-600 mb-1">
+              <label className="block text-xs font-semibold dark:text-gray-300 text-gray-600 mb-1">
                 How long is Your Trip?
               </label>
-              {/*<input
-                type="text"
-                placeholder="Select Duration"
+              <select
                 value={duration}
-                onChange={(e) => setDuration(e.target.value)}*/}
-                 <select
-  value={duration}
-  onChange={(e) => setDuration(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                onChange={(e) => setDuration(e.target.value)}
+                className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
               >
-                <option value="">Select Duration</option>
-
-  {variations.filter_options.duration.map((d) => (
-    <option
-      key={d.slug}
-      value={d.label}
-      className="text-black"
-    >
-      {d.label}
-    </option>
-  ))}
-</select>
+                <option value="" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
+                  Select Duration
+                </option>
+                {variations.filter_options.duration.map((d) => (
+                  <option key={d.slug} value={d.slug} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
+                    {d.label}
+                  </option>
+                ))}
+              </select>
             </div>
-           {/* <button className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition-all">
-              Find My Perfect Plan
-            </button>*/}
             <button
-  onClick={handleSearch}
-  className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition-all"
->              Find My Perfect Plan
-</button>
+              type="button"
+              onClick={handleSearch}
+              className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition-all"
+            >
+              Find My Perfect Plan
+            </button>
           </div>
         </div>
       </div>
