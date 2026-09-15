@@ -37,7 +37,7 @@ export const REGIONS: Region[] = [
 
 export function regionBySlug(slug: string | null): Region | null {
   if (!slug) return null;
-  return REGIONS.find((r) => r.slug === slug) ?? null;
+  return REGIONS.find((r) => r.slug === slug || r.countrySlugs.includes(slug)) ?? null;
 }
 
 /**
