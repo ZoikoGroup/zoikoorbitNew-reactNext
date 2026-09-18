@@ -46,23 +46,18 @@ export interface BuyPlanModalProps {
  * Step map:
  *
  * NEW SIM flow (2 steps):
- *   choose-sim-type → esim-check (eSIM)
- *                   → [checkout]  (pSIM)
+ *   choose-setup → choose-sim-type → esim-check (eSIM)
+ *                                  → [checkout]  (pSIM)
  *
  * KEEP NUMBER flow (3 steps):
- *   port-form → port-sim-type → esim-check (eSIM)
- *                             → [checkout]  (pSIM)
- *
- * `esim-check` is SHARED. `esimFrom` records which flow entered it so Back,
- * the pSIM fallback, and the checkout payload all resolve correctly.
+ *   choose-setup → port-form → port-sim-type → esim-check (eSIM)
+ *                                             → [checkout]  (pSIM)
  */
 type ModalStep =
   | "choose-sim-type"  // New SIM: pick eSIM or pSIM
   | "esim-check"       // Both flows: IMEI compatibility check
   | "port-form"        // Keep Number: port details
   | "port-sim-type";   // Keep Number: pick eSIM or pSIM
-
-type SetupType = "new-sim" | "keep-number";
 
 interface PortForm {
   fullName: string;
@@ -189,7 +184,7 @@ const SimOptionCard = ({
         <>
           <p className="font-bold text-gray-900 dark:text-white text-sm mb-0.5">eSIM</p>
           <p className="text-gray-500 dark:text-gray-400 text-xs mb-2">Digital SIM built into your phone — no physical card needed</p>
-          <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">Instant activation | No waiting for delivery | Can&apos;t be lost or damaged</p>
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">Instant activation | No waiting for delivery | Can't be lost or damaged</p>
         </>
       ) : (
         <>
@@ -223,10 +218,9 @@ export const BuyPlanModal = ({
   cartKey = "zo_checkout",
 }: BuyPlanModalProps) => {
   const [step, setStep] = useState<ModalStep>("choose-sim-type");
+  const [setupChoice] = useState<"new-sim">("new-sim");
+  // simType is always "esim" | "psim" — never anything else
   const [simChoice, setSimChoice] = useState<"esim" | "psim">("esim");
-
-  // Which flow entered `esim-check` — drives Back, pSIM fallback, and payload shape
-  const [esimFrom, setEsimFrom] = useState<SetupType>("new-sim");
 
   // IMEI / device check (shared by both flows when eSIM is chosen)
   const [imei, setImei] = useState("");
@@ -234,16 +228,13 @@ export const BuyPlanModal = ({
   const [compatResult, setCompatResult] = useState<CompatibilityResult | null>(null);
   const [imeiError, setImeiError] = useState<string | null>(null);
 
-  // Two-tap confirmation for skipping the compatibility check
-  const [confirmSkip, setConfirmSkip] = useState(false);
-
-  // MDN eligibility (Keep Number flow)
+  // MDN eligibility (Keep Number flow, Step 1)
   const [mdn, setMdn] = useState("");
   const [mdnChecking, setMdnChecking] = useState(false);
   const [mdnEligible, setMdnEligible] = useState<boolean | null>(null);
   const [mdnError, setMdnError] = useState<string | null>(null);
 
-  // Port details form (Keep Number flow)
+  // Port details form (Keep Number flow, Step 2)
   const [portForm, setPortForm] = useState<PortForm>(EMPTY_PORT_FORM);
   const [portErrors, setPortErrors] = useState<Partial<PortForm>>({});
 
@@ -258,23 +249,25 @@ export const BuyPlanModal = ({
     return () => window.removeEventListener("keydown", handler);
   }, [onClose]);
 
-  // Reset compat + skip-confirm state when IMEI changes
-  useEffect(() => {
-    setCompatResult(null);
-    setImeiError(null);
-    setConfirmSkip(false);
-  }, [imei]);
-
+  // Reset compat state when IMEI changes
+  useEffect(() => { setCompatResult(null); setImeiError(null); }, [imei]);
   // Reset MDN state when MDN changes
   useEffect(() => { setMdnEligible(null); setMdnError(null); }, [mdn]);
 
-  // ── Step numbering ─────────────────────────────────────────────────────────
-  // New SIM:     choose-sim-type (1/2) → esim-check (2/2)
-  // Keep Number: port-form (2/3) → port-sim-type (3/3) → esim-check (3/3)
+  // ── Step count per flow ────────────────────────────────────────────────────
+  // New SIM:      Step 1 (Setup) → Step 2 (SIM type + IMEI if eSIM)  → 2 steps total
+  // Keep Number:  Step 1 (Setup) → Step 2 (Port form) → Step 3 (SIM type + IMEI if eSIM) → 3 steps total
 
-  const isPortFlow = esimFrom === "keep-number";
-  const esimTotalSteps = isPortFlow ? 3 : 2;
-  const esimStepNumber = isPortFlow ? 3 : 2;
+  const totalSteps = 2;
+
+  const stepNumber: Record<ModalStep, number> = {
+    "choose-sim-type":1,
+    "esim-check":     2,  // New SIM eSIM path — still step 2
+    "port-form":      2,  // Keep Number — step 2
+    "port-sim-type":  3,  // Keep Number — step 3
+  };
+  // esim-check from Keep Number path is step 3
+  const currentStepNumber = stepNumber[step];
 
   // ── Cart ───────────────────────────────────────────────────────────────────
 
@@ -342,26 +335,13 @@ export const BuyPlanModal = ({
     setSimChoice("esim");   // reset before user picks on next screen
     setCompatResult(null);
     setImei("");
-    setConfirmSkip(false);
     setStep("port-sim-type");
-  };
-
-  // ── Enter the shared eSIM check from either flow ───────────────────────────
-
-  const enterEsimCheck = (from: SetupType) => {
-    setSimChoice("esim");
-    setEsimFrom(from);
-    setCompatResult(null);
-    setImei("");
-    setImeiError(null);
-    setConfirmSkip(false);
-    setStep("esim-check");
   };
 
   // ── IMEI check ─────────────────────────────────────────────────────────────
 
   const handleCheckDevice = async () => {
-    const cleanedImei = imei.replace(/\s/g, "").trim();
+      const cleanedImei = imei.replace(/\s/g, "").trim();
 
     // -------------------------------
     // Validation
@@ -377,50 +357,45 @@ export const BuyPlanModal = ({
     setImeiError(null);
     setChecking(true);
     setCompatResult(null);
-    setConfirmSkip(false);
-
-    // Cache key is the IMEI itself — direct lookup, no collisions, no scan
-    const cacheKey = `device_serial_${cleanedImei}`;
-
-    const cacheResult = (compatible: boolean) => {
-      try {
-        localStorage.setItem(
-          cacheKey,
-          JSON.stringify({ device_serial: cleanedImei, esim_compatible: compatible })
-        );
-      } catch {
-        // localStorage full / disabled — non-fatal, just skip caching
-      }
-    };
 
     try {
       // =========================================================
       // STEP 1: CHECK LOCAL STORAGE FIRST
       // =========================================================
-      const cached = localStorage.getItem(cacheKey);
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (parsed.esim_compatible === true) {
-          setCompatResult({
-            compatible: true,
-            esimCompatible: true,
-            message: cleanedImei + " is compatible with eSIM.",
-          });
-          return; // stop here, no API calls needed
-        }
-        if (parsed.esim_compatible === false) {
-          setCompatResult({
-            compatible: false,
-            esimCompatible: false,
-            message: cleanedImei + " is not compatible with eSIM.",
-          });
-          return; // stop here, no API calls needed
+      const storageKeys = Object.keys(localStorage).filter((key) =>
+        key.startsWith("device_serial_")
+      );
+
+      let localMatch: any = null;
+      for (const key of storageKeys) {
+        const item = localStorage.getItem(key);
+        if (!item) continue;
+        const parsed = JSON.parse(item);
+        if (parsed.device_serial === cleanedImei) {
+          localMatch = parsed;
+          break;
         }
       }
 
-      // =========================================================
-      // STEP 2: GOLITE TABLE LOOKUP
-      // =========================================================
+      const nextIndex = storageKeys.length + 1;
+      
+      // IF FOUND IN LOCAL STORAGE — show result and stop
+      if (localMatch && localMatch.esim_compatible === true) {
+        setCompatResult({
+          compatible: true,
+          message: cleanedImei +" is compatible with eSIM.",
+        });
+        return; // stop here, no API calls needed
+      }
+      
+      if (localMatch && localMatch.esim_compatible === false) {
+        setCompatResult({
+          compatible: false,
+          message: cleanedImei +" is not compatible with eSIM.",
+        });
+        return; // stop here, no API calls needed        
+      }
+
       const goliteEsimTblSrchResponse = await fetch(
         "https://goliteapi.golitemobile.com/api/device_compatibility_checker/",
         {
@@ -440,15 +415,21 @@ export const BuyPlanModal = ({
       if (goliteEsimTblSrchData.compatible === true) {
         setCompatResult({
           compatible: true,
-          esimCompatible: true,
-          message: cleanedImei + " is compatible with eSIM.",
+          message: cleanedImei +" is compatible with eSIM.",
         });
-        cacheResult(true);
-        return; // stop here, no further API calls needed
+        localStorage.setItem(
+          `device_serial_${nextIndex}`,
+          JSON.stringify({
+            device_serial: cleanedImei,
+            esim_compatible: true,
+          })
+        );
+        return; // stop here, no API calls needed        
       }
 
+      
       // =========================================================
-      // STEP 3: NOT IN GOLITE DB — CALL BEQUICK API
+      // STEP 2: NOT IN LOCAL STORAGE — AND NOT IN GOLITE DB EITHER — SO CALL BEQUICK API
       // =========================================================
       const bequickRes = await fetch(
         "https://zoiko-atom-api.bequickapps.com/carriers/3/query_device_info",
@@ -463,20 +444,23 @@ export const BuyPlanModal = ({
       );
 
       const bequickData = await bequickRes.json();
-      const info = bequickData ?? {};
-      const isEsimCompatible = info.esim_compatible;
+      console.log("Bequick API response:", bequickData);
+      const info = bequickData ?? {};      
+      const isEsimCompatible = info.esim_compatible;    
 
       if (isEsimCompatible === true) {
         setCompatResult({
           compatible: true,
-          esimCompatible: true,
-          device: info.device ?? info.model ?? null,
-          manufacturer: info.manufacturer ?? info.make ?? null,
-          lteCompatible: info.lte_compatible ?? null,
-          fiveGCompatible: info.five_g_compatible ?? null,
-          message: cleanedImei + " is compatible with eSIM.",
+          message: cleanedImei +" is compatible with eSIM.",
         });
-        cacheResult(true);
+        
+        localStorage.setItem(
+          `device_serial_${nextIndex}`,
+          JSON.stringify({
+            device_serial: cleanedImei,
+            esim_compatible: isEsimCompatible,
+          })
+        );
 
         await fetch(
           "https://goliteapi.golitemobile.com/api/device_compatibility_checker/",
@@ -493,11 +477,8 @@ export const BuyPlanModal = ({
           }
         );
         return; // stop here, no further API calls needed
-      }
+      } 
 
-      // =========================================================
-      // STEP 4: GOLITE VENDOR CHECK
-      // =========================================================
       const goliteVResponse = await fetch(
         "https://goliteapi.golitemobile.com/api/device_compatibility_checker/",
         {
@@ -515,27 +496,38 @@ export const BuyPlanModal = ({
 
       const goliteVData = await goliteVResponse.json();
 
-      if (goliteVData.esimCompatible === true) {
+      if(goliteVData.esimCompatible === true) {
         setCompatResult({
           compatible: true,
-          esimCompatible: true,
-          message: cleanedImei + " is compatible with eSIM.",
+          message: cleanedImei +" is compatible with eSIM.",
         });
-        cacheResult(true);
-        return;
-      }
 
-      cacheResult(false);
-      setCompatResult({
-        compatible: false,
-        esimCompatible: false,
-        message: cleanedImei + " is not compatible with eSIM.",
-      });
+        localStorage.setItem(
+          `device_serial_${nextIndex}`,
+          JSON.stringify({
+            device_serial: cleanedImei,
+            esim_compatible: true,
+          })
+        );
+        return; 
+      }else { 
+
+        localStorage.setItem(
+          `device_serial_${nextIndex}`,
+          JSON.stringify({
+            device_serial: cleanedImei,
+            esim_compatible: false,
+          })
+        );
+        setCompatResult({
+          compatible: false,
+          message: cleanedImei +" is not compatible with eSIM.",
+        });
+      } 
+
     } catch (err) {
-      // Network/parse failure — do NOT cache, this isn't a real "incompatible"
       setCompatResult({
         compatible: false,
-        esimCompatible: null,
         message:
           err instanceof Error
             ? err.message
@@ -543,7 +535,7 @@ export const BuyPlanModal = ({
       });
     } finally {
       setChecking(false);
-    }
+    };
   };
 
   // ── Checkout ───────────────────────────────────────────────────────────────
@@ -554,51 +546,41 @@ export const BuyPlanModal = ({
     window.location.href = checkoutPath;
   };
 
-  // New SIM → eSIM. `skipped` = user bypassed the compatibility check.
-  const handleNewSimEsimCheckout = (skipped = false) => goCheckout({
+  // New SIM → eSIM (after IMEI check)
+  const handleNewSimEsimCheckout = () => goCheckout({
     ...buildBase(), simType: "esim", setupType: "new-sim",
-    imei: skipped ? null : imei.replace(/\s/g, "").trim(),
-    esimCheckSkipped: skipped,
-    device: skipped ? null : (compatResult?.device ?? null),
-    manufacturer: skipped ? null : (compatResult?.manufacturer ?? null),
-    lteCompatible: skipped ? null : (compatResult?.lteCompatible ?? null),
-    fiveGCompatible: skipped ? null : (compatResult?.fiveGCompatible ?? null),
-    esimCompatible: skipped ? null : (compatResult?.esimCompatible ?? compatResult?.compatible ?? null),
+    imei: imei.trim(),
+    device: compatResult?.device ?? null, manufacturer: compatResult?.manufacturer ?? null,
+    lteCompatible: compatResult?.lteCompatible ?? null,
+    fiveGCompatible: compatResult?.fiveGCompatible ?? null,
+    esimCompatible: compatResult?.esimCompatible ?? null,
   });
 
   // New SIM → pSIM
   const handleNewSimPsimCheckout = () => goCheckout({
     ...buildBase(), simType: "psim", setupType: "new-sim",
-    imei: null, esimCheckSkipped: false, device: null, manufacturer: null,
+    imei: null, device: null, manufacturer: null,
     lteCompatible: null, fiveGCompatible: null, esimCompatible: null,
   });
 
   // Keep Number → pSIM (no IMEI needed)
   const handlePortPsimCheckout = () => goCheckout({
     ...buildBase(), simType: "psim", setupType: "keep-number",
-    imei: null, esimCheckSkipped: false, device: null, manufacturer: null,
+    imei: null, device: null, manufacturer: null,
     lteCompatible: null, fiveGCompatible: null, esimCompatible: null,
     portNumberInfo: { mdn: mdn.trim(), ...portForm },
   });
 
-  // Keep Number → eSIM. `skipped` = user bypassed the compatibility check.
-  const handlePortEsimCheckout = (skipped = false) => goCheckout({
+  // Keep Number → eSIM (after IMEI check)
+  const handlePortEsimCheckout = () => goCheckout({
     ...buildBase(), simType: "esim", setupType: "keep-number",
-    imei: skipped ? null : imei.replace(/\s/g, "").trim(),
-    esimCheckSkipped: skipped,
-    device: skipped ? null : (compatResult?.device ?? null),
-    manufacturer: skipped ? null : (compatResult?.manufacturer ?? null),
-    lteCompatible: skipped ? null : (compatResult?.lteCompatible ?? null),
-    fiveGCompatible: skipped ? null : (compatResult?.fiveGCompatible ?? null),
-    esimCompatible: skipped ? null : (compatResult?.esimCompatible ?? compatResult?.compatible ?? null),
+    imei: imei.trim(),
+    device: compatResult?.device ?? null, manufacturer: compatResult?.manufacturer ?? null,
+    lteCompatible: compatResult?.lteCompatible ?? null,
+    fiveGCompatible: compatResult?.fiveGCompatible ?? null,
+    esimCompatible: compatResult?.esimCompatible ?? null,
     portNumberInfo: { mdn: mdn.trim(), ...portForm },
   });
-
-  // Single entry point — routes to the correct payload builder for the flow
-  const submitEsim = (skipped: boolean) =>
-    esimFrom === "keep-number"
-      ? handlePortEsimCheckout(skipped)
-      : handleNewSimEsimCheckout(skipped);
 
   // ── Shared IMEI Check block ────────────────────────────────────────────────
 
@@ -613,7 +595,7 @@ export const BuyPlanModal = ({
         <div>
           <p className="font-bold text-gray-900 dark:text-white text-sm mb-0.5">eSIM Selected</p>
           <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">Digital SIM built into your phone — no physical card needed</p>
-          <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">Instant activation | No waiting for delivery | Can&apos;t be lost or damaged</p>
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">Instant activation | No waiting for delivery | Can't be lost or damaged</p>
         </div>
       </div>
 
@@ -622,7 +604,6 @@ export const BuyPlanModal = ({
         <div className="flex gap-2">
           <input
             type="text"
-            inputMode="numeric"
             value={imei}
             onChange={(e) => setImei(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") handleCheckDevice(); }}
@@ -652,7 +633,9 @@ export const BuyPlanModal = ({
               : "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700"
           }`}>
             {compatResult.compatible ? (
-              <p className="font-bold text-green-800 dark:text-green-400 mb-1.5">{compatResult.message}</p>
+              <>
+                <p className="font-bold text-green-800 dark:text-green-400 mb-1.5">{compatResult.message}</p>
+              </>
             ) : (
               <p className="text-red-700 dark:text-red-400 font-medium">
                 {compatResult.message || "Your device may not be compatible. Please contact support."}
@@ -668,16 +651,19 @@ export const BuyPlanModal = ({
 
   const renderStep = () => {
 
-    // ── STEP 1: Choose SIM Type — New SIM flow ────────────────────────────────
+    // ── STEP 1: Choose Setup ──────────────────────────────────────────────────
+  
+
+    // ── STEP 2a: Choose SIM Type — New SIM flow ───────────────────────────────
     if (step === "choose-sim-type") return (
       <>
         <StepIndicator currentStep={1} totalSteps={2} />
         <h2 className="text-xl font-extrabold text-gray-900 dark:text-white text-center mb-1">Choose Your SIM Type</h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">Select how you&apos;d like to receive your SIM</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">Select how you'd like to receive your SIM</p>
 
         <div className="space-y-3 mb-8">
           <SimOptionCard type="esim" selected={simChoice === "esim"}
-            onSelect={() => enterEsimCheck("new-sim")}
+            onSelect={() => { setSimChoice("esim"); setCompatResult(null); setImei(""); setStep("esim-check"); }}
           />
           <SimOptionCard type="psim" selected={simChoice === "psim"}
             onSelect={() => setSimChoice("psim")}
@@ -699,28 +685,25 @@ export const BuyPlanModal = ({
       </>
     );
 
-    // ── eSIM IMEI Check — shared by both flows ────────────────────────────────
+    // ── STEP 2b / 3b: eSIM IMEI Check — shared by both flows ─────────────────
     if (step === "esim-check") {
-      const backStep: ModalStep = isPortFlow ? "port-sim-type" : "choose-sim-type";
-      const verified = compatResult?.compatible === true;
-
+      
+      const backStep: ModalStep = "choose-sim-type";
       return (
         <>
-          <StepIndicator currentStep={esimStepNumber} totalSteps={esimTotalSteps} />
+          <StepIndicator currentStep={currentStepNumber} totalSteps={totalSteps} />
           <h2 className="text-xl font-extrabold text-gray-900 dark:text-white text-center mb-1">Check Device Compatibility</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">Verify your device supports eSIM on our network</p>
 
           <div className="space-y-3 mb-4">
             {renderImeiBlock()}
 
-            {/* Switch to pSIM fallback — returns to the SIM picker for THIS flow */}
+            {/* Switch to pSIM fallback */}
             <button
               onClick={() => {
                 setSimChoice("psim");
-                setCompatResult(null);
-                setImei("");
-                setConfirmSkip(false);
-                setStep(backStep);
+                setCompatResult(null); setImei("");
+                setStep( "choose-sim-type");
               }}
               className="w-full text-left rounded-2xl border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 bg-white dark:bg-gray-700 p-4 transition-all duration-200 flex items-start gap-4"
             >
@@ -737,50 +720,20 @@ export const BuyPlanModal = ({
             </button>
           </div>
 
-          {/* Skip confirmation warning */}
-          {confirmSkip && !verified && (
-            <div className="mb-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 px-3 py-2.5">
-              <p className="text-xs text-amber-700 dark:text-amber-400">
-                <span className="font-bold">Your device hasn&apos;t been verified.</span>{" "}
-                If it doesn&apos;t support eSIM, activation will fail and you&apos;ll need to request a
-                pSIM instead. Continue without checking?
-              </p>
-            </div>
-          )}
-
           <div className="flex items-center justify-between gap-3">
             <button
-              onClick={() => {
-                setCompatResult(null);
-                setImei("");
-                setConfirmSkip(false);
-                setStep(backStep);
-              }}
+              onClick={() => { setCompatResult(null); setImei(""); setStep(backStep); }}
               className="flex items-center gap-1.5 px-5 py-2.5 rounded-full border-2 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 font-semibold text-sm hover:border-gray-300 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
               Back
             </button>
-
-            {verified ? (
+            {compatResult?.compatible && (
               <button
-                onClick={() => submitEsim(false)}
+                onClick={handleNewSimEsimCheckout}
                 className="flex items-center gap-2 px-7 py-2.5 bg-[#1a4a3f] hover:bg-[#133830] text-white font-semibold text-sm rounded-full transition-colors duration-200"
               >
                 Continue to Checkout
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
-              </button>
-            ) : (
-              <button
-                onClick={() => (confirmSkip ? submitEsim(true) : setConfirmSkip(true))}
-                disabled={checking}
-                className={`flex items-center gap-2 px-7 py-2.5 font-semibold text-sm rounded-full transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
-                  confirmSkip
-                    ? "bg-amber-500 hover:bg-amber-600 text-white"
-                    : "border-2 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-gray-400"
-                }`}
-              >
-                {confirmSkip ? "Yes, skip and continue" : "Skip check and continue"}
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
               </button>
             )}
@@ -789,7 +742,7 @@ export const BuyPlanModal = ({
       );
     }
 
-    // ── Port Details Form — Keep Number flow ──────────────────────────────────
+    // ── STEP 2: Port Details Form — Keep Number flow ──────────────────────────
     if (step === "port-form") return (
       <>
         <StepIndicator currentStep={2} totalSteps={3} />
@@ -815,7 +768,11 @@ export const BuyPlanModal = ({
           <PortField label="OSP Account PIN/Password" name="ospAccountPin" placeholder="Enter PIN" value={portForm.ospAccountPin} error={portErrors.ospAccountPin} onChange={handlePortFormChange} />
         </div>
 
-        <div className="flex items-center justify-end gap-3">
+        <div className="flex items-center justify-between gap-3">
+          {/* <button onClick={() => setStep("choose-setup")} className="flex items-center gap-1.5 px-5 py-2.5 rounded-full border-2 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 font-semibold text-sm hover:border-gray-300 transition-colors">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+            Back
+          </button> */}
           <button onClick={handlePortFormNext} className="flex items-center gap-2 px-7 py-2.5 bg-[#1a4a3f] hover:bg-[#133830] text-white font-semibold text-sm rounded-full transition-colors duration-200">
             Next: Choose SIM
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
@@ -824,18 +781,18 @@ export const BuyPlanModal = ({
       </>
     );
 
-    // ── Choose SIM Type — Keep Number flow ────────────────────────────────────
+    // ── STEP 3: Choose SIM Type — Keep Number flow ────────────────────────────
     if (step === "port-sim-type") return (
       <>
         <StepIndicator currentStep={3} totalSteps={3} />
         <h2 className="text-xl font-extrabold text-gray-900 dark:text-white text-center mb-1">Choose Your SIM Type</h2>
         <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">
-          Select how you&apos;d like to receive your new SIM for the ported number
+          Select how you'd like to receive your new SIM for the ported number
         </p>
 
         <div className="space-y-3 mb-8">
           <SimOptionCard type="esim" selected={simChoice === "esim"}
-            onSelect={() => enterEsimCheck("keep-number")}
+            onSelect={() => { setSimChoice("esim"); setCompatResult(null); setImei(""); setStep("esim-check"); }}
           />
           <SimOptionCard type="psim" selected={simChoice === "psim"}
             onSelect={() => setSimChoice("psim")}
