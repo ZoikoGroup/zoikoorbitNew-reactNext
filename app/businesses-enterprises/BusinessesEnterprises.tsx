@@ -333,13 +333,13 @@ export default function BusinessesEnterprises() {
         enquiry_type: formData.enquiry_type || "",
       };
       // remove country_code from payload as it's merged into phone_number
-      const { country_code, ...rest } = payload;
-      void country_code;
-
+   const { country_code, enquiry_type, ...rest } = payload;
+void country_code;
+const finalPayload = enquiry_type ? { ...rest, enquiry_type } : rest;
       const response = await fetch(INQUIRY_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(rest),
+        body: JSON.stringify(finalPayload),
       });
 
       // Read text first so a non-JSON page (404/redirect HTML) doesn't crash JSON.parse.
